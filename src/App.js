@@ -3,6 +3,7 @@ import AuthLogin from './pages/auth/AuthLogin.jsx';
 import AuthRegister from './pages/auth/AuthRegister.jsx';
 import Mypage from './pages/mypage/MyPage.jsx';
 import TabGroup from './pages/tab-group/TabGroup.jsx';
+import DetailPage from './pages/details/DetailPage.jsx';
 import { Route, Routes } from 'react-router-dom';
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/register" element={<AuthRegister></AuthRegister>}></Route>
         <Route path="/mypage" element={<Mypage></Mypage>}></Route>
         <Route path="/tab-groups" element={<TabGroup />}></Route>
+        <Route path="/detail" element={<DetailPage />} />
       </Routes>
     </>
   );
