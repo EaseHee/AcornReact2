@@ -2,57 +2,79 @@ import { Box, Button, Input, Stack, Link, Text, Image } from "@chakra-ui/react";
 import { Field } from "../../components/ui/field";
 import { PasswordInput } from "../../components/ui/password-input";
 import { Checkbox } from "../../components/ui/checkbox";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
 import { DaumPostAPI } from "./DaumPostAPI";
 import Terms1 from "./Terms1";
 import Terms2 from "./Terms2";
 import DuplicatedEmail from "./DuplicatedEmail";
+import axios from "axios";
 
 const AuthRegister = () => {
+
   const {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors },
     watch,
+    control,
   } = useForm();
 
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  
   const watchPassword = watch("password");
 
-  const handleSignup = (values, { setSubmitting, setErrors }) => {
-    // 회원가입 요청
-    axios
-      .post("http://localhost:8080/auth/signup", values)
-      .then((response) => {
-        if (response.status === 200) {
-          //alert('회원가입 완료');
-          //navigate("/main/login"); // 회원가입 성공 시 로그인 페이지로 이동
-        }
-      })
-      .catch((error) => {
-        // 오류 응답 처리
-        if (error.response) {
-          const { code, message } = error.response.data;
-          if (code === "DI") {
-            setErrors({ submit: "이미 사용 중인 아이디 입니다." });
-          } else if (code == "DM") {
-            setErrors({ submit: "이미 사용 중인 이메일 입니다." });
-          } else if (code == "DP") {
-            setErrors({ submit: "이미 사용 중인 번호 입니다." });
-          } else if (error.response.status === 500) {
-            setErrors({ submit: "각 항목의 형식에 맞게 입력해주세요." });
-          }
-        } else {
-          setErrors({
-            submit: "서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+  const handleRegister = async (data) => {
+    if (!isEmailAvailable) {
+      setError("email", {
+        type: "manual",
+        message: "이메일 중복 확인을 해주세요.",
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/auth/register",
+        data
+      );
+
+      if (response.status === 200) {
+        alert("회원가입 완료");
+      }
+    } catch (error) {
+      if (error.response) {
+        const { code } = error.response.data;
+        if (code === "DP") {
+          setError("phone", {
+            type: "manual",
+            message: "이미 사용 중인 번호 입니다.",
+          });
+        } else if (code === "DM") {
+          setError("email", {
+            type: "manual",
+            message: "이미 사용 중인 이메일 입니다.",
+          });
+        } else if (error.response.status === 500) {
+          setError("submit", {
+            type: "manual",
+            message: "각 항목의 형식에 맞게 입력해주세요.",
           });
         }
-      });
+      } else {
+        setError("submit", {
+          type: "manual",
+          message: "서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+        });
+      }
+    }
   };
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const onSubmit = handleSubmit((data) => {
+    handleRegister(data);
+  });
 
   return (
     <form onSubmit={onSubmit}>
@@ -63,7 +85,7 @@ const AuthRegister = () => {
         height="100vh"
         width="full"
       >
-        <Stack gap="1" align="flex-start" maxW="xl" width="full">
+        <Stack gap="1" align="flex-start" maxW="lg" width="full">
           {" "}
           <Link href="/">
             <Image
@@ -83,7 +105,7 @@ const AuthRegister = () => {
             <Text fontSize="2xl" fontWeight="bold">
               회원가입
             </Text>
-            <Link href="/login" color="orange.500" fontWeight="bold">
+            <Link href="#" color="orange.500" fontWeight="bold">
               기존 계정으로 로그인
             </Link>
           </Box>
@@ -115,7 +137,10 @@ const AuthRegister = () => {
             </Box>
             <Box flex="3">
               <Field label="&nbsp;" invalid={!!errors.email} errorText="&nbsp;">
-                <DuplicatedEmail />
+                <DuplicatedEmail
+                  email={watch("email")}
+                  setIsEmailAvailable={setIsEmailAvailable}
+                />
               </Field>
             </Box>
           </Box>
@@ -193,14 +218,14 @@ const AuthRegister = () => {
           </Field>
           <Field
             label="생년월일"
-            invalid={!!errors.birth}
-            errorText={errors.birth?.message}
+            invalid={!!errors.birthDate}
+            errorText={errors.birthDate?.message}
           >
             <Input
               size="md"
               placeholder="YYYYMMDD 형식으로 입력해주세요."
               width="100%"
-              {...register("birth", {
+              {...register("birthDate", {
                 required: "생년월일은 필수 입력입니다.",
                 pattern: {
                   value: /^\d{8}$/,
@@ -278,9 +303,21 @@ const AuthRegister = () => {
             whiteSpace="nowrap"
             fontSize="sm"
           >
-            <Checkbox colorPalette="orange" fontSize="xs" size="sm" key="sm">
-              회원가입 시&nbsp;
-            </Checkbox>
+            <Controller
+              name="terms"
+              control={control}
+              rules={{ required: "약관에 동의해야 합니다." }}
+              render={({ field }) => (
+                <Checkbox
+                  {...field}
+                  colorPalette="orange"
+                  fontSize="xs"
+                  size="sm"
+                >
+                  회원가입 시&nbsp;
+                </Checkbox>
+              )}
+            />
             <Box display="flex" alignItems="center" gap="1" mr="2">
               <Terms1 />
               <Text fontSize="sm">과</Text>
@@ -288,6 +325,16 @@ const AuthRegister = () => {
               <Text fontSize="sm">에 동의하게 됩니다.</Text>
             </Box>
           </Box>
+          {errors.terms && (
+            <Box color="red.500" fontSize="sm" mt="2">
+              {errors.terms.message}
+            </Box>
+          )}
+          {errors.submit && (
+            <Box color="red.500" fontSize="sm" mt="2">
+              {errors.submit.message}
+            </Box>
+          )}
           <Stack spacing="4" width="full" mt="4">
             <Button type="submit" colorPalette="orange" width="full" size="lg">
               회원가입

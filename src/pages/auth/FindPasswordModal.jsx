@@ -12,21 +12,42 @@ import {
 import { Field } from "../../components/ui/field";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 const FindPasswordModal = () => {
-  const ref = useRef < HTMLInputElement > null;
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const handleFindPassword = async (data) => {
+    console.log("폼 데이터:", data);
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/auth/find-password",
+        data
+      );
+      console.log(response.data);
+      alert("이메일을 확인해주세요.");
+    } catch (error) {
+      console.error("비밀번호 찾기 에러:", error);
+    }
+  };
+
+  const onSubmit = handleSubmit((data) => {
+    console.log("폼 데이터:", data);
+    handleFindPassword(data);
+  });
 
   return (
-    <form onSubmit={onSubmit}>
-      <DialogRoot initialFocusEl={() => ref.current}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+    >
+      <DialogRoot disableEnforceFocus>
         <DialogTrigger asChild>
           <Button variant="link" fontSize="sm" p={0} minW="unset">
             비밀번호 찾기
@@ -57,24 +78,6 @@ const FindPasswordModal = () => {
                 />
               </Field>
               <Field
-                label="이름"
-                invalid={!!errors.name}
-                errorText={errors.name?.message}
-              >
-                <Input
-                  size="md"
-                  placeholder="가입하신 계정의 이름을 입력해주세요."
-                  width="100%"
-                  {...register("name", {
-                    required: "이름은 필수 입력입니다.",
-                    pattern: {
-                      value: /^[a-zA-Z가-힣]{2,20}$/,
-                      message: "이름은 한글과 영어만 입력해야 합니다.",
-                    },
-                  })}
-                />
-              </Field>
-              <Field
                 label="휴대전화"
                 invalid={!!errors.phone}
                 errorText={errors.phone?.message}
@@ -96,7 +99,7 @@ const FindPasswordModal = () => {
           </DialogBody>
           <DialogFooter>
             <Stack direction="row" spacing="4" width="100%" justify="flex-end">
-              <Button colorPalette="orange" width="auto">
+              <Button colorPalette="orange" width="auto" type="submit">
                 비밀번호 찾기
               </Button>
               <DialogActionTrigger asChild>

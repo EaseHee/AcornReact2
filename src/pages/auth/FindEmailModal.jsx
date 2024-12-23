@@ -12,17 +12,32 @@ import {
 import { Field } from "../../components/ui/field";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 const FindEmailModal = () => {
   const ref = useRef < HTMLInputElement > null;
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const handleFindEmail = async (data) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/auth/find-email",
+        data
+      );
+      console.log(response.data);
+      alert("이메일을 확인해주세요.");
+    } catch (error) {
+      console.error("이메일 찾기 에러 : ", error);
+    }
+  };
+
+  const onSubmit = handleSubmit((data) => {
+    handleFindEmail(data);
+  });
 
   return (
     <form onSubmit={onSubmit}>
