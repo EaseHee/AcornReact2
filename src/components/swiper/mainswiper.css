@@ -1,0 +1,29 @@
+.swiper-container {
+    width: 65vw;  /* 원하는 고정 크기 */
+    height: 30vh;  /* 원하는 고정 크기 */
+    overflow: hidden;  /* 내용이 넘치지 않도록 설정 */
+  }
+  
+  .swiper {
+    width: 100%;  /* 슬라이드 이미지가 부모 요소의 크기에 맞게 확장됨 */
+    height: 100%;  /* 슬라이드 이미지의 높이가 부모 요소에 맞게 확장됨 */
+    object-fit: cover;  /* 이미지가 비율에 맞게 잘림 */
+  }
+
+  .swiper-slide-content {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .text-container {
+    margin-left: 15%;
+  }
+  
+  .slide-image {
+    display: block;
+    width: 65%;
+    height: auto;
+    max-height: 100%;
+  }
+  
