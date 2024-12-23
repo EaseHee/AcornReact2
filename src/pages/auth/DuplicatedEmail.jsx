@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import {
   DialogActionTrigger,
@@ -10,12 +11,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
+import axios from "axios";
 
-const DuplicatedEmail = () => {
+const DuplicatedEmail = ({ email, setIsEmailAvailable }) => {
+  const [message, setMessage] = useState(""); // 응답 메시지 저장
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleCheckEmail = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/auth/check-email", {
+        params: { email },
+      });
+      if (response.status === 200) {
+        setMessage("사용 가능한 이메일입니다.");
+        setIsSuccess(true);
+        setIsEmailAvailable(true);  // 이메일이 사용 가능하면 상태 변경
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setMessage("이미 사용 중인 이메일입니다.");
+        setIsSuccess(false);
+        setIsEmailAvailable(false);  // 이메일이 중복되면 상태 변경
+      } else {
+        setMessage("이메일 확인 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
   return (
     <DialogRoot>
       <DialogTrigger asChild>
-        <Button colorPalette="orange" width="full" size="lg">
+        <Button
+          colorPalette="orange"
+          width="full"
+          size="lg"
+          onClick={handleCheckEmail}
+        >
           중복 확인
         </Button>
       </DialogTrigger>
@@ -24,13 +55,15 @@ const DuplicatedEmail = () => {
           <DialogTitle>이메일 중복 확인</DialogTitle>
         </DialogHeader>
         <DialogBody>
-          <p>입력하신 이메일은 사용 가능한 이메일 입니다.</p>
+          <p>{message}</p>
         </DialogBody>
-        <DialogFooter>
-          <DialogActionTrigger asChild>
-            <Button colorPalette="orange">사용하기</Button>
-          </DialogActionTrigger>
-        </DialogFooter>
+        {isSuccess && (
+          <DialogFooter>
+            <DialogActionTrigger asChild>
+              <Button colorPalette="orange">사용하기</Button>
+            </DialogActionTrigger>
+          </DialogFooter>
+        )}
         <DialogCloseTrigger />
       </DialogContent>
     </DialogRoot>
