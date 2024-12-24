@@ -4,18 +4,22 @@ import axios from 'axios';
 import { Box, Text } from '@chakra-ui/react';
 import MySpinner from './Spinner';
 
-const fetchTodos = async ({ pageParam = 1 }) => {
+const fetchTodos = async ({ pageParam = 1, url }) => {
   // 기본 페이지는 1입니다.
-  const { data } = await axios.get(`https://jsonplaceholder.typicode.com/todos?_page=${pageParam}&_limit=10`); // 페이지 매개변수를 사용하여 Todo 항목을 요청합니다.
+  const { data } = await axios.get(`${url}?_page=${pageParam}&_limit=10`); // 페이지 매개변수를 사용하여 Todo 항목을 요청합니다.
   return data;
 };
 
-const InfiniteScrollDemo = () => {
+const InfiniteScrollDemo = ({ url }) => {
   // 무한 스크롤 컴포넌트 정의
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery('todos', fetchTodos, {
-    // useInfiniteQuery를 사용하여 데이터를 가져옵니다.
-    getNextPageParam: (lastPage, pages) => (lastPage.length ? pages.length + 1 : undefined), // 다음 페이지 매개변수를 결정합니다.
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
+    ['todos', url], // 쿼리 키에 URL을 포함
+    ({ pageParam }) => fetchTodos({ pageParam, url }), // fetchTodos 호출 시 URL 전달
+    {
+      // useInfiniteQuery를 사용하여 데이터를 가져옵니다.
+      getNextPageParam: (lastPage, pages) => (lastPage.length ? pages.length + 1 : undefined), // 다음 페이지 매개변수를 결정합니다.
+    }
+  );
 
   const observerRef = useRef(); // Intersection Observer를 위한 ref 생성
 
