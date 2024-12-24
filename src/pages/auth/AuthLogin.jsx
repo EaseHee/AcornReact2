@@ -1,49 +1,70 @@
 import { Box, Button, Input, Stack, Link, Text, Image } from "@chakra-ui/react";
-import { Field } from "../../components/ui/field.jsx";
-import { PasswordInput } from "../../components/ui/password-input.jsx";
+import { Field } from "../../components/ui/field";
+import { PasswordInput } from "../../components/ui/password-input";
 import { Checkbox } from "../../components/ui/checkbox";
 import { KakaoLoginButton } from "./KakaoLogin";
-import { NaverLoginButton } from "./NaverLogin";
-import { GoogleLoginButton } from "./GoogleLogin";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import FindPasswordModal from "./FindPasswordModal";
-import FindEmailModal from "./FindEmailModal";
+import FindPassword from "./FindPassword";
+import FindEmail from "./FindEmail";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const AuthLogin = () => {
-  //const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm();
 
-  // 로그인 요청
-  axios
-    .post("http://localhost:8080/main/login", register, {
-      withCredentials: true, // 쿠키 포함 요청
-    })
-    .then((response) => {
-      if (response.status === 200) {
-        //alert('로그인 성공');
-        //navigate('/'); // 로그인 성공 시 이동할 페이지
-      }
-    })
-    .catch((error) => {
-      console.error("로그인 에러: ", error); // 기타 에러 로그
-    });
+  const [checked, setChecked] = useState(false);
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  useEffect(() => {
+    const savedChecked = Cookies.get('checked') === 'true';
+    const savedEmail = Cookies.get('savedEmail');
+
+    if (savedChecked) {
+      setChecked(true);
+    }
+    if (savedEmail) {
+      setValue("email", savedEmail);
+    }
+  }, [setValue]);
+
+  const handleLogin = async (data) => {
+    if (checked) {
+      Cookies.set('savedEmail', data.email, { expires: 7 });
+      Cookies.set('checked', 'true', { expires: 7 });
+    } else {
+      Cookies.remove('savedEmail');
+      Cookies.remove('checked');
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", data, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        alert("로그인 성공");
+      }
+    } catch (error) {
+      console.error("로그인 에러: ", error);
+    }
+  };
+
+  const onSubmit = handleSubmit((data) => {
+    handleLogin(data);
+  });
+
+  const handleCheckboxChange = () => {
+    setChecked((prevChecked) => !prevChecked);
+  };
 
   return (
     <form onSubmit={onSubmit}>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        height="100vh"
-      >
+      <Box display="flex" alignItems="center" justifyContent="center" height="100vh">
         <Stack gap="4" align="flex-start" maxW="sm" width="full">
           <Link href="/">
             <Image
@@ -54,16 +75,11 @@ const AuthLogin = () => {
               mb="4"
             />
           </Link>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            width="full"
-          >
+          <Box display="flex" alignItems="center" justifyContent="space-between" width="full">
             <Text fontSize="2xl" fontWeight="bold">
               로그인
             </Text>
-            <Link href="/register" color="orange.500" fontWeight="bold">
+            <Link href="#" color="orange.500" fontWeight="bold">
               회원가입
             </Link>
           </Box>
@@ -74,6 +90,7 @@ const AuthLogin = () => {
           >
             <Input
               size="lg"
+              placeholder="이메일을 입력해주세요."
               {...register("email", {
                 required: "이메일은 필수 입력입니다.",
                 pattern: {
@@ -90,39 +107,32 @@ const AuthLogin = () => {
           >
             <PasswordInput
               size="lg"
+              placeholder="비밀번호를 입력해주세요."
               {...register("password", {
                 required: "비밀번호는 필수 입력입니다.",
-                pattern: {
-                  value:
-                    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,20}$/,
-                  message:
-                    "비밀번호는 최소 8자 이상 최대 20자 이하를 입력해주세요.",
-                },
               })}
             />
           </Field>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            width="full"
-          >
-            <Checkbox colorPalette="orange" flexShrink={0}>
+
+          <Box display="flex" alignItems="center" justifyContent="space-between" width="full">
+            <Checkbox
+              colorPalette="orange"
+              checked={checked}
+              onChange={handleCheckboxChange}
+            >
               이메일 기억하기
             </Checkbox>
+
             <Box display="flex" alignItems="center" gap="1" mr="2">
-              <FindEmailModal />
-              <Text fontSize="sm">/</Text>
-              <FindPasswordModal />
+              <FindEmail height="40px" />
+              <FindPassword height="40px" />
             </Box>
           </Box>
-          <Stack spacing="4" width="full" mt="4">
+          <Stack spacing="2" width="full" mt="1">
             <Button type="submit" colorPalette="orange" width="full" size="lg">
               로그인
             </Button>
             <KakaoLoginButton />
-            <NaverLoginButton />
-            <GoogleLoginButton />
           </Stack>
         </Stack>
       </Box>
