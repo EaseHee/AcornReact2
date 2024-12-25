@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const fetchBlogReviews = async (query) => {
-  const API_KEY = "60ddc85bdd372041c11e1dc97e03d442"; // 발급받은 REST API 키
+  const API_KEY = "38c8d75fe8f50a5228b24a1aa963a86a"; // 발급받은 REST API 키
   const url = "https://dapi.kakao.com/v2/search/blog";
 
   try {
