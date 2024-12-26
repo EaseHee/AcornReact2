@@ -1,25 +1,50 @@
-import { Button, Card, Image, Text } from "@chakra-ui/react"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Maincard = () => {
+import { Button, Card, Image } from "@chakra-ui/react"
+
+const Maincard = ({no}) => {
+  // 서버에 음식점 상세 정보 요청
+  const [eatery, setEatery] = useState({});
+
+  useEffect (() => {
+    axios(`/main/eatery/${no}`, {method: "GET"})
+    .then(response => {
+      return response.data;
+    })
+    .then(data => {
+      // 마크업으로 작성된 설명 부분 평문으로 변환
+      let div = document.createElement('div');
+      div.innerHTML = data.description;
+      setEatery({...data, description: div.textContent || div.innerText});
+    })
+    .catch(error => {
+      console.log("error : " + error);
+    })
+  }, [no]);
+
+  const navigate = useNavigate();
+
+  // 상세 페이지로 이동
+  const handleCardClick = () => {
+    navigate(`/detail/${eatery.no}`);
+  }
+
+  
   return (
-    <Card.Root maxW="sm" overflow="hidden">
+    <Card.Root maxW="sm" overflow="hidden" onClick={handleCardClick} style={{ cursor: "pointer" }}>
       <Image
-        src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-        alt="Green double couch with wooden legs"
+        src={eatery.thumbnail}
+        alt="이미지 없음"
       />
       <Card.Body gap="2">
-        <Card.Title>Living room Sofa</Card.Title>
-        <Card.Description>
-          This sofa is perfect for modern tropical spaces, baroque inspired
-          spaces.
-        </Card.Description>
-        <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-          $450
-        </Text>
+        <Card.Title>{eatery.name}</Card.Title>
+        <Card.Description>{eatery.description}</Card.Description>
       </Card.Body>
       <Card.Footer>
-        <Button variant="solid">Buy now</Button>
-        <Button variant="ghost">Add to cart</Button>
+        <Button variant="solid">{eatery.viewCount}</Button>
+        <Button variant="ghost">{eatery.favoritesCount}</Button>
       </Card.Footer>
     </Card.Root>
   )
