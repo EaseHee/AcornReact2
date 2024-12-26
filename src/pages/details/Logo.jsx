@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import logo from './images/logo.png';
 
 const Logo = () => {
-  const navigate = useNavigate(); // useNavigate 훅을 사용하여 네비게이터 객체 생성
+  const navigate = useNavigate();
 
   const handleLogoClick = () => {
     navigate("/"); // 메인 페이지로 이동

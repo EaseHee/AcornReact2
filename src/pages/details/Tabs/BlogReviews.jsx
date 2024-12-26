@@ -24,22 +24,20 @@ const BlogReviews = () => {
         <Flex key={index} p={4} borderBottom="1px solid #e2e8f0" justifyContent="space-between">
           {/* 블로그 리뷰 섹션 */}
           <Box flex="3" pr={4}>
-            <Link href={blog.url} isExternal>
-              {' '}
-              {/* isExternal : 새탭으로 블로그창 열기, chakra Link 사용 */}
+            <Link href={blog.url} isExternal> {/* isExternal : 새탭으로 블로그창 열기, chakra Link 사용 */}
               <Text fontWeight="bold" color="blue.500" _hover={{ textDecoration: 'underline' }}>
                 {removeHtmlTags(blog.title)} {/* HTML 태그 제거 */}
               </Text>
             </Link>
+
             <Text fontSize="sm" color="gray.500">
               {new Date(blog.datetime).toLocaleDateString()}
             </Text>
             <Text mt={2}>{removeHtmlTags(blog.contents)}</Text> {/* HTML 태그 제거 */}
           </Box>
+
           {/* 블로그 사진 섹션 */}
-          <Box flex="1" maxWidth="200px">
-            {' '}
-            {/* 썸네일 크기 조정 */}
+          <Box flex="1" maxWidth="200px"> {/* 썸네일 크기 조정 */}
             <Link href={blog.url} isExternal>
               <Image
                 src={blog.thumbnail || 'https://via.placeholder.com/200?text=No+Image'}
