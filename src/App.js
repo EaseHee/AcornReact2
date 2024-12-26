@@ -12,6 +12,7 @@ function App() {
   return (
     <>
       <Routes>
+        
         <Route path='/' element={<Main isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}></Main>}></Route>
         <Route path='/login' element={<AuthLogin setIsLoggedIn={setIsLoggedIn}></AuthLogin>} ></Route>
         <Route path='/register' element={<AuthRegister></AuthRegister>}></Route>
