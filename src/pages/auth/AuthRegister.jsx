@@ -105,7 +105,7 @@ const AuthRegister = () => {
             <Text fontSize="2xl" fontWeight="bold">
               회원가입
             </Text>
-            <Link href="#" color="orange.500" fontWeight="bold">
+            <Link href="/login" color="orange.500" fontWeight="bold">
               기존 계정으로 로그인
             </Link>
           </Box>
@@ -274,7 +274,7 @@ const AuthRegister = () => {
             <Input
               size="md"
               placeholder="도로명 주소"
-              readOnly
+              //readOnly
               width="100%"
               {...register("roadAddress", {
                 required: "도로명 주소는 필수 입력입니다.",
