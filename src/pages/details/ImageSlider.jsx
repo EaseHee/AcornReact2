@@ -1,18 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Image } from "@chakra-ui/react";
+import fetchRestaurantImages from "./RestaurantApi"; // API 호출 함수 추가
 
-import image1 from "./images/1.jpg";
-import image2 from "./images/2.png";
-import image3 from "./images/3.png";
-import image4 from "./images/4.jpg";
-import image5 from "./images/5.jpg";
-
-const ImageSlider = () => {
+const ImageSlider = ({ restaurant }) => {
+  const [images, setImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images = [image1, image2, image3, image4, image5];
   const timerRef = useRef(null);
 
-  // 자동 슬라이더
+  // 이미지 슬라이드용 타이머
   const resetTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -34,10 +29,31 @@ const ImageSlider = () => {
     resetTimer();
   };
 
+  // 음식점 이미지를 가져오는 로직
   useEffect(() => {
+    const fetchImages = async () => {
+      if (restaurant?.name && restaurant?.address) {
+        try {
+          const fetchedImages = await fetchRestaurantImages(
+            restaurant.name,
+            restaurant.address // 주소 추가
+          );
+          setImages(fetchedImages);
+        } catch (error) {
+          console.error("이미지 fetch 에러:", error);
+        }
+      }
+    };
+  
+    fetchImages();
     resetTimer();
+  
     return () => clearInterval(timerRef.current);
-  }, []);
+  }, [restaurant]);
+
+  if (!images.length) {
+    return <Box>이미지를 불러오지 못했습니다.</Box>;
+  }
 
   return (
     <Box position="relative" width="100%" mb={4}>

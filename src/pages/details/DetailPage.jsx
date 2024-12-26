@@ -35,11 +35,12 @@ const DetailPage = () => {
   return (
     <Box px="25%" py={4}>
       <Logo />
-      <ImageSlider />
+      
+      <ImageSlider restaurant={restaurant}/>
       
       <Box display="flex" flexDirection={["column", "row"]} gap={3}>
         <Box flex={2}>
-          <RestaurantInfo restaurant={restaurant} />  {/* props로 전달 */}
+          <RestaurantInfo restaurant={restaurant} />
         </Box>
         <Box flex={1}>
           <Map 
