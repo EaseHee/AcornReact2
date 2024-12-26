@@ -7,11 +7,14 @@ import Sidebar from "../sidebar/Sidebar.js";
 import MySpinner from "../../components/Spinner.js";
 import CategoryDialog from "./CategoryDialog.js";
 import LocationDialog from "./LocationDialog.js";
-import {Link} from 'react-router-dom';
-export default function Main() {
+import {Link, useNavigate} from 'react-router-dom';
+import axios from "axios";
+export default function Main({ isLoggedIn, setIsLoggedIn }) {
   const [items, setItems] = useState(Array.from({ length: 6 })); // 초기 데이터
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState("1")
+  const navigate = useNavigate();
+
   // 더 많은 데이터를 로드하는 함수
   const loadMoreItems = () => {
     if (isLoading) return;
@@ -28,6 +31,20 @@ export default function Main() {
         loadMoreItems();
     }
 };
+
+const handleLogout = async () => {
+    try {
+        const response = await axios.post('http://localhost:8080/auth/logout', {withCredentials: true,});
+        if (response.status === 200) {
+            alert("로그아웃 성공");
+            setIsLoggedIn(false); // 로그인 상태를 false로 변경
+            navigate("/"); // 홈으로 이동
+          }
+    } catch (error) {
+        console.error("로그아웃 에러 : ",error);
+        alert("로그아웃 에러");
+    }
+  };
 
   return (
     <Flex
@@ -52,7 +69,13 @@ export default function Main() {
                 <LocationDialog></LocationDialog>
             </Box>
             <Box h="8vh" w="23%" borderRadius="md" py={4} display="flex" justifyContent="flex-end"alignItems="flex-end">
-                <Button as={Link} to="/login">로그인</Button>
+            {isLoggedIn ? (
+              <Button onClick={handleLogout}>로그아웃</Button>
+            ) : (
+              <Button as={Link} to="/login">
+                로그인
+              </Button>
+            )}
             </Box>
         </Flex>
 
