@@ -7,16 +7,35 @@ const removeHtmlTags = (text) => {
   return text.replace(/<[^>]*>?/gm, ''); // 정규식
 };
 
-const BlogReviews = () => {
+const BlogReviews = ({ restaurant }) => {  // restaurant prop 추가
   const [blogs, setBlogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+
     const fetchData = async () => {
-      const data = await fetchBlogReviews('서울 강남 맛집'); // 검색어
-      setBlogs(data);
+      if (restaurant?.name) {
+        try {
+          const data = await fetchBlogReviews(restaurant.name);
+          setBlogs(data);
+        } catch (error) {
+          console.error("블로그 데이터 fetch 에러:", error);
+        }
+      } else {
+        console.log("restaurant.name이 없습니다");
+      }
+      setIsLoading(false);
     };
     fetchData();
-  }, []);
+  }, [restaurant]);
+
+  if (isLoading) {
+    return <Box p={4}>블로그 리뷰를 불러오는 중...</Box>;
+  }
+
+  if (!blogs.length) {
+    return <Box p={4}>블로그 리뷰가 없습니다.</Box>;
+  }
 
   return (
     <Box height="100%" overflowY="auto" border="1px solid #e2e8f0" borderRadius="md" p={2}>

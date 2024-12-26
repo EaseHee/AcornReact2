@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 
 const queryClient = new QueryClient();
 
-const ReviewTabs = () => {
+const ReviewTabs = ({ restaurant }) => {
   return (
     <Tabs.Root mt={4} variant="enclosed" defaultValue="stars">
       <Tabs.List>
@@ -27,7 +27,7 @@ const ReviewTabs = () => {
         </Tabs.Content>
         <Tabs.Content value="blog">
           {/* 블로그 리뷰 공간 */}
-          <BlogReviews />
+          <BlogReviews restaurant={restaurant} />
         </Tabs.Content>
       </QueryClientProvider>
     </Tabs.Root>

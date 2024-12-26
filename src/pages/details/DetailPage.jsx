@@ -6,6 +6,7 @@ import RestaurantInfo from './RestaurantInfo'
 import Map from './Map'
 import ReviewTabs from './ReviewTabs'
 import axios from 'axios';
+import BlogReviews from './Tabs/BlogReviews';
 
 const DetailPage = () => {
   const [restaurant, setRestaurant] = useState(null);
@@ -30,7 +31,7 @@ const DetailPage = () => {
   if (isLoading) return <Box>로딩 중...</Box>;
   if (error) return <Box>에러: {error}</Box>;
   if (!restaurant) return <Box>식당 정보를 찾을 수 없습니다</Box>;
-
+  
   return (
     <Box px="25%" py={4}>
       <Logo />
@@ -48,7 +49,9 @@ const DetailPage = () => {
         </Box>
       </Box>
       
-      <ReviewTabs />
+      <ReviewTabs restaurant={restaurant}>
+        <BlogReviews />
+      </ReviewTabs>
     </Box>
   );
 };
