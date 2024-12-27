@@ -8,8 +8,8 @@ import MySpinner from "../../components/Spinner.js";
 import CategoryDialog from "./CategoryDialog.js";
 import LocationDialog from "./LocationDialog.js";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import Cookies from 'js-cookie';
+import axios from "axios";
 
 export default function Main({ isLoggedIn, setIsLoggedIn }) {
   const [items, setItems] = useState(Array.from({ length: 6 })); // 초기 데이터
@@ -91,7 +91,7 @@ export default function Main({ isLoggedIn, setIsLoggedIn }) {
 
   useEffect(() => {
     if (coords) {
-      axios("/address", {
+      axios("http://localhost:8080/main/address", {
         method: "get",
         params: {
           lat: coords.lat,
