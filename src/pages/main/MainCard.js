@@ -9,7 +9,7 @@ const Maincard = ({no}) => {
   const [eatery, setEatery] = useState({});
 
   useEffect (() => {
-    axios(`/main/eatery/${no}`, {method: "GET"})
+    axios(`http://localhost:8080/main/eateries/${no}`, {method: "GET"})
     .then(response => {
       return response.data;
     })
