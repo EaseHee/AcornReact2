@@ -16,7 +16,7 @@ const DetailPage = () => {
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/eateries/2");
+        const response = await axios.get("http://localhost:8080/main/eateries/2");
         setRestaurant(response.data);
       } catch (err) {
         setError(err.message);
