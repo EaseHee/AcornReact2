@@ -7,8 +7,11 @@ import Map from './Map'
 import ReviewTabs from './ReviewTabs'
 import axios from 'axios';
 import BlogReviews from './Tabs/BlogReviews';
+import {useParams} from "react-router-dom";
 
 const DetailPage = () => {
+  const {no} = useParams();
+
   const [restaurant, setRestaurant] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +19,7 @@ const DetailPage = () => {
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/main/eateries/2");
+        const response = await axios.get("http://localhost:8080/main/eateries/" + no);
         setRestaurant(response.data);
       } catch (err) {
         setError(err.message);
