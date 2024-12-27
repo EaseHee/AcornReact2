@@ -9,6 +9,7 @@ import CategoryDialog from "./CategoryDialog.js";
 import LocationDialog from "./LocationDialog.js";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 export default function Main({ isLoggedIn, setIsLoggedIn }) {
   const [items, setItems] = useState(Array.from({ length: 6 })); // 초기 데이터
@@ -40,7 +41,7 @@ export default function Main({ isLoggedIn, setIsLoggedIn }) {
       if (response.status === 200) {
         alert("로그아웃 성공");
         setIsLoggedIn(false); // 로그인 상태를 false로 변경
-        navigate("/"); // 홈으로 이동
+        window.location.href = '/login'; // 로그인 페이지로 리디렉션
       }
     } catch (error) {
       console.error("로그아웃 에러 : ", error);

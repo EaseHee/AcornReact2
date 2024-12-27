@@ -55,8 +55,12 @@ const AuthLogin = ({setIsLoggedIn}) => {
         navigate("/");
       }
     } catch (error) {
-      console.error("로그인 에러: ", error);
       alert("로그인 실패");
+      if(error.response) {
+        console.error('Response Error:', error.response.data); // 서버에서 반환한 에러 메시지
+      } else {
+        console.error('Axios Error:', error.message); // 네트워크 오류나 Axios 문제
+      }   
     }
   };
 
