@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Image } from "@chakra-ui/react";
-import fetchRestaurantImages from "./RestaurantApi"; // API 호출 함수 추가
+import fetchRestaurantImages from "./RestaurantApi"; // 카카오 API 이미지 호출 함수
 
 const ImageSlider = ({ restaurant }) => {
   const [images, setImages] = useState([]);
@@ -12,9 +12,13 @@ const ImageSlider = ({ restaurant }) => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    timerRef.current = setInterval(() => {
-      setCurrentIndex((index) => (index === images.length - 1 ? 0 : index + 1));
-    }, 3000);
+
+    // 이미지가 있을 때만 타이머 설정
+    if (images.length > 0) {
+      timerRef.current = setInterval(() => {
+        setCurrentIndex((index) => (index === images.length - 1 ? 0 : index + 1));
+      }, 3000);
+    }
   };
 
   // 이전 슬라이드
@@ -46,10 +50,25 @@ const ImageSlider = ({ restaurant }) => {
     };
   
     fetchImages();
-    resetTimer();
   
-    return () => clearInterval(timerRef.current);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, [restaurant]);
+
+  // 이미지가 로드되면 타이머 시작
+  useEffect(() => {
+    if (images.length > 0) {
+      resetTimer();
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [images]);
 
   if (!images.length) {
     return <Box>이미지를 불러오지 못했습니다.</Box>;
@@ -138,7 +157,10 @@ const ImageSlider = ({ restaurant }) => {
             borderRadius="full"
             bg={currentIndex === index ? "white" : "whiteAlpha.600"}
             cursor="pointer"
-            onClick={() => setCurrentIndex(index)}
+            onClick={() => {
+              setCurrentIndex(index);
+              resetTimer();
+            }}
           />
         ))}
       </Box>
