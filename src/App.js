@@ -12,15 +12,10 @@ function App() {
   return (
     <>
       <Routes>
-        
         <Route path='/' element={<Main isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}></Main>}></Route>
         <Route path='/login' element={<AuthLogin setIsLoggedIn={setIsLoggedIn}></AuthLogin>} ></Route>
         <Route path='/register' element={<AuthRegister></AuthRegister>}></Route>
         <Route path='/mypage' element={<Mypage></Mypage>}></Route>
-        <Route path="/" element={<Main></Main>}></Route>
-        <Route path="/login" element={<AuthLogin></AuthLogin>}></Route>
-        <Route path="/register" element={<AuthRegister></AuthRegister>}></Route>
-        <Route path="/mypage" element={<Mypage></Mypage>}></Route>
         <Route path="/detail/:no" element={<DetailPage />} />
       </Routes>
     </>
