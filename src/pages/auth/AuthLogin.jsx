@@ -1,7 +1,6 @@
 import { Box, Button, Input, Stack, Link, Text, Image } from "@chakra-ui/react";
 import { Field } from "../../components/ui/field";
 import { PasswordInput } from "../../components/ui/password-input";
-import { KakaoLoginButton } from "./KakaoLogin";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import FindPassword from "./FindPassword";
@@ -12,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const AuthLogin = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState("");
 
   const {
     register,
@@ -54,15 +54,15 @@ const AuthLogin = ({ setIsLoggedIn }) => {
       );
 
       if (response.status === 200) {
-        alert("로그인 성공");
-        setIsLoggedIn(true); // 로그인 상태 업데이트
+        setIsLoggedIn(true);
         navigate("/");
       }
     } catch (error) {
-      alert("로그인 실패");
       if (error.response) {
+        setLoginError("이메일 또는 비밀번호를 확인해주세요.");
         console.error("Response Error:", error.response.data); // 서버에서 반환한 에러 메시지
       } else {
+        setLoginError("네트워크 오류 입니다.");
         console.error("Axios Error:", error.message); // 네트워크 오류나 Axios 문제
       }
     }
@@ -163,11 +163,15 @@ const AuthLogin = ({ setIsLoggedIn }) => {
               <FindPassword height="40px" />
             </Box>
           </Box>
+          {loginError && (
+            <Text color="red.500" fontSize="sm" mb="2">
+              {loginError}
+            </Text>
+          )}
           <Stack spacing="2" width="full" mt="1">
             <Button type="submit" colorPalette="orange" width="full" size="lg">
               로그인
             </Button>
-            <KakaoLoginButton />
           </Stack>
         </Stack>
       </Box>
