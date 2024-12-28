@@ -28,7 +28,7 @@ export default function CreateReview() {
       { label: '★☆☆☆☆', value: 1 },
     ],
   });
-
+  
   return (
     <Box>
       <HStack>

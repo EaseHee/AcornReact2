@@ -46,14 +46,14 @@ const DetailPage = () => {
           <RestaurantInfo restaurant={restaurant} />
         </Box>
         <Box flex={1}>
-          <Map 
+          <Map
             latitude={parseFloat(restaurant.latitude)} 
             longitude={parseFloat(restaurant.longitude)}
           />
         </Box>
       </Box>
       
-      <ReviewTabs restaurant={restaurant}>
+      <ReviewTabs restaurant={restaurant} no={no}>
         <BlogReviews />
       </ReviewTabs>
     </Box>
