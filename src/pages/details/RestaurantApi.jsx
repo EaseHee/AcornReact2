@@ -15,23 +15,13 @@ const validateImages = async (urls) => {
   return urls.filter((_, index) => results[index]);
 };
 
-// 주소에서 '구', '군' 앞 단어만 추출하는 함수
-const extractKeyLocation = (address) => {
-  if (!address) return "";
-  const match = address.match(/(?:\s|^)(\S+)(구|군)/); // 단어 + '구', '군'
-  return match ? match[1] : ""; // 예: '서울시 강남구 영동대로86길' -> '강남'
-};
-
 // 음식점 이미지를 가져오는 함수
-const fetchRestaurantImages = async (restaurantName, address) => {
+const fetchRestaurantImages = async (restaurantName) => {
   const API_KEY = "60ddc85bdd372041c11e1dc97e03d442";
 
-  // 주소에서 키워드 추출
-  const keyLocation = extractKeyLocation(address);
-  const query = `${restaurantName} ${keyLocation}`; // 음식점명 + 추출된 키워드
-  const API_URL = `https://dapi.kakao.com/v2/search/image?query=${encodeURIComponent(query)}&size=30`; // 카카오 API URL
+  const API_URL = `https://dapi.kakao.com/v2/search/image?query=${encodeURIComponent(restaurantName)}&size=30`; // 카카오 API URL
 
-  console.log("카카오 검색어:", query); // 확인용 로그 출력
+  console.log("카카오 검색어:", restaurantName); // 확인용 로그 출력
 
   try {
     const response = await fetch(API_URL, {
