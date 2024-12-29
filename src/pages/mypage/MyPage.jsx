@@ -1,7 +1,7 @@
 import { Tabs, Box, VStack, Text } from "@chakra-ui/react";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineReviews } from "react-icons/md";
-import { RiBookMarkedLine } from "react-icons/ri";
+import { RiBookmarkLine } from "react-icons/ri";
 import MyBookmark from "./MyBookmark";
 import MyReview from "./MyReview";
 import ProfileForm from "./ProfileForm";
@@ -34,7 +34,7 @@ const MyPage = () => {
         alignItems="center"
         justifyContent="space-between"
         marginTop="10vh"
-        //marginBottom="5vh"
+        // marginBottom="5vh"
         paddingX="25vw"
       >
         <Text fontSize="2xl" fontWeight="bold">
@@ -48,13 +48,14 @@ const MyPage = () => {
         height="100vh"
         paddingX="20vw"
       >
-        <VStack spacing="6" width="100%">
-          <Tabs.Root defaultValue="bookmarks" width="100%">
+        <VStack spacing="6">
+          <Tabs.Root defaultValue="bookmarks">
             <Tabs.List
               display="flex"
               justifyContent="center"
               alignItems="center"
-              padding="4"
+              pt="2"
+              pb="2"
               rounded="md"
             >
               <Tabs.Trigger
@@ -65,8 +66,10 @@ const MyPage = () => {
                 display="flex"
                 alignItems="center"
               >
-                <RiBookMarkedLine style={{ marginRight: "8px" }} />
-                즐겨찾기
+                <Box display="flex" alignItems="center" margin="0 auto" gap="4px">
+                  <RiBookmarkLine style={{ fontSize: "20px" }} />
+                  <Text whiteSpace="nowrap" fontSize="lg">즐겨찾기</Text>
+                </Box>
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="reviews"
@@ -76,8 +79,10 @@ const MyPage = () => {
                 display="flex"
                 alignItems="center"
               >
-                <MdOutlineReviews style={{ marginRight: "8px" }} />
-                리뷰
+                <Box display="flex" alignItems="center" margin="0 auto" gap="4px">
+                  <MdOutlineReviews style={{ fontSize: "20px" }} />
+                  <Text whiteSpace="nowrap" fontSize="lg">리뷰</Text>
+                </Box>
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="profile"
@@ -87,15 +92,16 @@ const MyPage = () => {
                 display="flex"
                 alignItems="center"
               >
-                <CgProfile style={{ marginRight: "8px" }} />
-                내 정보
+                <Box display="flex" alignItems="center" margin="0 auto" gap="4px">
+                  <CgProfile style={{ fontSize: "20px" }} />
+                  <Text whiteSpace="nowrap" fontSize="lg">내 정보</Text>
+                </Box>
               </Tabs.Trigger>
             </Tabs.List>
             <Box
               bg="white"
-              p="6"
+              p="2"
               rounded="md"
-              mt="4"
               shadow="md"
               textAlign="center"
               minHeight="200px"
@@ -109,7 +115,6 @@ const MyPage = () => {
                 <Box
                   display="flex"
                   justifyContent="flex-start"
-                  width="100%"
                   minHeight="200px"
                   ml="10"
                 >

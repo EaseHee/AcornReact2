@@ -34,29 +34,27 @@ const DetailPage = () => {
   if (isLoading) return <Box>로딩 중...</Box>;
   if (error) return <Box>에러: {error}</Box>;
   if (!restaurant) return <Box>식당 정보를 찾을 수 없습니다</Box>;
-  
+
   return (
-    <Box px="25%" py={4}>
-      <Logo />
-      
-      <ImageSlider restaurant={restaurant}/>
-      
-      <Box display="flex" flexDirection={["column", "row"]} gap={3}>
-        <Box flex={2}>
-          <RestaurantInfo restaurant={restaurant} />
+      <Box>
+        <ImageSlider restaurant={restaurant}/>
+
+        <Box display="flex" flexDirection={"column"} gap={3}>
+          <Box flex={2}>
+            <RestaurantInfo restaurant={restaurant} />
+          </Box>
+          <Box flex={1}>
+            <Map
+                latitude={parseFloat(restaurant.latitude)}
+                longitude={parseFloat(restaurant.longitude)}
+            />
+          </Box>
         </Box>
-        <Box flex={1}>
-          <Map 
-            latitude={parseFloat(restaurant.latitude)} 
-            longitude={parseFloat(restaurant.longitude)}
-          />
-        </Box>
+
+        <ReviewTabs restaurant={restaurant}>
+          <BlogReviews />
+        </ReviewTabs>
       </Box>
-      
-      <ReviewTabs restaurant={restaurant}>
-        <BlogReviews />
-      </ReviewTabs>
-    </Box>
   );
 };
 
