@@ -9,6 +9,7 @@ import Terms1 from "./Terms1";
 import Terms2 from "./Terms2";
 import DuplicatedEmail from "./DuplicatedEmail";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AuthRegister = () => {
 
@@ -21,6 +22,8 @@ const AuthRegister = () => {
     watch,
     control,
   } = useForm();
+
+  const navigate = useNavigate();
 
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   
@@ -43,6 +46,7 @@ const AuthRegister = () => {
 
       if (response.status === 200) {
         alert("회원가입 완료");
+        navigate("/login");
       }
     } catch (error) {
       if (error.response) {

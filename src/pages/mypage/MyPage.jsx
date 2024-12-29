@@ -1,12 +1,32 @@
-import { Tabs, Box, VStack, Text, Link, Button } from "@chakra-ui/react";
+import { Tabs, Box, VStack, Text } from "@chakra-ui/react";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineReviews } from "react-icons/md";
 import { RiBookMarkedLine } from "react-icons/ri";
 import MyBookmark from "./MyBookmark";
 import MyReview from "./MyReview";
 import ProfileForm from "./ProfileForm";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const MyPage = () => {
+  const [nickname, setNickname] = useState(""); // 닉네임 상태 관리
+
+  useEffect(() => {
+    const fetchNickname = async () => {
+      try {
+        // 서버에서 사용자 정보를 가져옵니다.
+        const response = await axios.get("http://localhost:8080/members/read", {
+          withCredentials: true, // 쿠키를 함께 전송하도록 설정
+        });
+        setNickname(response.data.nickname); // 응답에서 닉네임을 설정
+      } catch (error) {
+        console.error("닉네임을 가져오는 데 실패했습니다:", error);
+      }
+    };
+
+    fetchNickname();
+  }, []);
+
   return (
     <>
       <Box
@@ -14,15 +34,12 @@ const MyPage = () => {
         alignItems="center"
         justifyContent="space-between"
         marginTop="10vh"
-        marginBottom="10vh"
+        //marginBottom="5vh"
         paddingX="25vw"
       >
         <Text fontSize="2xl" fontWeight="bold">
-          회원명
+          {nickname} 님 환영
         </Text>
-        {/* <Button variant="link" fontSize="sm" p={0} minW="unset" color="orange.500" fontWeight="bold">
-          프로필 수정
-        </Button> */}
       </Box>
       <Box
         display="flex"
@@ -71,7 +88,7 @@ const MyPage = () => {
                 alignItems="center"
               >
                 <CgProfile style={{ marginRight: "8px" }} />
-                프로필 수정
+                내 정보
               </Tabs.Trigger>
             </Tabs.List>
             <Box
