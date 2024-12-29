@@ -29,7 +29,6 @@ const FindPassword = () => {
           title: "인증 성공",
           message: "인증 성공 : 이메일을 확인해주세요.",
         });
-        reset();
       } catch (error) {
         console.error("비밀번호 찾기 에러:", error);
         setResult({
@@ -40,6 +39,12 @@ const FindPassword = () => {
       } finally {
         setLoading(false);
       }
+    };
+
+    const handleCloseModal = () => {
+      setModalOpen(false);
+      reset();
+      setResult(null);
     };
   
     const modalStyles = {
@@ -193,7 +198,7 @@ const FindPassword = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setModalOpen(false)}
+                  onClick={handleCloseModal}
                   style={modalStyles.cancelButton}
                 >
                   나가기

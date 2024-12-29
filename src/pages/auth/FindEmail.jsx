@@ -16,23 +16,19 @@ const FindEmail = () => {
 
   const handleFindEmail = async (data) => {
     setLoading(true);
-    //console.log("폼 데이터:", data);
 
     try {
       const response = await axios.post(
         "http://localhost:8080/auth/find-email",
         data
       );
-      //console.log("응답:", response.data);
       const email = response.data.email;
       setResult({
         status: "success",
         title: "인증 성공",
         message: `회원님의 이메일은 ${email} 입니다.`,
       });
-      reset();
     } catch (error) {
-      //console.error("이메일 찾기 에러:", error);
       setResult({
         status: "error",
         title: "정보 불일치",
@@ -41,6 +37,12 @@ const FindEmail = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    reset();
+    setResult(null);
   };
 
   const modalStyles = {
@@ -200,7 +202,7 @@ const FindEmail = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setModalOpen(false)}
+                onClick={handleCloseModal}
                 style={modalStyles.cancelButton}
               >
                 나가기

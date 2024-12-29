@@ -36,12 +36,9 @@ const ImageSlider = ({ restaurant }) => {
   // 음식점 이미지를 가져오는 로직
   useEffect(() => {
     const fetchImages = async () => {
-      if (restaurant?.name && restaurant?.address) {
+      if (restaurant?.name) {
         try {
-          const fetchedImages = await fetchRestaurantImages(
-            restaurant.name,
-            restaurant.address // 주소 추가
-          );
+          const fetchedImages = await fetchRestaurantImages(restaurant.name);
           setImages(fetchedImages);
         } catch (error) {
           console.error("이미지 fetch 에러:", error);
