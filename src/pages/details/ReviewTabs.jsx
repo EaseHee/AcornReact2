@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from '@chakra-ui/react';
 import BlogReviews from './Tabs/BlogReviews';
-import StarReviews from './Tabs/StarReviews';
+import StarReviews from './Tabs/StarReview/StarReviews';
 import FreeComments from './Tabs/FreeComments';
 import { QueryClient, QueryClientProvider } from 'react-query';
 

@@ -1,8 +1,8 @@
 import { Box, Button, Card, HStack } from '@chakra-ui/react';
 import React from 'react';
-import InfiniteScroll from '../../../components/InfiniteScrollDemo';
-import CustomDialog from '../../../components/CustomDialog';
-import CreateReview from './dialog-body/CreateReview';
+import StarReviewCard from './StarReviewCard';
+import CustomDialog from '../../../../components/CustomDialog';
+import CreateReview from '../dialog-body/CreateReview';
 
 export default function StarReviews({no}) {
   return (
@@ -25,7 +25,7 @@ export default function StarReviews({no}) {
         </HStack>
       </Card.Header>
       <Card.Body>
-        <InfiniteScroll url={`http://localhost:8080/main/eateries/${no}/reviews`} />
+        <StarReviewCard no={no} />
       </Card.Body>
     </Card.Root>
   );
