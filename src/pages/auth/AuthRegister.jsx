@@ -10,6 +10,7 @@ import Terms2 from "./Terms2";
 import DuplicatedEmail from "./DuplicatedEmail";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Logo from "../../components/Logo";
 
 const AuthRegister = () => {
 
@@ -90,16 +91,7 @@ const AuthRegister = () => {
         width="full"
       >
         <Stack gap="1" align="flex-start" maxW="lg" width="full">
-          {" "}
-          <Link href="/">
-            <Image
-              src="https://example.com/logo.png"
-              alt="로고"
-              boxSize="45px"
-              objectFit="contain"
-              mb="4"
-            />
-          </Link>
+          <Logo></Logo>
           <Box
             display="flex"
             alignItems="center"

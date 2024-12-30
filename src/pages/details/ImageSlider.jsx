@@ -72,7 +72,7 @@ const ImageSlider = ({ restaurant }) => {
   }, [images]);
 
   // 이미지 로딩 처리 (by @EaseHee)
-  if (!images.length) {
+  if (images.length === 0) {
     return <Box h="400px"><MySpinner/></Box>;
   }
 
