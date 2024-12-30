@@ -23,7 +23,7 @@ const ProfileForm = () => {
 
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
   const [formError, setFormError] = useState("");
-  const watchPassword = watch("password");
+  const watchPassword = watch("changePassword");
 
   const handleProfileUpdate = async (data) => {
     if (!isNicknameAvailable) {
@@ -36,7 +36,7 @@ const ProfileForm = () => {
     console.log("클라이언트에서 보내는 데이터: ", data);
     try {
       const response = await axios.put(
-        "http://localhost:8080/members/update",
+        "http://localhost:8080/main/mypage/members/update",
         data,
         {
           withCredentials: true,

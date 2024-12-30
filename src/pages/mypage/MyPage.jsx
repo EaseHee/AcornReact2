@@ -15,7 +15,7 @@ const MyPage = () => {
     const fetchNickname = async () => {
       try {
         // 서버에서 사용자 정보를 가져옵니다.
-        const response = await axios.get("http://localhost:8080/members/read", {
+        const response = await axios.get("http://localhost:8080/main/mypage/members/read", {
           withCredentials: true, // 쿠키를 함께 전송하도록 설정
         });
         setNickname(response.data.nickname); // 응답에서 닉네임을 설정
