@@ -8,10 +8,16 @@ import FindEmail from "./FindEmail";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import Logo from "../../components/Logo";
+import {useDispatch, useSelector} from "react-redux";
+import {login} from "../../redux/authSlice";
 
-const AuthLogin = ({ setIsLoggedIn }) => {
+const AuthLogin = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState("");
+
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -23,19 +29,18 @@ const AuthLogin = ({ setIsLoggedIn }) => {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const savedEmail = Cookies.get("savedEmail"); // 쿠키에 저장된 아이디 가져오기
-    const savedChecked = Cookies.get("checked"); // 체크박스 상태 가져오기
+    const savedEmail = Cookies.get("savedEmail");
+    const savedChecked = Cookies.get("checked");
     console.log(savedChecked);
     if (savedChecked === "true") {
-      setChecked(true); // 체크박스 체크된 상태로 설정
+      setChecked(true);
     }
     if (savedEmail) {
-      setValue("email", savedEmail); // 이메일 값이 있으면 입력란에 세팅
+      setValue("email", savedEmail);
     }
   }, [setValue]);
 
   const handleLogin = async (data) => {
-    // 체크박스 상태에 따라 쿠키 저장/삭제
     if (checked) {
       Cookies.set("savedEmail", data.email, { expires: 7 });
       Cookies.set("checked", "true", { expires: 7 });
@@ -43,7 +48,7 @@ const AuthLogin = ({ setIsLoggedIn }) => {
       Cookies.remove("savedEmail");
       Cookies.remove("checked");
     }
-
+  
     try {
       const response = await axios.post(
         "http://localhost:8080/auth/login",
@@ -52,18 +57,31 @@ const AuthLogin = ({ setIsLoggedIn }) => {
           withCredentials: true,
         }
       );
-
+  
       if (response.status === 200) {
-        setIsLoggedIn(true);
+        dispatch(login());
         navigate("/");
       }
     } catch (error) {
       if (error.response) {
-        setLoginError("이메일 또는 비밀번호를 확인해주세요.");
-        console.error("Response Error:", error.response.data); // 서버에서 반환한 에러 메시지
+        const status = error.response.status;
+  
+        switch (status) {
+          case 404:
+            setLoginError("가입된 계정이 없습니다. 이메일을 확인해주세요.");
+            break;
+          case 401:
+            setLoginError("이메일 또는 비밀번호를 확인해주세요.");
+            break;
+          default:
+            setLoginError("로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            break;
+        }
+  
+        console.error("Response Error:", error.response.data);
       } else {
-        setLoginError("네트워크 오류 입니다.");
-        console.error("Axios Error:", error.message); // 네트워크 오류나 Axios 문제
+        setLoginError("서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+        console.error("Axios Error:", error.message);
       }
     }
   };
@@ -81,15 +99,7 @@ const AuthLogin = ({ setIsLoggedIn }) => {
         height="100vh"
       >
         <Stack gap="4" align="flex-start" maxW="sm" width="full">
-          <Link href="/">
-            <Image
-              src="https://example.com/logo.png"
-              alt="로고"
-              boxSize="45px"
-              objectFit="contain"
-              mb="4"
-            />
-          </Link>
+          <Logo></Logo>
           <Box
             display="flex"
             alignItems="center"
@@ -179,7 +189,6 @@ const AuthLogin = ({ setIsLoggedIn }) => {
   );
 };
 
-// 스타일링 (CSS-in-JS)
 const styles = {
   customCheckbox: {
     display: "flex",

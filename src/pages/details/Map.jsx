@@ -67,6 +67,8 @@ const Map = ({ latitude, longitude, name }) => {
       const options = {
         center: new window.kakao.maps.LatLng(latitude, longitude), // 지도 중심 좌표
         level: 3, // 지도 확대 레벨 (1~14)
+        draggable: false, // 드래그 비활성화 (by @EaseHee)
+        scrollwheel: false, // 스크롤 비활성화 (by @EaseHee)
       };
 
       // 지도 인스턴스 생성
