@@ -8,10 +8,16 @@ import FindEmail from "./FindEmail";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import Logo from "../../components/Logo";
+import {useDispatch, useSelector} from "react-redux";
+import {login} from "../../redux/authSlice";
 
-const AuthLogin = ({ setIsLoggedIn }) => {
+const AuthLogin = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState("");
+
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -53,7 +59,7 @@ const AuthLogin = ({ setIsLoggedIn }) => {
       );
   
       if (response.status === 200) {
-        setIsLoggedIn(true);
+        dispatch(login());
         navigate("/");
       }
     } catch (error) {
@@ -93,15 +99,7 @@ const AuthLogin = ({ setIsLoggedIn }) => {
         height="100vh"
       >
         <Stack gap="4" align="flex-start" maxW="sm" width="full">
-          <Link href="/">
-            <Image
-              src="https://example.com/logo.png"
-              alt="로고"
-              boxSize="45px"
-              objectFit="contain"
-              mb="4"
-            />
-          </Link>
+          <Logo></Logo>
           <Box
             display="flex"
             alignItems="center"

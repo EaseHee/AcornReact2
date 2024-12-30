@@ -16,7 +16,7 @@ const validateImages = async (urls) => {
 };
 
 // 음식점 이미지를 가져오는 함수
-const fetchRestaurantImages = async (restaurantName) => {
+const fetchRestaurantImages = async (restaurantName, restaurantAddress) => {
   const API_KEY = "60ddc85bdd372041c11e1dc97e03d442";
 
   const API_URL = `https://dapi.kakao.com/v2/search/image?query=${encodeURIComponent(restaurantName)}&size=30`; // 카카오 API URL

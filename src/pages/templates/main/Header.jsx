@@ -1,17 +1,16 @@
-﻿import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+﻿import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FaSun, FaMoon } from "react-icons/fa6"; // 다크/라이트 모드 아이콘
 import axios from "axios";
-import { Box, Button, Flex, HStack, IconButton, Image, Text } from "@chakra-ui/react";
+
 import { useTheme } from "next-themes";
+import { Box, Button, Flex, HStack, Text } from "@chakra-ui/react";
 
 import { menuItems } from "../../sidebar/Sidebar";
 import { logout } from "../../../redux/authSlice";
 import Logo from "../../../components/Logo";
 
-const Header = ({ isSmallScreen }) => {
-
+const Header = () => {
     // 사용자의 로그인 상태를 redux에 저장하여 useSelector와 useDispatch 훅을 이용해서 전역적으로 관리
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const dispatch = useDispatch();
@@ -36,7 +35,7 @@ const Header = ({ isSmallScreen }) => {
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
     };
-    const themeIcon = theme === "light" ? <FaMoon /> : <FaSun />;
+    const themeIcon = theme === "dark" ? <FaSun /> : <FaMoon />;
 
     // 상세 페이지로 이동 시 active 속성을 제거하기 위해 useLocation 훅을 이용
     const location = useLocation();

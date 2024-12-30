@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { AiOutlineEye } from "react-icons/ai";
 import { FaEye } from "react-icons/fa";
-import { MdOutlineVisibility } from "react-icons/md";
 import { RiBookmarkLine } from "react-icons/ri";
 
-import {Box, Card, Flex, Icon, Image, Text} from "@chakra-ui/react"
+import { Card, Flex, Image, Text} from "@chakra-ui/react"
 
 const Maincard = ({no}) => {
     // 서버에 음식점 상세 정보 요청
