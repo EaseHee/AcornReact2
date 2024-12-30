@@ -6,6 +6,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 // Import required modules
 import { Pagination, Navigation } from 'swiper/modules';
+import './StarReviewSwiper.css';
 export default function StarReviewSwiper({ImgInfo}) {
     return (
     <div className="swiper-container">
@@ -22,8 +23,8 @@ export default function StarReviewSwiper({ImgInfo}) {
             <div className="swiper-slide-content">
               <img
                 className="slide-image"
-                alt={`사진 ${item.no}`}
-                src={item.imageUrl}
+                src={`http://localhost:8080${item.imageUrl.replace('.\\', '/')}`}  // 서버 주소를 포함한 절대 URL로 변환
+                alt={`리뷰 사진 ${item.no}`}
               />
             </div>
           </SwiperSlide>
