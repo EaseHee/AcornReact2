@@ -68,6 +68,7 @@ const LocationDialog = () => {
         method: "GET",
         params: { page: 1, size: 12 },
       });
+
       const data = response.data.data;
 
       dispatch(setEateries(data.content)); // 음식점 목록 업데이트
@@ -103,8 +104,8 @@ const LocationDialog = () => {
                   <Button
                       key={group.no}
                       onClick={() => handleRegionSelect(group.name)}
-                      bg={selectedRegion === group.no ? "gray.500" : "gray.100"}
-                      color={selectedRegion === group.no ? "white" : "black"}
+                      bg={selectedRegion === group.name ? "gray.500" : "gray.100"}
+                      color={selectedRegion === group.name ? "white" : "black"}
                       borderRadius="full"
                       px={4}
                       py={2}
@@ -144,12 +145,12 @@ const LocationDialog = () => {
           </DialogBody>
 
           <DialogFooter>
-          <DialogActionTrigger onClick={handleSubmit}>
-              <Button colorPalette="orange">적용</Button>
+          <DialogActionTrigger asChild>
+              <Button colorPalette="orange" onClick={handleSubmit}>적용</Button>
             </DialogActionTrigger>
-            <DialogCloseTrigger asChild>
+            <DialogActionTrigger asChild>
               <Button variant="outline">닫기</Button>
-            </DialogCloseTrigger>
+            </DialogActionTrigger>
           </DialogFooter>
         </DialogContent>
       </DialogRoot>

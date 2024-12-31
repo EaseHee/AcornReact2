@@ -103,6 +103,8 @@ const CategoryDialog = () => {
     }
   };
 
+
+
   return (
       <DialogRoot>
         <DialogTrigger asChild>
@@ -177,14 +179,15 @@ const CategoryDialog = () => {
           </DialogBody>
 
           <DialogFooter>
-          <DialogActionTrigger onClick={handleSubmit}>
-              <Button colorPalette="orange">적용</Button>
+          <DialogActionTrigger asChild>
+              <Button colorPalette="orange" onClick={handleSubmit}>적용</Button>
             </DialogActionTrigger>
-            <DialogCloseTrigger asChild>
+            <DialogActionTrigger asChild>
               <Button variant="outline">닫기</Button>
-            </DialogCloseTrigger>
+            </DialogActionTrigger>
           </DialogFooter>
         </DialogContent>
+
       </DialogRoot>
   );
 };
