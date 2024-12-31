@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import MySpinner from "../../../../components/Spinner.js";
-import { Card } from "@chakra-ui/react"
+import { Box, Card } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
-const StarReviewCard = ({memberNo, sortBy}) => {
+import CustomDialog from './CustomDialog';
+const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(1); // 현재 페이지 번호
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 여부
@@ -92,6 +93,16 @@ const StarReviewCard = ({memberNo, sortBy}) => {
               {review.content}
             </Card.Description>
           </Card.Body>
+              <Box alignSelf="end">                
+                <CustomDialog
+                  openBtnText="리뷰 수정"
+                  title={nickname}
+                  review={review}
+                  memberNo={memberNo}
+                  confirmBtnText="수정"
+                  closeBtnText="취소"
+                />
+              </Box>
           <Card.Footer>
             {review.reviewImagesResponseDto.length>0 ?<Swiper ImgInfo={review.reviewImagesResponseDto}/>:null} 
           </Card.Footer>

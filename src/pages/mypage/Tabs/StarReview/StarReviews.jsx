@@ -1,7 +1,7 @@
 import { Box, Button, Card, HStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import StarReviewCard from './StarReviewCard';
-import CustomDialog from './CustomDialog';
+
 export default function StarReviews({nickname, memberNo}) {
   const [sortBy, setSortBy] = useState("createdAt"); // 기본 정렬 기준
   const handleSortChange = (criterion) => {
@@ -18,17 +18,7 @@ export default function StarReviews({nickname, memberNo}) {
         </HStack>
       </Card.Header>
       <Card.Body>
-        <StarReviewCard memberNo={memberNo} sortBy={sortBy}>
-          <Box>
-            <CustomDialog
-              openBtnText="리뷰 수정"
-              title={nickname}
-              memberNo={memberNo}
-              confirmBtnText="등록"
-              closeBtnText="취소"
-            />
-          </Box>
-        </StarReviewCard>
+        <StarReviewCard memberNo={memberNo} nickname={nickname} sortBy={sortBy}/>
       </Card.Body>
     </Card.Root>
   );
