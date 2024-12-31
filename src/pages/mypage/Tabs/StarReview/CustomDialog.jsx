@@ -13,11 +13,11 @@ import {
 } from '../../../../components/ui/dialog';
 import { NativeSelectField, NativeSelectRoot } from "../../../../components/ui/native-select"
 import { Field } from "../../../../components/ui/field"
-import { toaster  } from "../../../../components/ui/toaster"
+import { Toaster  } from "../../../../components/ui/toaster"
 import axios from 'axios';
 
-export default function CustomDialog({ openBtnText, title, memberNo, eateryNo, confirmBtnText, closeBtnText }) {
-  const [formData, setFormData] = useState({ rating: "5", content: "" });
+export default function CustomDialog({ openBtnText, title, memberNo, review, confirmBtnText, closeBtnText }) {
+  const [formData, setFormData] = useState({ rating: "", content: "" });
   const [files, setFiles] = useState([]);
   const [open, setOpen] = useState(false); // 모달 열림/닫힘 상태 관리
   useEffect(()=>{
@@ -35,24 +35,29 @@ export default function CustomDialog({ openBtnText, title, memberNo, eateryNo, c
 
   const handleSubmit = useCallback(async () => {
     const payload = new FormData();
+    payload.append("no",review.no);
     payload.append("memberNo",memberNo);
-    payload.append("eateryNo",eateryNo);
+    payload.append("eateryNo",review.reviewEateriesDto.no);
     payload.append("rating",formData.rating);
     payload.append("content",formData.content);
     // 파일들을 FormData에 추가
     files.forEach((file) => payload.append("files", file));
     try {
-      await axios.post("http://localhost:8080/main/mypage/review", payload, {
+      await axios.put(`http://localhost:8080/main/mypage/review/${review.no}`, payload, {
         withCredentials: true, // 쿠키를 함께 전송하도록 설정
       });
       closeDialog();
       toaster.create({
-        description: "리뷰 등록 성공!",
+        description: "리뷰 수정 성공!",
         type: "success",
       })
+      // 페이지 새로고침을 지연시키기 위해 setTimeout 사용
+      setTimeout(() => {
+        window.location.reload();  // 페이지 새로고침
+      }, 1000);  // 1초 후 새로고침
     } catch (error) {
       toaster.create({
-        description: "리뷰 등록 실패!",
+        description: "리뷰 수정 실패!",
         type: "error",
       })
     }
@@ -62,6 +67,9 @@ export default function CustomDialog({ openBtnText, title, memberNo, eateryNo, c
   };
   return (
     <DialogRoot placement="center" open={open} onOpenChange={setOpen}>
+      <Toaster 
+        
+      />
       <DialogTrigger asChild>
         <Button size="sm">{openBtnText}</Button>
       </DialogTrigger>
