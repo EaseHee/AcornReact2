@@ -59,12 +59,12 @@ const LocationDialog = () => {
           </DialogBody>
 
           <DialogFooter>
+          <DialogActionTrigger onClick={handleSubmit}>
+              <Button colorPalette="orange">적용</Button>
+            </DialogActionTrigger>
             <DialogCloseTrigger asChild>
               <Button variant="outline">닫기</Button>
             </DialogCloseTrigger>
-            <DialogActionTrigger onClick={handleSubmit}>
-              <Button>적용</Button>
-            </DialogActionTrigger>
           </DialogFooter>
         </DialogContent>
       </DialogRoot>
