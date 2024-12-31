@@ -57,20 +57,21 @@ const DetailPage = () => {
   if (!restaurant) return <Box>식당 정보를 찾을 수 없습니다</Box>;
 
   return (
-    <Box>
-      <ImageSlider restaurant={restaurant}/>
-      <Box display="flex" flexDirection={"column"} gap={3}>
-        <Box flex={2}>
-          <RestaurantInfo restaurant={restaurant} memberNo={memberNo} />
-        </Box>
-        <Box flex={1}>
-          <Map
-            latitude={parseFloat(restaurant.latitude)}
-            longitude={parseFloat(restaurant.longitude)}
-          />
-        </Box>
-      </Box>
-      <ReviewTabs restaurant={restaurant}>
+      <Box>
+        <ImageSlider restaurant={restaurant}/>
+
+        <Box display="flex" flexDirection={"column"} gap={3}>
+          <Box flex={2}>
+            <RestaurantInfo restaurant={restaurant} />
+          </Box>
+          <Box flex={1}>
+            <Map
+                latitude={parseFloat(restaurant.latitude)}
+                longitude={parseFloat(restaurant.longitude)}
+            />
+          </Box>
+        </Box>      
+      <ReviewTabs restaurant={restaurant} no={no}>
         <BlogReviews />
       </ReviewTabs>
     </Box>
