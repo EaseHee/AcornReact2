@@ -5,6 +5,7 @@ import MySpinner from "../../../../components/Spinner.js";
 import { Box, Card } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
 import CustomDialog from './CustomDialog';
+import DeleteDialog from './DeleteDialog.js'
 const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(1); // 현재 페이지 번호
@@ -65,6 +66,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
     const emptyStar = '☆';
     return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
   };
+
   return (
     <div
       id="scrollableDiv"
@@ -93,7 +95,8 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
               {review.content}
             </Card.Description>
           </Card.Body>
-              <Box alignSelf="end">                
+              <Box alignSelf="end">
+                <DeleteDialog reviewNo={review.no}/>
                 <CustomDialog
                   openBtnText="리뷰 수정"
                   title={nickname}
