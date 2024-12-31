@@ -1,6 +1,6 @@
 import { Card, Image, Text } from "@chakra-ui/react";
 
-const BookmarkCard = ({ name, rating, bookmarks }) => {
+const BookmarkCard = ({ name, rating, favorites }) => {
   return (
     <Card.Root maxW="sm" borderRadius="lg" overflow="hidden" boxShadow="md">
       <Image
@@ -15,7 +15,7 @@ const BookmarkCard = ({ name, rating, bookmarks }) => {
           fontSize="sm"
           mr="10px"
         >
-          ★ {rating} | 북마크 {bookmarks}개
+          ★ {rating} | 즐겨찾기 {favorites}개
         </Card.Description>
         <Text fontSize="xl" fontWeight="bold" mt={2} noOfLines={1}>
           {name}

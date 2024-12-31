@@ -1,13 +1,14 @@
 ﻿import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FaSun, FaMoon } from "react-icons/fa6"; // 다크/라이트 모드 아이콘
-import axios from "axios";
+
+import axios from "utils/axios";
 
 import { useTheme } from "next-themes";
 import { Box, Button, Flex, HStack, Text } from "@chakra-ui/react";
 
 import { menuItems } from "../../sidebar/Sidebar";
-import { logout } from "../../../redux/authSlice";
+import { logout } from "../../../redux/slices/authSlice";
 import Logo from "../../../components/Logo";
 
 const Header = () => {
@@ -17,11 +18,8 @@ const Header = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await axios.post("http://localhost:8080/auth/logout", {
-                withCredentials: true,
-            });
+            const response = await axios.post("/auth/logout");
             if (response.status === 200) {
-                alert("로그아웃 성공");
                 dispatch(logout()); // 로그아웃
             }
         } catch (error) {
@@ -83,7 +81,7 @@ const Header = () => {
             position="sticky"
             top="0"
             bg="white"
-            zIndex="10"
+            zIndex="20"
             boxShadow="sm"
         >
             <Box borderRadius="md">
