@@ -1,13 +1,14 @@
 ﻿import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FaSun, FaMoon } from "react-icons/fa6"; // 다크/라이트 모드 아이콘
-import axios from "axios";
+
+import axios from "utils/axios";
 
 import { useTheme } from "next-themes";
 import { Box, Button, Flex, HStack, Text } from "@chakra-ui/react";
 
 import { menuItems } from "../../sidebar/Sidebar";
-import { logout } from "../../../redux/authSlice";
+import { logout } from "../../../redux/slices/authSlice";
 import Logo from "../../../components/Logo";
 
 const Header = () => {
@@ -15,20 +16,17 @@ const Header = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
 
-  const handleLogout = async () => {
-    try {
-      const response = await axios.post("http://localhost:8080/auth/logout", {
-        withCredentials: true,
-      });
-      if (response.status === 200) {
-        alert("로그아웃 성공");
-        dispatch(logout()); // 로그아웃
-      }
-    } catch (error) {
-      console.error("로그아웃 에러 : ", error);
-      alert("로그아웃 에러");
-    }
-  };
+    const handleLogout = async () => {
+        try {
+            const response = await axios.post("/auth/logout");
+            if (response.status === 200) {
+                dispatch(logout()); // 로그아웃
+            }
+        } catch (error) {
+            console.error("로그아웃 에러 : ", error);
+            alert("로그아웃 에러");
+        }
+    };
 
   // 테마 변경을 위해 useTheme 훅을 이용하여 토글로 변경
   const { theme, setTheme } = useTheme(); // 현재 테마와 테마 변경 함수

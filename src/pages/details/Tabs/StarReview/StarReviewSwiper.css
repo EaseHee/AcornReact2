@@ -1,0 +1,23 @@
+/* 화살표 크기 조정 */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 30px; /* 원하는 크기로 조정 */
+  height: 30px; /* 원하는 크기로 조정 */
+}
+
+/* 화살표 색상 변경 */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 20px; /* 아이콘 크기 변경 */
+  color: #333; /* 원하는 색상으로 변경 */
+}
+.slide-image {
+  margin-left: 20%;
+  width: 70%;
+  height: 70%;
+}
+.swiper-container {
+  width: 100%;  /* 원하는 고정 크기 */
+  height: 30vh;  /* 원하는 고정 크기 */
+  overflow: hidden;  /* 내용이 넘치지 않도록 설정 */
+}

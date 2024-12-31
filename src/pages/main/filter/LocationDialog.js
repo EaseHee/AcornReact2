@@ -2,39 +2,87 @@ import {
   Input,
   Stack,
   Button,
-  DialogCloseTrigger,
+  Text,
+  Flex,
+  Box,
 } from "@chakra-ui/react";
 
-import { DialogActionTrigger, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger,} from "../../../components/ui/dialog"
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "../../../components/ui/dialog";
+
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-import { Field } from "../../../components/ui/field"
-import {useRef, useState} from "react"
+import region from "./region.js"; // 지역 데이터를 가져오기
+
+import { useState } from "react";
+import axios from "utils/axios";
+import { useDispatch } from "react-redux";
+import { setEateries, setPage } from "../../../redux/slices/eateriesSlice";
 
 const LocationDialog = () => {
-  const ref = useRef(null)
+  // 대분류, 소분류 select-box 데이터 상태변수로 관리
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [isOpen, setIsOpen] = useState(false); // 모달 열림 상태
 
-  const [location, setLocation] = useState(""); // 입력값 상태 변수로 선언
+  const dispatch = useDispatch();
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      console.log("Selected location:", event.target.value); // 입력값 반환
-      handleSubmit();
-      setLocation("");
-    } else {
-      setLocation(event.target.value); // 입력값 업데이트
+  // 대분류 선택 메서드
+  const handleRegionSelect = (region) => {
+    setSelectedRegion(region); // 대분류 선택
+    setSelectedLocation(null); // 소분류 초기화
+  };
+
+  // 소분류 선택 메서드
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location); // 소분류 선택
+  };
+
+  const handleSubmit = async () => {
+    console.log("대분류:", selectedRegion);
+    console.log("소분류:", selectedLocation);
+
+    // 대분류나 소분류 중 하나를 반드시 선택해야 함
+    if (!selectedRegion) {
+      console.error("대분류를 선택하세요.");
+      return;
+    }
+
+    try {
+      // Redux 상태 초기화
+      dispatch(setPage(1));
+
+      // 서버 요청
+      const endpoint = selectedLocation // 소분류 선택 여부에 따른 api 요청명 변경
+          ? selectedLocation // 소분류
+          : selectedRegion; // 대분류
+      const response = await axios(`/main/locations/${endpoint}`, {
+        method: "GET",
+        params: { page: 1, size: 12 },
+      });
+      const data = response.data.data;
+
+      dispatch(setEateries(data.content)); // 음식점 목록 업데이트
+      console.log("서버 응답 데이터:", data.content);
+    } catch (error) {
+      console.error("서버 요청 오류:", error);
+    } finally {
+      setIsOpen(false); // 모달 닫기
     }
   };
 
-  const handleSubmit = () => {
-    console.log("선택한 지역명: ", location); // 입력값 반환
-    setLocation("");
-  };
-
   return (
-      <DialogRoot initialFocusEl={() => ref.current}>
+      <DialogRoot isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <DialogTrigger asChild>
-          <Button variant="outline">
+          <Button variant="outline" >
             <FaMapMarkerAlt />
             지역 카테고리
           </Button>
@@ -46,16 +94,53 @@ const LocationDialog = () => {
           </DialogHeader>
 
           <DialogBody pb="4">
-            <Stack gap="4">
-              <Field label="지역이름">
-                <Input
-                    ref={ref}
-                    placeholder="예) 서울 강남구, 전남 고흥시"
-                    value={location} // 상태값 바인딩
-                    onChange={handleKeyDown} // 입력값 변경 시 상태 업데이트
-                />
-              </Field>
-            </Stack>
+            {/* 대분류 카테고리 */}
+            <Text fontWeight="medium" mb="4">
+              대분류 카테고리
+            </Text>
+            <Flex gap="2" wrap="wrap">
+              {region.map((group) => (
+                  <Button
+                      key={group.no}
+                      onClick={() => handleRegionSelect(group.name)}
+                      bg={selectedRegion === group.no ? "gray.500" : "gray.100"}
+                      color={selectedRegion === group.no ? "white" : "black"}
+                      borderRadius="full"
+                      px={4}
+                      py={2}
+                      _hover={{ bg: "gray.500", color: "white" }}
+                  >
+                    {group.name}
+                  </Button>
+              ))}
+            </Flex>
+
+            {/* 소분류 카테고리 */}
+            {selectedRegion && (
+                <Box mt={6}>
+                  <Text fontWeight="medium" mb="4">
+                    {region.find((group) => group.name === selectedRegion)?.name} 하위 카테고리
+                  </Text>
+                  <Flex gap="2" wrap="wrap">
+                    {region
+                        .find((group) => group.name === selectedRegion)
+                        ?.locations.map((location) => (
+                            <Button
+                                key={location.no}
+                                onClick={() => handleLocationSelect(location.name)}
+                                bg={selectedLocation === location.name ? "gray.500" : "gray.100"}
+                                color={selectedLocation === location.name ? "white" : "black"}
+                                borderRadius="full"
+                                px={4}
+                                py={2}
+                                _hover={{ bg: "gray.500", color: "white" }}
+                            >
+                              {location.name}
+                            </Button>
+                        ))}
+                  </Flex>
+                </Box>
+            )}
           </DialogBody>
 
           <DialogFooter>

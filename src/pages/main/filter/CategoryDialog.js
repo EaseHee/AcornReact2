@@ -1,22 +1,19 @@
 import {useEffect, useState} from "react";
+
+import axios from "utils/axios";
+
+import {useDispatch, useSelector} from "react-redux";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import {
   Box,
   Flex,
   Text,
   Button,
-  DialogCloseTrigger,
-  DialogActionTrigger,
-  DialogBody,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
 } from "@chakra-ui/react";
 
-import axios from "axios";
+import { DialogActionTrigger,DialogBody, DialogContent, DialogFooter, DialogHeader, DialogRoot, DialogTitle, DialogTrigger,} from "../../../components/ui/dialog"
+import {setEateries, setPage} from "../../../redux/slices/eateriesSlice";
+
 
 /**
  * Main으로부터 음식 카테고리에 대한 props를 전달받아서
@@ -24,15 +21,24 @@ import axios from "axios";
  * @returns {CategoryDialog}
  */
 const CategoryDialog = () => {
+  const location = useSelector(state => state.location);
+  const pagination = useSelector(state => state.eateries.pagination);
+  const dispatch = useDispatch();
+
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const [categoryGroups, setCategoryGroups] = useState([]);
 
   useEffect(() => {
-    axios("http://localhost:8080/main/filter", {method: "GET"})
-        .then(response => response.data)
-        .then(data => setCategoryGroups(data))
+    axios(`/main/categories/filter/`, {
+      method: "GET",
+    })
+        .then(response => response.data.data)
+        .then(data => {
+          console.log("category group data : ", data);
+          setCategoryGroups(data);
+        })
         .catch(err => console.error(err));
   }, [])
 
@@ -50,12 +56,51 @@ const CategoryDialog = () => {
     );
   };
 
-  const handleSubmit = async () => {
-    if (!selectedCategories || selectedCategories.length === 0) {
-      console.log(selectedGroup);
+  const handleSubmit = () => {
+    if (!selectedGroup) {
+      console.error("대분류 카테고리를 선택하세요.");
+      return;
     }
-    console.log(selectedCategories);
 
+    // 페이지 초기화 후 요청
+    dispatch(setPage(1));
+
+    console.log("소분류 카테고리 : ", selectedCategories);
+
+    // 대분류만 선택하고 소분류는 선택하지 않은 경우
+    if (selectedCategories.length === 0) {
+      console.log("대분류 : ", selectedGroup);
+
+      axios(`/main/locations/${location.address}/categories/large/${selectedGroup}`, {
+        method: "GET",
+        params: {
+          page: pagination.page,
+          size: pagination.size,
+        }})
+      .then(response => response.data.data)
+      .then(data => {
+        console.log(data.content);
+        dispatch(setEateries(data.content));
+      })
+      .catch(err => console.error(err));
+
+    // 소분류까지 선택한 경우
+    } else {
+      console.log("소분류 : ", selectedCategories);
+
+      axios(`/main/locations/${location.address}/categories/small/${selectedCategories}`, {
+        method: "GET",
+        params: {
+          page: pagination.page,
+          size: pagination.size,
+        }})
+      .then(response => response.data.data)
+      .then(data => {
+        console.log(data.content);
+        dispatch(setEateries(data.content));
+      })
+      .catch(err => console.error(err));
+    }
   };
 
   return (
@@ -78,7 +123,7 @@ const CategoryDialog = () => {
               대분류 카테고리
             </Text>
             <Flex gap="2" wrap="wrap">
-              {categoryGroups.map(group => (
+              {categoryGroups?.map(group => (
                   <Button
                       key={group.no}
                       onClick={() => handleGroupSelect(group.no)}
@@ -98,12 +143,15 @@ const CategoryDialog = () => {
             {selectedGroup && (
                 <Box mt={6}>
                   <Text fontWeight="medium" mb="4">
-                    {categoryGroups[selectedGroup -1].name} 하위 카테고리
+                    {categoryGroups
+                        .find(group => group.no === selectedGroup)
+                        ?.name} 하위 카테고리
                   </Text>
                   <Flex gap="2" wrap="wrap">
                     {categoryGroups
                         .find(group => group.no === selectedGroup)
-                        ?.categories.map(category => (
+                        ?.categoriesFilterDtos
+                        ?.map(category => (
                             <Button
                                 key={category.no}
                                 onClick={() => handleCategorySelectToggle(category.no)}

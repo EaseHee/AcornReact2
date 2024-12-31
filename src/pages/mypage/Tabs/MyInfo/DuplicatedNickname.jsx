@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import {
   DialogActionTrigger,
   DialogBody,
@@ -10,7 +10,7 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
-} from "../../components/ui/dialog";
+} from "../../../../components/ui/dialog";
 import axios from "axios";
 
 const DuplicatedNickname = ({ nickname, setIsNicknameAvailable }) => {
