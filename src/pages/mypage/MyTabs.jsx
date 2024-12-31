@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from '@chakra-ui/react';
 import StarReviews from './Tabs/StarReview/StarReviews';
 import ProfileForm from './Tabs/MyInfo/ProfileForm';
+import MyBookmark from './Tabs/Favorites/MyBookmark';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 const queryClient = new QueryClient();
@@ -17,10 +18,11 @@ const MyTabs = ({ memberNo, nickname }) => {
       </Tabs.List>
 
       <QueryClientProvider client={queryClient}>
-        <Tabs.Content value="stars">
+        <Tabs.Content value="favorites">
           {/* 즐겨찾기 */}
-
+          <MyBookmark memberNo={memberNo} />
         </Tabs.Content>
+
         <Tabs.Content value="stars">
           {/* 별점 리뷰 */}          
           <StarReviews memberNo={memberNo} nickname={nickname} />
