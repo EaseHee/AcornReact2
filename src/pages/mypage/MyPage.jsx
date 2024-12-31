@@ -10,6 +10,7 @@ import axios from "axios";
 
 const MyPage = () => {
   const [nickname, setNickname] = useState(""); // 닉네임 상태 관리
+  const [memberNo, setMemberNo] = useState(null); // memberNo 상태 추가
 
   useEffect(() => {
     const fetchNickname = async () => {
@@ -25,6 +26,26 @@ const MyPage = () => {
     };
 
     fetchNickname();
+  }, []);
+
+  // 사용자 정보(memberNo) 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
+          withCredentials: true, // 쿠키 자동 전송
+        });
+        
+        if (response.data) {
+          setMemberNo(response.data);
+        }
+      } catch (err) {
+        console.error("사용자 정보 조회 실패:", err);
+        setMemberNo(null); // 로그인되지 않은 경우 null로 처리
+      }
+    };
+  
+    fetchUserInfo();
   }, []);
 
   return (
