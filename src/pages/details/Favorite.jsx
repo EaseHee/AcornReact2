@@ -23,35 +23,38 @@ const Favorite = ({ restaurantNo, memberNo }) => {
     };
 
     checkBookmarkStatus();
-  }, [memberNo, restaurantNo]);
+    }, [memberNo, restaurantNo]);
 
-  const toggleBookmark = async () => {
-    if (!memberNo) {
-      alert("로그인이 필요한 서비스입니다.");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `http://localhost:8080/main/eateries/${restaurantNo}/favorites`,
-        { memberNo },
-        { withCredentials: true }
-      );
-
-      if (response.status === 200) {
-        const newBookmarkStatus = !isBookmarked;
-        setIsBookmarked(newBookmarkStatus);
-        alert(newBookmarkStatus ? "즐겨찾기 되었습니다." : "즐겨찾기가 취소되었습니다.");
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        alert("로그인이 필요한 서비스입니다.");
-      } else {
-        console.error("즐겨찾기 처리 중 오류:", error);
-        alert("즐겨찾기 처리 중 오류가 발생했습니다.");
-      }
-    }
-  };
+    const toggleBookmark = async () => {
+        if (!memberNo) {
+          alert("로그인이 필요한 서비스입니다.");
+          return;
+        }
+      
+        try {
+          const response = await axios.post(
+            `http://localhost:8080/main/eateries/${restaurantNo}/favorites`,
+            { 
+              memberNo,
+              status: isBookmarked ? 0 : 1  // 현재 상태의 반대값으로 설정
+            },
+            { withCredentials: true }
+          );
+      
+          if (response.status === 200) {
+            const newBookmarkStatus = !isBookmarked;
+            setIsBookmarked(newBookmarkStatus);
+            alert(newBookmarkStatus ? "즐겨찾기 되었습니다." : "즐겨찾기가 취소되었습니다.");
+          }
+        } catch (error) {
+          if (error.response && error.response.status === 401) {
+            alert("로그인이 필요한 서비스입니다.");
+          } else {
+            console.error("즐겨찾기 처리 중 오류:", error);
+            alert("즐겨찾기 처리 중 오류가 발생했습니다.");
+          }
+        }
+    };
 
   return (
     <div 

@@ -62,7 +62,7 @@ const DetailPage = () => {
 
         <Box display="flex" flexDirection={"column"} gap={3}>
           <Box flex={2}>
-            <RestaurantInfo restaurant={restaurant} />
+            <RestaurantInfo restaurant={restaurant} memberNo={memberNo} />
           </Box>
           <Box flex={1}>
             <Map
