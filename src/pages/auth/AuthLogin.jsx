@@ -10,7 +10,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo";
 import {useDispatch, useSelector} from "react-redux";
-import {login} from "../../redux/authSlice";
+import {login} from "../../redux/slices/authSlice";
 
 const AuthLogin = () => {
   const navigate = useNavigate();
