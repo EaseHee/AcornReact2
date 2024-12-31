@@ -144,14 +144,12 @@ const LocationDialog = () => {
           </DialogBody>
 
           <DialogFooter>
-            <DialogActionTrigger asChild>
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
-                닫기
-              </Button>
+          <DialogActionTrigger onClick={handleSubmit}>
+              <Button colorPalette="orange">적용</Button>
             </DialogActionTrigger>
-            <DialogActionTrigger asChild>
-              <Button onClick={handleSubmit}>적용</Button>
-            </DialogActionTrigger>
+            <DialogCloseTrigger asChild>
+              <Button variant="outline">닫기</Button>
+            </DialogCloseTrigger>
           </DialogFooter>
         </DialogContent>
       </DialogRoot>

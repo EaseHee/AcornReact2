@@ -177,12 +177,12 @@ const CategoryDialog = () => {
           </DialogBody>
 
           <DialogFooter>
-            <DialogActionTrigger>
-              <Button variant="outline" >닫기</Button>
+          <DialogActionTrigger onClick={handleSubmit}>
+              <Button colorPalette="orange">적용</Button>
             </DialogActionTrigger>
-            <DialogActionTrigger>
-              <Button onClick={handleSubmit}>적용</Button>
-            </DialogActionTrigger>
+            <DialogCloseTrigger asChild>
+              <Button variant="outline">닫기</Button>
+            </DialogCloseTrigger>
           </DialogFooter>
         </DialogContent>
       </DialogRoot>

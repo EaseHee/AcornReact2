@@ -8,9 +8,9 @@ import { RiBookmarkLine } from "react-icons/ri";
 import {Box, Card, Flex, Icon, Image, Text} from "@chakra-ui/react"
 import {MdCategory} from "react-icons/md";
 
-const Maincard = ({no}) => {
-    // 서버에 음식점 상세 정보 요청
-    const [eatery, setEatery] = useState({});
+const Maincard = ({ no }) => {
+  // 서버에 음식점 상세 정보 요청
+  const [eatery, setEatery] = useState({});
 
     useEffect (() => {
         axios(`/main/eateries/${no}`, {
@@ -29,7 +29,7 @@ const Maincard = ({no}) => {
             })
     }, [no]);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
     // 상세 페이지로 이동
     const handleCardClick = () => {
@@ -73,27 +73,5 @@ const Maincard = ({no}) => {
                     />
                 )}
             </Flex>
-
-            <Card.Body gap="2" minHeight="120px">
-                <Card.Title>{eatery.name}</Card.Title>
-                <Card.Description>{eatery?.categoryDto?.categoryGroupDto?.name}  {eatery?.categoryDto?.name}</Card.Description>
-            </Card.Body>
-
-            <Card.Footer display="block">
-                {/* 조회수 */}
-                <Flex alignItems={"center"} padding="1" >
-                    <Text as={FaEye} marginRight="5px"></Text>
-                    <Text>{eatery.viewCount}</Text>
-                </Flex>
-
-                {/* 즐겨찾기 수 */}
-                <Flex alignItems={"center"} padding="1" >
-                    <Text as={RiBookmarkLine} marginRight="5px"></Text>
-                    <Text>{eatery.favoritesCount}</Text>
-                </Flex>
-            </Card.Footer>
-        </Card.Root>
-    )
-}
 
 export default Maincard;
