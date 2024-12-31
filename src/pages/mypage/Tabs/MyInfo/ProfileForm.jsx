@@ -1,8 +1,8 @@
 import { Box, Button, Input, Stack, Text } from "@chakra-ui/react";
-import { Field } from "../../components/ui/field";
-import { PasswordInput } from "../../components/ui/password-input";
+import { Field } from "../../../../components/ui/field";
+import { PasswordInput } from "../../../../components/ui/password-input";
 import { useForm } from "react-hook-form";
-import { DaumPostAPI } from "../auth/DaumPostAPI";
+import { DaumPostAPI } from "../../../auth/DaumPostAPI";
 import DuplicatedNickname from "./DuplicatedNickname";
 import { useState } from "react";
 import axios from "axios";
