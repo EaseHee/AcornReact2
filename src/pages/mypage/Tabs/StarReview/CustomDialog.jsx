@@ -12,8 +12,8 @@ import {
   DialogRoot
 } from '../../../../components/ui/dialog';
 import { NativeSelectField, NativeSelectRoot } from "../../../../components/ui/native-select"
-import { Field } from "../../../../components/ui/field"
-import { Toaster  } from "../../../../components/ui/toaster"
+import { Field } from "../../../../components/ui/field";
+import { Toaster, toaster } from "../../../../components/ui/toaster";
 import axios from 'axios';
 
 export default function CustomDialog({ openBtnText, title, memberNo, review, confirmBtnText, closeBtnText }) {
@@ -67,9 +67,7 @@ export default function CustomDialog({ openBtnText, title, memberNo, review, con
   };
   return (
     <DialogRoot placement="center" open={open} onOpenChange={setOpen}>
-      <Toaster 
-        
-      />
+      <Toaster/>
       <DialogTrigger asChild>
         <Button size="sm">{openBtnText}</Button>
       </DialogTrigger>
