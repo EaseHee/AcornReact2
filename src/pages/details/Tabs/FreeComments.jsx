@@ -38,10 +38,14 @@ const deleteComment = async (commentNo) => {
 
 // 댓글 수정
 const updateComment = async (commentNo, content) => {
-  const response = await axios.put(`http://localhost:8080/main/eateries/comments/${commentNo}`, {
-    content,
-  });
-  return response.data;
+  try {
+    const response = await axios.put(`http://localhost:8080/main/eateries/comments/${commentNo}`, {
+      content,
+    });
+    return response.data;
+  } catch (err) {
+    console.log('commentNo:', commentNo);
+  }
 };
 
 const FreeComments = ({ eateryNo }) => {
@@ -50,15 +54,16 @@ const FreeComments = ({ eateryNo }) => {
   useEffect(() => {
     const fetchMemberNo = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/main/mypage/members/read', {
-          withCredentials: true, // 쿠키를 함께 전송하도록 설정
+        const response = await axios.get('http://localhost:8080/main/mypage/members/member-no', {
+          withCredentials: true,
         });
-        setMemberNo(response.data.no);
-      } catch (error) {
-        console.error('회원정보를 가져오는 데 실패했습니다:', error);
+        if (response.data) {
+          setMemberNo(response.data);
+        }
+      } catch (err) {
+        console.error('사용자 정보 조회 실패:', err);
       }
     };
-
     fetchMemberNo();
   }, []);
 
@@ -131,7 +136,7 @@ const FreeComments = ({ eateryNo }) => {
 
   const handleSaveClick = async () => {
     if (editedContent.trim()) {
-      updateCommentMutate({ commentNo: editingComment, content: editedContent });
+      updateCommentMutate({ commentNo: editingComment.commentNo, content: editedContent });
     }
   };
 
@@ -148,7 +153,7 @@ const FreeComments = ({ eateryNo }) => {
     setReplyingToComment(replyingToComment === comment.no ? null : comment.no);
   };
 
-  const handleReplySubmit = (comment) => {
+  const handleReplySubmit = () => {
     setReplyingToComment(null);
   };
 
@@ -163,8 +168,6 @@ const FreeComments = ({ eateryNo }) => {
   };
 
   if (isLoading) return <MySpinner />;
-
-  console.log('memberNo: ', memberNo);
 
   return (
     <Box w="full" p={4}>
