@@ -37,13 +37,18 @@ export default function Main() {
       if (data.content.length === 0 || pagination.page >= data.page.totalPages) {
         setHasMore(false); // 더 이상 데이터가 없는 경우
       }
-
+        console.log("음식점 데이터 조회 성공 : ", data.content);
       dispatch(setEateries([...eateries, ...data.content])); // Redux 상태 업데이트
       dispatch(setPage(pagination.page + 1)); // 페이지 증가
     } catch (error) {
-      console.error("Error fetching eateries:", error);
+      console.error("음식점 데이터 조회 실패 : ", error);
     }
   }, [dispatch, location.address, pagination.page, pagination.size, eateries]);
+
+  // 페이지 첫 로드 시 화면에 출력할 기본 데이터 요청
+  useEffect(() => {
+      fetchEateries();
+  }, [])
 
   /**
    * 첫 진입 시 사용자 위치를 기반으로 지역 주소 가져오기
@@ -114,11 +119,10 @@ export default function Main() {
               hasMore={hasMore} // 더 가져올 데이터가 있는지 여부
               loader={<MySpinner />} // 로딩 중일 때 표시할 컴포넌트
               endMessage={
-                  <Text textAlign="center" color="gray.500" mt={4}>
+                  <Text textAlign="center" color="gray.500" m={2}>
                       더 이상 데이터가 없습니다.
                   </Text>
               }
-              scrollableTarget="scrollableContainer" // 스크롤 이벤트 대상
           >
               <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
                   {eateries.map((eatery, index) => (

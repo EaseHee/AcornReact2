@@ -97,7 +97,7 @@ const CategoryDialog = () => {
       .then(response => response.data.data)
       .then(data => {
         console.log(data.content);
-       dispatch(setEateries(data.content));
+        dispatch(setEateries(data.content));
       })
       .catch(err => console.error(err));
     }
@@ -177,8 +177,8 @@ const CategoryDialog = () => {
           </DialogBody>
 
           <DialogFooter>
-            <DialogActionTrigger asChild>
-              <Button variant="outline">닫기</Button>
+            <DialogActionTrigger>
+              <Button variant="outline" >닫기</Button>
             </DialogActionTrigger>
             <DialogActionTrigger>
               <Button onClick={handleSubmit}>적용</Button>
