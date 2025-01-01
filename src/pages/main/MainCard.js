@@ -18,7 +18,7 @@ const MainCard = ({ data }) => {
     div.innerHTML = data.description;
     setEatery({ ...eatery, description: div.textContent || div.innerText });
 
-    axios(`/main/eateries/${data.no}/favorites`, {method: "GET"})
+    axios(`/main/eateries/${data.no}/favorites/count`, {method: "GET"})
     .then(response => response.data)
     .then(data => setEatery({...eatery, favoriteCount: data}) )
     .catch(error => console.log(error));
