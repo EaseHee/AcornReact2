@@ -24,6 +24,11 @@ export default function Main() {
    * 사용자 위치 기반 음식점 데이터를 서버로 요청하여 가져오는 함수
    */
   const fetchEateries = useCallback(async () => {
+      console.log("fetchEateries page : " , pagination.page);
+
+      console.log("hasMore : ", hasMore);
+      if (!hasMore) return;
+
     try {
       const response = await axios(`/main/locations/${location.address}`, {
         method: "get",
@@ -74,7 +79,9 @@ export default function Main() {
               });
 
               const data = response.data.data;
-              const address = data.content[0]?.address.split(" ")[1] || "강남구";
+              const address =
+                  `${data.content[0]?.address.split(" ")[0]} ${data.content[0]?.address.split(" ")[1]}`
+                  || location.address;
 
               dispatch(setAddress(address));
               dispatch(setEateries(data.content)); // 초기 데이터 설정
@@ -92,7 +99,7 @@ export default function Main() {
     } else {
       dispatch(setError("Geolocation API가 지원되지 않습니다."));
     }
-  }, [dispatch, pagination.page, pagination.size]);
+  }, []);
 
   return (
       <Box id="scrollableContainer" height="100vh" overflowY="auto">
@@ -118,11 +125,7 @@ export default function Main() {
               next={fetchEateries} // 추가 데이터를 요청할 함수
               hasMore={hasMore} // 더 가져올 데이터가 있는지 여부
               loader={<MySpinner />} // 로딩 중일 때 표시할 컴포넌트
-              endMessage={
-                  <Text textAlign="center" color="gray.500" m={2}>
-                      더 이상 데이터가 없습니다.
-                  </Text>
-              }
+              endMessage={<p style={{ textAlign: "center" }}>모든 음식점을 로드했습니다.</p>}
           >
               <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
                   {eateries.map((eatery, index) => (

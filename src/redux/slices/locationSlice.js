@@ -8,7 +8,7 @@ const locationSlice = createSlice({
             lat: "37.498863932227",
             lng: "127.03167064582",
         }, // 사용자 경위도 주소 초기값
-        address: "강남구", // 사용자 지역구 주소
+        address: "서울 강남구", // 사용자 지역구 주소
         loading: false, // 위치 로드 상태
         error: null, // 에러 상태 추가
     },
