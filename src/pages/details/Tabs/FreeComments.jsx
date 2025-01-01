@@ -13,6 +13,7 @@ import {
   AccordionItemContent,
 } from '@chakra-ui/react';
 import MySpinner from '../../../components/Spinner';
+import LikeButton from './LikeButton';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
@@ -206,7 +207,7 @@ const FreeComments = ({ eateryNo }) => {
           disabled={memberNo === 0}
         />
         {memberNo !== 0 && (
-          <Flex justify='flex-end'>
+          <Flex justify='end'>
             <Button size='sm' colorScheme='blue' onClick={handleNewCommentSubmit}>
               작성
             </Button>
@@ -248,8 +249,14 @@ const FreeComments = ({ eateryNo }) => {
 
                 {editingComment === comment.no ? (
                   <Box>
-                    <Textarea value={editedContent} onChange={(e) => setEditedContent(e.target.value)} size='sm' color='black' />
-                    <Flex justify='flex-end' mt={2}>
+                    <Textarea
+                      value={editedContent}
+                      onChange={(e) => setEditedContent(e.target.value)}
+                      size='sm'
+                      color='black'
+                      rows={4}
+                    />
+                    <Flex justify='end' mt={2}>
                       <Button size='sm' colorScheme='blue' onClick={handleSaveClick} mr={2}>
                         저장
                       </Button>
@@ -266,11 +273,14 @@ const FreeComments = ({ eateryNo }) => {
 
                 {/* 댓글 버튼들 */}
                 {editingComment !== comment.no && (
-                  <Flex justify='flex-end'>
+                  <Flex justify='end'>
                     {memberNo !== 0 && (
-                      <Button size='sm' mr={2} onClick={() => handleReplyClick(comment)}>
-                        대댓글
-                      </Button>
+                      <Flex align='center'>
+                        {/* 좋아요 아이콘 위치 */}
+                        <Button size='sm' mx={2} onClick={() => handleReplyClick(comment)}>
+                          대댓글 달기
+                        </Button>
+                      </Flex>
                     )}
 
                     {memberNo === comment.memberNo && !comment.deleted && (
@@ -296,10 +306,11 @@ const FreeComments = ({ eateryNo }) => {
                       color='black'
                       value={newReplyContent}
                       onChange={(e) => setNewReplyContent(e.target.value)}
+                      rows={4}
                     />
-                    <Flex justify='flex-end'>
+                    <Flex justify='end'>
                       <Button size='sm' colorScheme='blue' onClick={() => handleReplySubmit(comment.no)} mr={2}>
-                        제출
+                        작성
                       </Button>
                       <Button size='sm' colorScheme='gray' onClick={() => setReplyingToComment(null)}>
                         취소
@@ -310,10 +321,10 @@ const FreeComments = ({ eateryNo }) => {
 
                 {/* 대댓글 보기 */}
                 {comment.childComments && comment.childComments.length > 0 && (
-                  <AccordionRoot collapsible variant='plain'>
+                  <AccordionRoot collapsible variant='plain' defaultValue={['b']}>
                     <AccordionItem>
                       <AccordionItemTrigger cursor='pointer' w='fit-content'>
-                        <Text color='black'>{comment.childComments.length}개의 대댓글 보기</Text>
+                        <Button variant='outline'>{comment.childComments.length}개의 대댓글</Button>
                       </AccordionItemTrigger>
                       <AccordionItemContent>
                         {comment.childComments.map((childComment) => (
@@ -350,8 +361,9 @@ const FreeComments = ({ eateryNo }) => {
                                   onChange={(e) => setEditedReplyContent(e.target.value)}
                                   size='sm'
                                   color='black'
+                                  rows={4}
                                 />
-                                <Flex justify='flex-end' mt={2}>
+                                <Flex justify='end' mt={2}>
                                   <Button
                                     size='sm'
                                     colorScheme='blue'
@@ -373,7 +385,7 @@ const FreeComments = ({ eateryNo }) => {
 
                             {/* 대댓글 수정 삭제 버튼 */}
                             {editingReply !== childComment.no && memberNo === childComment.memberNo && (
-                              <Flex justify='flex-end'>
+                              <Flex justify='end'>
                                 <Button size='sm' mr={2} onClick={() => handleReplyEditClick(childComment)}>
                                   수정
                                 </Button>
