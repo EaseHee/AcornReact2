@@ -52,7 +52,9 @@ export default function CustomDialog({ openBtnText, title, memberNo, eateryNo, c
         description: "리뷰 등록 성공!",
         type: "success",
       })
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();        
+      }, 1500);
     } catch (error) {
       toaster.create({
         description: "리뷰 등록 실패!",
