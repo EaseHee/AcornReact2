@@ -60,13 +60,14 @@ const MyBookmark = () => {
       p={4}
     >
       {bookmarks.map((bookmark) => (
-        <GridItem key={bookmark.eateryNo}>
+        <GridItem key={bookmark.no}>
           <BookmarkCard
             name={bookmark.name}
             rating={bookmark.rating}
+            thumbnail={bookmark.thumbnail}
             address={bookmark.address}
             imageUrl={bookmark.imageUrl}
-            eateryNo={bookmark.eateryNo}
+            eateryNo={bookmark.no}
           />
         </GridItem>
       ))}
