@@ -25,20 +25,23 @@ const CategoryDialog = () => {
   const pagination = useSelector(state => state.eateries.pagination);
   const dispatch = useDispatch();
 
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const [categoryGroups, setCategoryGroups] = useState([]);
 
   useEffect(() => {
     if (categoryGroups.length > 0) return;
-    axios(`/main/categories/filter/`, {
+    axios(`/main/categories/filter`, {
       method: "GET",
     })
     .then(response => response.data.data)
     .then(data => {
       console.log("category group data : ", data);
       setCategoryGroups(data);
+
+      // 기본값 설정
+      setSelectedCategories([data[0]?.categoriesFilterDtos[0]?.no]);
     })
     .catch(err => console.error(err));
   }, []) // 페이지 첫 렌더 시 1회만 요청 + 상태변수 배열의 길이가 0인 경우에만 실행
@@ -65,9 +68,6 @@ const CategoryDialog = () => {
       return;
     }
 
-    // 요청 전 페이지 초기화
-    dispatch(setPage(1));
-
     let api;
     // 대분류만 선택하고 소분류는 선택하지 않은 경우
     if (selectedCategories.length === 0) {
@@ -86,15 +86,11 @@ const CategoryDialog = () => {
     try {
       const data = (await axios(api, {
         method: "GET",
-        params: {
-          page: pagination.page,
-          size: pagination.size,
-        }
+        params: {page: 1, size: 12},
       })).data.data;
       dispatch(setEateries(data.content)); // 음식점 목록 데이터 redux 상태변수에 저장
     } catch (error) { console.error(error) }
   }
-
 
 
   return (
@@ -102,7 +98,18 @@ const CategoryDialog = () => {
       <DialogTrigger asChild>
         <Button variant="outline">
           <MdOutlineRestaurantMenu />
-          음식 카테고리
+          {categoryGroups.find(group => group.no === selectedGroup)?.name}
+          {selectedCategories && selectedCategories.length > 0 && (
+              <>
+                {" > "}
+                {categoryGroups
+                    ?.map(group =>
+                        group.categoriesFilterDtos
+                            ?.filter(category => selectedCategories.includes(category.no))
+                            ?.map(category => category.name).join(" / "))
+                }
+              </>
+          )}
         </Button>
       </DialogTrigger>
 
