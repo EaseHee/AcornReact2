@@ -25,7 +25,9 @@ const DeleteDialog = ({reviewNo, onClose}) => {
             description: response.data,
             type: "success",
         })}
-        window.location.reload();
+        setTimeout(() => {
+            window.location.reload();        
+          }, 1500);
     } catch (error) {
         toaster.create({
         description: "리뷰 삭제 실패!",

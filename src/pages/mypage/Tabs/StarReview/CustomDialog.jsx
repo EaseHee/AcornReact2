@@ -51,7 +51,9 @@ export default function CustomDialog({ openBtnText, title, memberNo, review, con
         description: "리뷰 수정 성공!",
         type: "success",
       })
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();        
+      }, 1500);
     } catch (error) {
       toaster.create({
         description: "리뷰 수정 실패!",
