@@ -33,16 +33,14 @@ export default function StarReviews({no}) {
             <Button mr="3" onClick={() => handleSortChange("createdAt")} variant={sortBy === "createdAt" ? "subtle" : "outline"}>최신순</Button>
             <Button onClick={() => handleSortChange("rating")} variant={sortBy === "rating" ? "subtle" : "outline"}>추천순</Button>
           </Box>
-          <Box>
-            <CustomDialog
-              openBtnText="리뷰 쓰기"
-              title={nickName}
-              memberNo={memberNo}
-              eateryNo={no}
-              confirmBtnText="등록"
-              closeBtnText="취소"
-            />
-          </Box>
+          <CustomDialog
+            openBtnText="리뷰 쓰기"
+            title={nickName}
+            memberNo={memberNo}
+            eateryNo={no}
+            confirmBtnText="등록"
+            closeBtnText="취소"
+          />
         </HStack>
       </Card.Header>
       <Card.Body>
