@@ -11,36 +11,26 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const [page, setPage] = useState(1); // 현재 페이지 번호
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 여부
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+
   // 서버에서 리뷰 데이터를 가져오는 함수
   const fetchReviews = async (currentPage) => {
     setIsLoading(true); // 로딩 시작
     try {
-      // 지연시간 1초 추가
-      setTimeout(async () => {
-<<<<<<< HEAD
-        const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
-          params: { page: currentPage }, // 쿼리 매개변수 설정
-          withCredentials: true, // 쿠키를 함께 전송하도록 설정
-=======
-        const response = await axios.get(`/main/mypage/review/member/${memberNo}`, {
-          params: { page: currentPage },
->>>>>>> my/develop
-        });
-        const { content, page: pageInfo } = response.data.list;
-
-      // 중복된 리뷰가 추가되지 않도록 처리
-      setReviews((prevReviews) => {
-        const newReviews = content.filter(review => 
-          !prevReviews.some(prevReview => prevReview.no === review.no)
-        );
-        return [...prevReviews, ...newReviews];
+      const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
+        params: { page: currentPage }, // 쿼리 매개변수 설정
+        withCredentials: true, // 쿠키를 함께 전송하도록 설정
       });
-
-        // 모든 페이지 로드 완료 여부 확인
-        setHasMore(pageInfo.number < pageInfo.totalPages);
-
-        setIsLoading(false); // 로딩 완료
-      }, 1000); // 1초 지연
+      const { content, page: pageInfo } = response.data.list;
+    // 중복된 리뷰가 추가되지 않도록 처리
+    setReviews((prevReviews) => {
+      const newReviews = content.filter(review => 
+        !prevReviews.some(prevReview => prevReview.no === review.no)
+      );
+      return [...prevReviews, ...newReviews];
+    });
+      // 모든 페이지 로드 완료 여부 확인
+      setHasMore(pageInfo.number < pageInfo.totalPages);
+      setIsLoading(false); // 로딩 완료
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
       setIsLoading(false); // 오류 발생 시 로딩 상태 해제
@@ -72,7 +62,6 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
     const emptyStar = '☆';
     return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
   };
-
   return (
     <div
       id="scrollableDiv"
