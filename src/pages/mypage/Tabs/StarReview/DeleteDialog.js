@@ -18,7 +18,9 @@ const DeleteDialog = ({reviewNo}) => {
     //리뷰 삭제
     const deleteMyReview= async (reviewNo)=>{
     try {
-        const response = await axios.delete(`http://localhost:8080/main/mypage/review/${reviewNo}`);
+        const response = await axios.delete(`http://localhost:8080/main/mypage/review/${reviewNo}`, {
+            withCredentials: true, // 쿠키를 함께 전송하도록 설정
+          });
         if(response.data){
         closeDialog();
         toaster.create({

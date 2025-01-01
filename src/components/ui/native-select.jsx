@@ -1,3 +1,5 @@
+import { NativeSelect as Select } from '@chakra-ui/react'
+import * as React from 'react'
 function _optionalChain(ops) {
   let lastAccessLHS = undefined
   let value = ops[0]
@@ -19,10 +21,8 @@ function _optionalChain(ops) {
   }
   return value
 }
-;('use client')
+;
 
-import { NativeSelect as Select } from '@chakra-ui/react'
-import * as React from 'react'
 
 export const NativeSelectRoot = React.forwardRef(
   function NativeSelect(props, ref) {

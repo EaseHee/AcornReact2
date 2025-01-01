@@ -18,7 +18,8 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
       // 지연시간 1초 추가
       setTimeout(async () => {
         const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
-          params: { page: currentPage },
+          params: { page: currentPage }, // 쿼리 매개변수 설정
+          withCredentials: true, // 쿠키를 함께 전송하도록 설정
         });
         const { content, page: pageInfo } = response.data.list;
 
