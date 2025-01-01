@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Box, Text } from '@chakra-ui/react';
 import MySpinner from './Spinner';
 
+// 현재 사용중이지 않은 컴포넌트
 const fetchTodos = async ({ pageParam = 1, url }) => {
   // 기본 페이지는 1입니다.
   const { data } = await axios.get(`${url}?_page=${pageParam}&_limit=10`); // 페이지 매개변수를 사용하여 Todo 항목을 요청합니다.
