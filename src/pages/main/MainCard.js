@@ -8,34 +8,30 @@ import axios from "utils/axios";
 import {RiBookmarkLine} from "react-icons/ri";
 import {AiOutlineEye} from "react-icons/ai";
 
-const Maincard = ({ no }) => {
+const MainCard = ({ data }) => {
   // 서버에 음식점 상세 정보 요청
-  const [eatery, setEatery] = useState({});
+  const [eatery, setEatery] = useState(data);
 
   useEffect(() => {
-    axios(`/main/eateries/${no}`, {
-      method: "GET",
-    })
-      .then((response) => response.data)
-      .then((data) => {
-        // 마크업으로 작성된 설명 부분 평문으로 변환
-        let div = document.createElement("div");
-        div.innerHTML = data.description;
-        setEatery({ ...data, description: div.textContent || div.innerText });
-      })
-      .catch((error) => {
-        console.log("error : " + error);
-      });
-  }, [no]);
+    // 마크업으로 작성된 설명 부분 평문으로 변환
+    let div = document.createElement("div");
+    div.innerHTML = data.description;
+    setEatery({ ...eatery, description: div.textContent || div.innerText });
+
+    axios(`/main/eateries/${data.no}/favorites`, {method: "GET"})
+    .then(response => response.data)
+    .then(data => setEatery({...eatery, favoriteCount: data}) )
+    .catch(error => console.log(error));
+  }, [data]);
 
   const navigate = useNavigate();
 
   // 상세 페이지로 이동
   const handleCardClick = () => {
     // 음식점 상세 페이지 접근 시 조회 수 증가 요청
-    axios(`/main/eateries/${no}/viewcount`, { method: "PUT" })
-      .then((response) => response.data)
-      .catch((error) => console.log("error : " + error));
+    axios(`/main/eateries/${data.no}/viewcount`, { method: "PUT" })
+    .then((response) => response.data)
+    .catch((error) => console.log("error : " + error));
 
     // 상세 페이지로 이동
     navigate(`/detail/${eatery.no}`);
@@ -113,7 +109,7 @@ const Maincard = ({ no }) => {
             <Box mt="auto" pt="2">
               {/* 카테고리 정보 */}
               <Text fontSize="sm" color="gray.500" mb="1">
-                {eatery.categoryName || "카테고리 정보 없음"}
+                {eatery.categoryDto.name || "카테고리 정보 없음"}
               </Text>
 
               {/* 조회수 */}
@@ -133,4 +129,4 @@ const Maincard = ({ no }) => {
       </Card.Root>
   );
 };
-export default Maincard;
+export default MainCard;
