@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import axios from "axios";
+import axios from "utils/axios";
 import MySpinner from "../../../../components/Spinner.js";
 import { Box, Card } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
@@ -17,9 +17,14 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
     try {
       // 지연시간 1초 추가
       setTimeout(async () => {
+<<<<<<< HEAD
         const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
           params: { page: currentPage }, // 쿼리 매개변수 설정
           withCredentials: true, // 쿠키를 함께 전송하도록 설정
+=======
+        const response = await axios.get(`/main/mypage/review/member/${memberNo}`, {
+          params: { page: currentPage },
+>>>>>>> my/develop
         });
         const { content, page: pageInfo } = response.data.list;
 

@@ -23,7 +23,7 @@ const ReviewTabs = ({ restaurant, no }) => {
         </Tabs.Content>
         <Tabs.Content value="comments">
           {/* 자유 댓글 공간 */}
-          <FreeComments />
+          <FreeComments eateryNo={restaurant.no} />
         </Tabs.Content>
         <Tabs.Content value="blog">
           {/* 블로그 리뷰 공간 */}

@@ -31,161 +31,156 @@ const CategoryDialog = () => {
   const [categoryGroups, setCategoryGroups] = useState([]);
 
   useEffect(() => {
+    if (categoryGroups.length > 0) return;
     axios(`/main/categories/filter/`, {
       method: "GET",
     })
-        .then(response => response.data.data)
-        .then(data => {
-          console.log("category group data : ", data);
-          setCategoryGroups(data);
-        })
-        .catch(err => console.error(err));
-  }, [])
+    .then(response => response.data.data)
+    .then(data => {
+      console.log("category group data : ", data);
+      setCategoryGroups(data);
+    })
+    .catch(err => console.error(err));
+  }, []) // 페이지 첫 렌더 시 1회만 요청 + 상태변수 배열의 길이가 0인 경우에만 실행
 
-
-  const handleGroupSelect = (value) => {
-    setSelectedGroup(value);
+  // 대분류 카테고리 선택 시 처리 메서드
+  const handleGroupSelect = group => {
+    setSelectedGroup(group);
     setSelectedCategories([]); // 대분류 선택 시 소분류 초기화
   };
 
-  const handleCategorySelectToggle = (sub) => {
-    setSelectedCategories((prev) =>
-        prev.includes(sub)
-            ? prev.filter((item) => item !== sub) // 선택 해제
-            : [...prev, sub] // 선택 추가
+  // 소분류 카테고리 선택 시 처리 메서드 : 토글 기능 적용
+  const handleCategorySelectToggle = category => {
+    setSelectedCategories(prev =>
+        prev.includes(category) // 소분류 항목 포함 여부에 따른 처리 구분 (토글)
+            ? prev.filter(item => item !== category) // 선택 해제
+            : [...prev, category] // 선택 추가
     );
   };
 
+  // 적용 버튼 클릭 처리 메서드
   const handleSubmit = () => {
-    if (!selectedGroup) {
+    if (!selectedGroup) { // 대분류 미선택 시 메서드 종료
       console.error("대분류 카테고리를 선택하세요.");
       return;
     }
 
-    // 페이지 초기화 후 요청
+    // 요청 전 페이지 초기화
     dispatch(setPage(1));
 
-    console.log("소분류 카테고리 : ", selectedCategories);
-
+    let api;
     // 대분류만 선택하고 소분류는 선택하지 않은 경우
     if (selectedCategories.length === 0) {
-      console.log("대분류 : ", selectedGroup);
-
-      axios(`/main/locations/${location.address}/categories/large/${selectedGroup}`, {
-        method: "GET",
-        params: {
-          page: pagination.page,
-          size: pagination.size,
-        }})
-      .then(response => response.data.data)
-      .then(data => {
-        console.log(data.content);
-        dispatch(setEateries(data.content));
-      })
-      .catch(err => console.error(err));
-
-    // 소분류까지 선택한 경우
+      api = `/main/locations/${location.address}/categories/large/${selectedGroup}`
+      fetchFilteredData(api);
+      // 소분류까지 선택한 경우
     } else {
-      console.log("소분류 : ", selectedCategories);
-
-      axios(`/main/locations/${location.address}/categories/small/${selectedCategories}`, {
-        method: "GET",
-        params: {
-          page: pagination.page,
-          size: pagination.size,
-        }})
-      .then(response => response.data.data)
-      .then(data => {
-        console.log(data.content);
-       dispatch(setEateries(data.content));
-      })
-      .catch(err => console.error(err));
+      api = `/main/locations/${location.address}/categories/small/${selectedCategories}`
+      fetchFilteredData(api);
     }
   };
 
+  // 필터 조건 서버로 요청 및 데이터 저장
+  const fetchFilteredData = async (api) => {
+    console.log("API Endpoint:", api); // 확인용 로그
+    try {
+      const data = (await axios(api, {
+        method: "GET",
+        params: {
+          page: pagination.page,
+          size: pagination.size,
+        }
+      })).data.data;
+      dispatch(setEateries(data.content)); // 음식점 목록 데이터 redux 상태변수에 저장
+    } catch (error) { console.error(error) }
+  }
+
+
+
   return (
-      <DialogRoot>
-        <DialogTrigger asChild>
-          <Button variant="outline">
-            <MdOutlineRestaurantMenu />
-            음식 카테고리
-          </Button>
-        </DialogTrigger>
+    <DialogRoot> {/* DialogTrigger 와 Button 모두 button 태그이기 때문에 중첩 오류를 방지하기 위해 asChild props를 설정한다. */}
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <MdOutlineRestaurantMenu />
+          음식 카테고리
+        </Button>
+      </DialogTrigger>
 
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>음식 카테고리 선택</DialogTitle>
-          </DialogHeader>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>음식 카테고리 선택</DialogTitle>
+        </DialogHeader>
 
-          <DialogBody pb="4">
-            {/* 대분류 카테고리 */}
-            <Text fontWeight="medium" mb="4">
-              대분류 카테고리
-            </Text>
-            <Flex gap="2" wrap="wrap">
-              {categoryGroups?.map(group => (
-                  <Button
-                      key={group.no}
-                      onClick={() => handleGroupSelect(group.no)}
-                      bg={selectedGroup === group.no ? "gray.500" : "gray.100"}
-                      color={selectedGroup === group.no ? "white" : "black"}
-                      borderRadius="full"
-                      px={4}
-                      py={2}
-                      _hover={{ bg: "gray.500", color: "white" }}
-                  >
-                    {group.name}
-                  </Button>
-              ))}
-            </Flex>
+        <DialogBody pb="4">
+          {/* 대분류 카테고리 */}
+          <Text fontWeight="medium" mb="4">
+            대분류 카테고리
+          </Text>
+          <Flex gap="2" wrap="wrap">
+            {categoryGroups?.map(group => (
+                <Button
+                    key={group.no}
+                    onClick={() => handleGroupSelect(group.no)}
+                    bg={selectedGroup === group.no ? "gray.500" : "gray.100"}
+                    color={selectedGroup === group.no ? "white" : "black"}
+                    borderRadius="full"
+                    px={4}
+                    py={2}
+                    _hover={{ bg: "gray.500", color: "white" }}
+                >
+                  {group.name}
+                </Button>
+            ))}
+          </Flex>
 
-            {/* 소분류 카테고리 */}
-            {selectedGroup && (
-                <Box mt={6}>
-                  <Text fontWeight="medium" mb="4">
-                    {categoryGroups
-                        .find(group => group.no === selectedGroup)
-                        ?.name} 하위 카테고리
-                  </Text>
-                  <Flex gap="2" wrap="wrap">
-                    {categoryGroups
-                        .find(group => group.no === selectedGroup)
-                        ?.categoriesFilterDtos
-                        ?.map(category => (
-                            <Button
-                                key={category.no}
-                                onClick={() => handleCategorySelectToggle(category.no)}
-                                bg={
-                                  selectedCategories.includes(category.no)
-                                      ? "gray.500"
-                                      : "gray.100"
-                                }
-                                color={
-                                  selectedCategories.includes(category.no) ? "white" : "black"
-                                }
-                                borderRadius="full"
-                                px={4}
-                                py={2}
-                                _hover={{ bg: "gray.500", color: "white" }}
-                            >
-                              {category.name}
-                            </Button>
-                        ))}
-                  </Flex>
-                </Box>
-            )}
-          </DialogBody>
+          {/* 소분류 카테고리 */}
+          {selectedGroup && (
+            <Box mt={6}>
+              <Text fontWeight="medium" mb="4">
+                {categoryGroups
+                  .find(group => group.no === selectedGroup)
+                  ?.name} 하위 카테고리
+              </Text>
+              <Flex gap="2" wrap="wrap">
+                {categoryGroups
+                  .find(group => group.no === selectedGroup)
+                  ?.categoriesFilterDtos
+                  ?.map(category => (
+                      <Button
+                          key={category.no}
+                          onClick={() => handleCategorySelectToggle(category.no)}
+                          bg={
+                            selectedCategories.includes(category.no)
+                                ? "gray.500"
+                                : "gray.100"
+                          }
+                          color={
+                            selectedCategories.includes(category.no) ? "white" : "black"
+                          }
+                          borderRadius="full"
+                          px={4}
+                          py={2}
+                          _hover={{ bg: "gray.500", color: "white" }}
+                      >
+                        {category.name}
+                      </Button>
+                  ))}
+              </Flex>
+            </Box>
+          )}
+        </DialogBody>
 
-          <DialogFooter>
-            <DialogActionTrigger asChild>
-              <Button variant="outline">닫기</Button>
-            </DialogActionTrigger>
-            <DialogActionTrigger>
-              <Button onClick={handleSubmit}>적용</Button>
-            </DialogActionTrigger>
-          </DialogFooter>
-        </DialogContent>
-      </DialogRoot>
+        <DialogFooter>
+        <DialogActionTrigger asChild>
+            <Button colorPalette="orange" onClick={handleSubmit}>적용</Button>
+          </DialogActionTrigger>
+          <DialogActionTrigger asChild>
+            <Button variant="outline">닫기</Button>
+          </DialogActionTrigger>
+        </DialogFooter>
+      </DialogContent>
+
+    </DialogRoot>
   );
 };
 

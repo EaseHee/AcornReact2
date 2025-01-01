@@ -21,12 +21,12 @@ const DuplicatedNickname = ({ nickname, setIsNicknameAvailable }) => {
   const handleCheckNickname = async () => {
     try {
       console.log(nickname);
-      const response = await axios.get("http://localhost:8080/members/check-nickname", {
+      const response = await axios.get("http://localhost:8080/main/mypage/members/check-nickname", {
         withCredentials: true,
         params: { nickname }, 
       });
       if (response.status === 200) {
-        setMessage("사용 가능한 닉네임입니다..");
+        setMessage("사용 가능한 닉네임입니다.");
         setIsSuccess(true);
         setIsNicknameAvailable(true);
       }

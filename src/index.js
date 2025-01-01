@@ -12,15 +12,13 @@ import { ThemeProvider } from "next-themes";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <BrowserRouter>
-        <ThemeProvider attribute="class">
-            <Provider store={store}>
-                <ChakraProvider>
-                    <React.StrictMode>
-                        <App/>
-                    </React.StrictMode>
-                </ChakraProvider>
-            </Provider>
-        </ThemeProvider>
+        <Provider store={store}>
+            <ChakraProvider>
+                <React.StrictMode>
+                    <App/>
+                </React.StrictMode>
+            </ChakraProvider>
+        </Provider>
     </BrowserRouter>
 );
 

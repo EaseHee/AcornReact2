@@ -20,8 +20,7 @@ function _optionalChain(ops) {
     }
   }
   return value
-}
-;
+};
 
 
 export const NativeSelectRoot = React.forwardRef(
