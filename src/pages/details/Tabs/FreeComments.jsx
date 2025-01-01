@@ -13,7 +13,6 @@ import {
   AccordionItemContent,
 } from '@chakra-ui/react';
 import MySpinner from '../../../components/Spinner';
-import LikeButton from './LikeButton';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
