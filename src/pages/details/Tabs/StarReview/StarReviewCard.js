@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import MySpinner from "../../../../components/Spinner.js";
-import { Card } from "@chakra-ui/react"
+import { Box, Card } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
 const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
   const [reviews, setReviews] = useState([]);
@@ -92,10 +92,12 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
         {sortedReviews.map((review, index) => (
           <Card.Root maxW="svw" overflow="hidden" key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
           <Card.Body gap="3">
-            <Card.Title></Card.Title>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Card.Title alignSelf="flex-start">{review.reviewMembersDto.name} 님</Card.Title>
+            <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
+            </Box>
             <Card.Description>
-              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
-              {review.reviewMembersDto.name}<br></br><br></br>
+              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br><br></br>
               {review.content}
             </Card.Description>
           </Card.Body>

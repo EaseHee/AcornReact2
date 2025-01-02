@@ -103,10 +103,13 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
             <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()} />
             </Box>
             </Box>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
             <Card.Description>
               {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
               {nickname}
             </Card.Description>
+            <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
+            </Box>
             <br></br>
             {review.content}
           </Card.Body>
