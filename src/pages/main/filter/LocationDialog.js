@@ -63,7 +63,7 @@ const LocationDialog = () => {
         <DialogRoot>
             <DialogTrigger asChild>
                 <Button variant="outline">
-                    <FaMapMarkerAlt />
+                    <FaMapMarkerAlt style={{ color: '#FF4500' }} />
                     {locationFilter.group || "지역 선택"}
                     {locationFilter.locations && ` > ${locationFilter.locations}`}
                 </Button>

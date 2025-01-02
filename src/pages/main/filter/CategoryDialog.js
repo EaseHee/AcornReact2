@@ -68,7 +68,7 @@ const CategoryDialog = () => {
         <DialogRoot>
             <DialogTrigger asChild>
                 <Button variant="outline">
-                    <MdOutlineRestaurantMenu />
+                    <MdOutlineRestaurantMenu style={{ color: '#FF4500' }} />
                     {category.group?.name || "카테고리 선택"}
                     {category.categories?.name && ` > ${category.categories.name}`}
                 </Button>
