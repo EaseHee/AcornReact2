@@ -110,7 +110,7 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
           <Button colorPalette="orange" onClick={handleSubmit} >{confirmBtnText}</Button>
           </DialogActionTrigger>
           <DialogActionTrigger asChild>
-            <Button variant="outline">{closeBtnText}</Button>
+            <Button colorPalette="orange">{closeBtnText}</Button>
           </DialogActionTrigger>
         </DialogFooter>
         <DialogCloseTrigger />
