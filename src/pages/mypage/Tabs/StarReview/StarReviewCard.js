@@ -87,12 +87,9 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
         {sortedReviews.map((review, index) => (
           <Card.Root maxW="svw" overflow="hidden"  key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
           <Card.Body gap="3">
-            <Card.Title>{review.reviewEateriesDto.name}</Card.Title>
-            <Card.Description>
-              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
-              {nickname}
-            </Card.Description>
-            <Box alignSelf="end">
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Card.Title alignSelf="flex-start">{review.reviewEateriesDto.name}</Card.Title>
+            <Box display="flex" alignItems="center">
             <CustomDialog
               alignSelf="end"
               openBtnText="수정"
@@ -105,6 +102,11 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
             />
             <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()} />
             </Box>
+            </Box>
+            <Card.Description>
+              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
+              {nickname}
+            </Card.Description>
             <br></br>
             {review.content}
           </Card.Body>
