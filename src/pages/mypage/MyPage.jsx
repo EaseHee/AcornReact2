@@ -7,7 +7,7 @@ const MyPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [nickname, setNickname] = useState("");
-  const [memberNo, setMemberNo] = useState(null); // memberNo 상태 관리
+  const [memberNo, setMemberNo] = useState(0); // memberNo 상태 관리
   const isLoggedIn = useSelector(state=>state.auth.isLoggedIn);
   useEffect(() => {
     if(isLoggedIn){
