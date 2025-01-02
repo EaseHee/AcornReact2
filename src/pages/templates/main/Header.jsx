@@ -46,13 +46,13 @@ const Header = () => {
     try {
       const response = await axios.post("/auth/logout");
       if (response.status === 200) {
-        alert("로그아웃 성공");
+        //alert("로그아웃 성공");
         dispatch(logout()); // 로그아웃
         navigate("/login");
       }
     } catch (error) {
       console.error("로그아웃 에러 : ", error);
-      alert("로그아웃 에러");
+      //alert("로그아웃 에러");
     }
   };
 
@@ -106,16 +106,6 @@ const Header = () => {
       <Box>
         <Logo />
       </Box>
-
-      {/* 메뉴 */}
-      <HStack
-        as="nav"
-        spacing={8}
-        flexWrap="nowrap"
-        justify="space-between"
-      >
-        {renderMenuItems()}
-      </HStack>
 
       {/* 로그인/로그아웃 버튼 + 닉네임 + 테마 토글 */}
       <Flex align="center" gap={4}>

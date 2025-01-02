@@ -207,7 +207,7 @@ const FreeComments = ({ eateryNo }) => {
         />
         {memberNo !== 0 && (
           <Flex justify='end'>
-            <Button size='sm' colorScheme='blue' onClick={handleNewCommentSubmit}>
+            <Button size='sm' colorPalette="orange" onClick={handleNewCommentSubmit}>
               작성
             </Button>
           </Flex>
@@ -256,10 +256,10 @@ const FreeComments = ({ eateryNo }) => {
                       rows={4}
                     />
                     <Flex justify='end' mt={2}>
-                      <Button size='sm' colorScheme='blue' onClick={handleSaveClick} mr={2}>
+                      <Button size='sm' colorPalette="orange" onClick={handleSaveClick} mr={2}>
                         저장
                       </Button>
-                      <Button size='sm' colorScheme='gray' onClick={handleCancelClick}>
+                      <Button size='sm' onClick={handleCancelClick}>
                         취소
                       </Button>
                     </Flex>
@@ -276,7 +276,7 @@ const FreeComments = ({ eateryNo }) => {
                     {memberNo !== 0 && (
                       <Flex align='center'>
                         {/* 좋아요 아이콘 위치 */}
-                        <Button size='sm' mx={2} onClick={() => handleReplyClick(comment)}>
+                        <Button colorPalette="orange" size='sm' mx={2} onClick={() => handleReplyClick(comment)}>
                           대댓글 달기
                         </Button>
                       </Flex>
@@ -284,10 +284,10 @@ const FreeComments = ({ eateryNo }) => {
 
                     {memberNo === comment.memberNo && !comment.deleted && (
                       <Box>
-                        <Button size='sm' mr={2} onClick={() => handleEditClick(comment)}>
+                        <Button colorPalette="orange" size='sm' mr={2} onClick={() => handleEditClick(comment)}>
                           수정
                         </Button>
-                        <Button size='sm' colorScheme='red' onClick={() => handleCommentDelete(comment.no)}>
+                        <Button colorPalette="orange" size='sm' colorScheme='red' onClick={() => handleCommentDelete(comment.no)}>
                           삭제
                         </Button>
                       </Box>
@@ -308,10 +308,10 @@ const FreeComments = ({ eateryNo }) => {
                       rows={4}
                     />
                     <Flex justify='end'>
-                      <Button size='sm' colorScheme='blue' onClick={() => handleReplySubmit(comment.no)} mr={2}>
+                      <Button colorPalette="orange" size='sm' colorScheme='blue' onClick={() => handleReplySubmit(comment.no)} mr={2}>
                         작성
                       </Button>
-                      <Button size='sm' colorScheme='gray' onClick={() => setReplyingToComment(null)}>
+                      <Button size='sm' variant="outline" onClick={() => setReplyingToComment(null)}>
                         취소
                       </Button>
                     </Flex>
@@ -343,11 +343,11 @@ const FreeComments = ({ eateryNo }) => {
                               </Text>
                               <Flex direction='row' align='center'>
                                 {childComment.updatedAt === childComment.createdAt ? null : (
-                                  <Text fontSize='xx-small' color='black' ml={2}>
+                                  <Text fontSize='sm' color='black' ml={2}>
                                     (수정일: {new Date(childComment.updatedAt).toLocaleString()})
                                   </Text>
                                 )}
-                                <Text fontSize='xx-small' color='black' ml={2}>
+                                <Text fontSize='sm' color='black' ml={2}>
                                   작성일: {new Date(childComment.createdAt).toLocaleString()}
                                 </Text>
                               </Flex>
@@ -365,13 +365,13 @@ const FreeComments = ({ eateryNo }) => {
                                 <Flex justify='end' mt={2}>
                                   <Button
                                     size='sm'
-                                    colorScheme='blue'
+                                    colorPalette="orange"
                                     onClick={() => updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })}
                                     mr={2}
                                   >
                                     저장
                                   </Button>
-                                  <Button size='sm' colorScheme='gray' onClick={() => setEditingReply(null)}>
+                                  <Button size='sm' variant="outline" onClick={() => setEditingReply(null)}>
                                     취소
                                   </Button>
                                 </Flex>
@@ -385,10 +385,10 @@ const FreeComments = ({ eateryNo }) => {
                             {/* 대댓글 수정 삭제 버튼 */}
                             {editingReply !== childComment.no && memberNo === childComment.memberNo && (
                               <Flex justify='end'>
-                                <Button size='sm' mr={2} onClick={() => handleReplyEditClick(childComment)}>
+                                <Button colorPalette="orange" size='sm' mr={2} onClick={() => handleReplyEditClick(childComment)}>
                                   수정
                                 </Button>
-                                <Button size='sm' colorScheme='red' onClick={() => handleCommentDelete(childComment.no)}>
+                                <Button size='sm' colorPalette="orange" onClick={() => handleCommentDelete(childComment.no)}>
                                   삭제
                                 </Button>
                               </Flex>

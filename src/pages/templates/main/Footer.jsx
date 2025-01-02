@@ -15,9 +15,12 @@ const Footer = () => {
   const location = useLocation(); // 현재 경로 확인을 위한 훅
 
   // 메뉴 아이템 클릭 시 로그인 상태 체크
-  const handleMenuClick = (path) => {
+  const handleMenuClick = (e, path) => {
     if (path === "/mypage" && !isLoggedIn) {
+      e.preventDefault(); // 기본 이동 방지
       navigate("/login"); // 로그인되지 않은 경우 로그인 페이지로 리디렉션
+    } else {
+      navigate(path); // 다른 경로는 그대로 이동
     }
   };
 
@@ -46,7 +49,8 @@ const Footer = () => {
             key={index}
             textDecoration="none"
             _hover={{ color: "orange.500" }}
-            onClick={() => handleMenuClick(item.path)}
+            onClick={(e) => handleMenuClick(e, item.path)}
+            style={{ textDecoration: "none" }}
           >
             <Flex
               direction="column"

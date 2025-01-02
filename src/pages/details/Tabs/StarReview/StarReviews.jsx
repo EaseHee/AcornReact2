@@ -35,7 +35,7 @@ export default function StarReviews({no}) {
             <Button onClick={() => handleSortChange("rating")} variant={sortBy === "rating" ? "subtle" : "outline"}>추천순</Button>
           </Box>
           <CustomDialog
-            openBtnText="리뷰 쓰기"
+            openBtnText="리뷰 작성"
             title={nickName}
             memberNo={memberNo}
             eateryNo={no}

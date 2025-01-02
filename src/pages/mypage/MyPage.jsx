@@ -53,8 +53,8 @@ const MyPage = () => {
   
   return (
     <Box>
-        <Text fontSize="2xl" fontWeight="bold">
-          {nickname} 님 환영합니다!
+        <Text fontSize="2xl" fontWeight="bold" ml={4}>
+          {nickname}
         </Text>
       <MyTabs memberNo={memberNo} nickname={nickname}>
       </MyTabs>
