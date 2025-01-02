@@ -1,28 +1,129 @@
-import { Button, Card, Image, Text } from "@chakra-ui/react"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { MdCategory } from "react-icons/md";
 
-const Maincard = () => {
+import {Box, Card, Flex, Image, Text} from "@chakra-ui/react";
+
+import axios from "utils/axios";
+import {RiBookmarkLine} from "react-icons/ri";
+import {AiOutlineEye} from "react-icons/ai";
+
+const MainCard = ({ data }) => {
+  // 서버에 음식점 상세 정보 요청
+  const [eatery, setEatery] = useState(data);
+
+  useEffect(() => {
+    const fetchAdditionalData = async () => {
+      try {
+        // 즐겨찾기 개수 가져오기
+        const favoriteCount = await axios
+            .get(`/main/eateries/${data.no}/favorites/count`)
+            .then((res) => res.data);
+
+        setEatery((prev) => ({
+          ...prev,
+          favoriteCount,
+        }));
+      } catch (error) {
+        console.error("추가 데이터 가져오기 오류:", error);
+      }
+    };
+
+    fetchAdditionalData();
+  }, [data.no]);
+
+  const navigate = useNavigate();
+
+  // 상세 페이지로 이동 및 조회수 업데이트
+  const handleCardClick = async () => {
+    try {
+      await axios.put(`/main/eateries/${data.no}/view/counts`, {
+        params: { no: data.no },
+      });
+
+      // 로컬 상태에서 조회수 증가
+      setEatery((prev) => ({
+        ...prev,
+        viewCount: prev.viewCount + 1,
+      }));
+
+      // 상세 페이지로 이동
+      navigate(`/detail/${eatery.no}`);
+    } catch (error) {
+      console.error("조회수 업데이트 실패:", error);
+    }
+  };
+
   return (
-    <Card.Root maxW="sm" overflow="hidden">
-      <Image
-        src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-        alt="Green double couch with wooden legs"
-      />
-      <Card.Body gap="2">
-        <Card.Title>Living room Sofa</Card.Title>
-        <Card.Description>
-          This sofa is perfect for modern tropical spaces, baroque inspired
-          spaces.
-        </Card.Description>
-        <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-          $450
-        </Text>
-      </Card.Body>
-      <Card.Footer>
-        <Button variant="solid">Buy now</Button>
-        <Button variant="ghost">Add to cart</Button>
-      </Card.Footer>
-    </Card.Root>
-  )
-}
+      <Card.Root
+          maxW="sm"
+          overflow="hidden"
+          onClick={handleCardClick}
+          style={{ cursor: "pointer" }}
+      >
+        <Flex
+            height="150px"
+            borderRadius="md"
+            overflow="hidden"
+            boxShadow="md"
+            bg="gray.100"
+        >
+          {/* 이미지 출력 영역 (좌) */}
+          <Box flex="3" overflow="hidden">
+                <Image
+                    src={`http://localhost:8080/proxy/image?url=${encodeURIComponent(eatery?.thumbnail)}`}
+                    height="100%"
+                    width="100%"
+                    objectFit="cover"
+                    alt="음식점 이미지"
+                />
+          </Box>
 
-export default Maincard;
+          {/* 정보 출력 영역 (우) */}
+          <Box
+              flex="2"
+              p="4"
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              textAlign="start"
+              position="relative"
+          >
+            {/* 음식점 이름 */}
+            <Text
+                fontWeight="bold"
+                fontSize="md"
+                mb="auto" // 이름은 위로 밀림
+            >
+              {eatery.name || "음식점 이름 없음"}
+            </Text>
+
+            {/* 하단 정보 영역 */}
+            <Box mt="auto" pt="2">
+              {/* 카테고리 정보 */}
+              <Text fontSize="sm" color="gray.500" mb="1">
+                {eatery.categoryDto?.categoryGroupsDto?.name
+                    ? eatery.categoryDto?.categoryGroupsDto?.name + " > " + eatery.categoryDto.name
+                    : eatery.categoryDto?.categoryGroupsDto?.name
+                }
+                {/*{eatery.categoryDto.name || "카테고리 정보 없음"}*/}
+              </Text>
+
+              {/* 조회수 */}
+              <Flex align="center" gap="2" fontSize="sm" color="gray.600" mb="1">
+                <AiOutlineEye />
+                <Text>{eatery.viewCount || 0}</Text>
+              </Flex>
+
+              {/* 즐겨찾기 */}
+              <Flex align="center" gap="2" fontSize="sm" color="gray.600">
+                <RiBookmarkLine />
+                <Text>{eatery.favoriteCount || 0}</Text>
+              </Flex>
+            </Box>
+          </Box>
+        </Flex>
+      </Card.Root>
+  );
+};
+export default MainCard;

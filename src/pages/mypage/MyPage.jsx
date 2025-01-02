@@ -1,114 +1,47 @@
-import { Tabs, Box, VStack, Text, Link, Button } from "@chakra-ui/react";
-import { CgProfile } from "react-icons/cg";
-import { MdOutlineReviews } from "react-icons/md";
-import { RiBookMarkedLine } from "react-icons/ri";
-import MyBookmark from "./MyBookmark";
-import MyReview from "./MyReview";
-import ProfileForm from "./ProfileForm";
-
+import { Box, Text } from "@chakra-ui/react";
+import React, { useEffect, useState } from 'react';
+import MyTabs from './MyTabs'
+import axios from "axios";
+import { useSelector } from "react-redux";
 const MyPage = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [nickname, setNickname] = useState("");
+  const [memberNo, setMemberNo] = useState(0); // memberNo 상태 관리
+  const isLoggedIn = useSelector(state=>state.auth.isLoggedIn);
+  useEffect(() => {
+    if(isLoggedIn){
+      const fetchNickname = async () => {
+        try {
+          const response = await axios.get("http://localhost:8080/main/mypage/members/read", {
+            withCredentials: true, // 쿠키를 함께 전송하도록 설정
+          });
+          setNickname(response.data.nickname); // 응답에서 닉네임을 설정
+          setMemberNo(response.data.no);
+        } catch (err) {
+          setError("서버로부터 에러가 발생했습니다.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchNickname();
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) return <Box>로딩 중...</Box>;
+  if (error) return <Box>에러: {error}</Box>;
+  if (!isLoggedIn) return <Box p={4}>로그인이 필요한 서비스입니다.</Box>;
+  
+  
   return (
-    <>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        marginTop="10vh"
-        marginBottom="10vh"
-        paddingX="25vw"
-      >
-        <Text fontSize="2xl" fontWeight="bold">
-          회원명
+    <Box>
+        <Text fontSize="2xl" fontWeight="bold" ml={4}>
+          {nickname}
         </Text>
-        {/* <Button variant="link" fontSize="sm" p={0} minW="unset" color="orange.500" fontWeight="bold">
-          프로필 수정
-        </Button> */}
-      </Box>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="flex-start"
-        height="100vh"
-        paddingX="20vw"
-      >
-        <VStack spacing="6" width="100%">
-          <Tabs.Root defaultValue="bookmarks" width="100%">
-            <Tabs.List
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              padding="4"
-              rounded="md"
-            >
-              <Tabs.Trigger
-                value="bookmarks"
-                fontSize="lg"
-                p="4"
-                mx="10"
-                display="flex"
-                alignItems="center"
-              >
-                <RiBookMarkedLine style={{ marginRight: "8px" }} />
-                즐겨찾기
-              </Tabs.Trigger>
-              <Tabs.Trigger
-                value="reviews"
-                fontSize="lg"
-                p="4"
-                mx="10"
-                display="flex"
-                alignItems="center"
-              >
-                <MdOutlineReviews style={{ marginRight: "8px" }} />
-                리뷰
-              </Tabs.Trigger>
-              <Tabs.Trigger
-                value="profile"
-                fontSize="lg"
-                p="4"
-                mx="10"
-                display="flex"
-                alignItems="center"
-              >
-                <CgProfile style={{ marginRight: "8px" }} />
-                프로필 수정
-              </Tabs.Trigger>
-            </Tabs.List>
-            <Box
-              bg="white"
-              p="6"
-              rounded="md"
-              mt="4"
-              shadow="md"
-              textAlign="center"
-              minHeight="200px"
-            >
-              <Tabs.Content value="bookmarks">
-                <Box textAlign="left">
-                  <MyBookmark />
-                </Box>
-              </Tabs.Content>
-              <Tabs.Content value="reviews">
-                <Box
-                  display="flex"
-                  justifyContent="flex-start"
-                  width="100%"
-                  minHeight="200px"
-                  ml="10"
-                >
-                  <MyReview />
-                </Box>
-              </Tabs.Content>
-              <Tabs.Content value="profile">
-                <Box textAlign="left">
-                  <ProfileForm />
-                </Box>
-              </Tabs.Content>
-            </Box>
-          </Tabs.Root>
-        </VStack>
-      </Box>
-    </>
+      <MyTabs memberNo={memberNo} nickname={nickname}>
+      </MyTabs>
+    </Box>
   );
 };
 
