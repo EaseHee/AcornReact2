@@ -11,7 +11,6 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const [page, setPage] = useState(1); // 현재 페이지 번호
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 여부
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
-
   // 서버에서 리뷰 데이터를 가져오는 함수
   const fetchReviews = async (currentPage) => {
     setIsLoading(true); // 로딩 시작
@@ -62,6 +61,12 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
     const emptyStar = '☆';
     return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
   };
+  const refreshReviews = async () => {
+    setReviews([]); // 기존 데이터 초기화
+    setPage(1);     // 첫 페이지로 초기화
+    setHasMore(true); // 추가 데이터 로드 가능 상태로 초기화
+    await fetchReviews(1); // 첫 페이지 데이터 다시 로드
+  };
   return (
     <div
       id="scrollableDiv"
@@ -91,7 +96,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
             </Card.Description>
           </Card.Body>
               <Box alignSelf="end">
-                <DeleteDialog reviewNo={review.no}/>
+                <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()}/>
                 <CustomDialog
                   openBtnText="리뷰 수정"
                   title={nickname}
@@ -99,6 +104,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
                   memberNo={memberNo}
                   confirmBtnText="수정"
                   closeBtnText="취소"
+                  onReviewSubmitted={() => refreshReviews()}
                 />
               </Box>
           <Card.Footer>

@@ -4,7 +4,7 @@ import axios from "axios";
 import MySpinner from "../../../../components/Spinner.js";
 import { Card } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
-const StarReviewCard = ({eateryNo, sortBy}) => {
+const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(1); // 현재 페이지 번호
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 여부
@@ -50,7 +50,8 @@ const StarReviewCard = ({eateryNo, sortBy}) => {
   // 초기 데이터 로드
   useEffect(() => {
     fetchReviews(page);
-  }, [page]);
+    passRefresh(refreshReviews); // 부모에 refreshReviews 전달
+  }, [page,passRefresh]);
 
   // 다음 페이지를 로드하는 함수
   const loadMore = () => {
@@ -63,6 +64,12 @@ const StarReviewCard = ({eateryNo, sortBy}) => {
     const fullStar = '★';
     const emptyStar = '☆';
     return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
+  };
+  const refreshReviews = async () => {
+    setReviews([]); // 기존 데이터 초기화
+    setPage(1);     // 첫 페이지로 초기화
+    setHasMore(true); // 추가 데이터 로드 가능 상태로 초기화
+    await fetchReviews(1); // 첫 페이지 데이터 다시 로드
   };
   return (
     <div

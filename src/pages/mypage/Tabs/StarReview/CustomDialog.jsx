@@ -15,7 +15,7 @@ import { NativeSelectField, NativeSelectRoot } from "../../../../components/ui/n
 import { Field } from "../../../../components/ui/field";
 import { Toaster, toaster } from "../../../../components/ui/toaster";
 import axios from 'axios';
-export default function CustomDialog({ openBtnText, title, memberNo, review, confirmBtnText, closeBtnText, onClose }) {
+export default function CustomDialog({ onReviewSubmitted, openBtnText, title, memberNo, review, confirmBtnText, closeBtnText, onClose }) {
   const [formData, setFormData] = useState({ rating: "", content: "" });
   const [files, setFiles] = useState([]);
   const handleInputChange = (e) => {
@@ -52,8 +52,8 @@ export default function CustomDialog({ openBtnText, title, memberNo, review, con
         type: "success",
       })
       setTimeout(() => {
-        window.location.reload();        
-      }, 1500);
+        onReviewSubmitted();        
+      }, 700);
     } catch (error) {
       toaster.create({
         description: "리뷰 수정 실패!",

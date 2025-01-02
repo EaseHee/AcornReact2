@@ -16,7 +16,7 @@ import { Field } from "../../../../components/ui/field"
 import { Toaster, toaster } from "../../../../components/ui/toaster"
 import axios from 'axios';
 
-export default function CustomDialog({ openBtnText, title, memberNo, eateryNo, confirmBtnText, closeBtnText }) {
+export default function CustomDialog({ onReviewSubmitted, openBtnText, title, memberNo, eateryNo, confirmBtnText, closeBtnText }) {
   const [formData, setFormData] = useState({ rating: "", content: "" });
   const [files, setFiles] = useState([]);
 
@@ -52,9 +52,7 @@ export default function CustomDialog({ openBtnText, title, memberNo, eateryNo, c
         description: "리뷰 등록 성공!",
         type: "success",
       })
-      setTimeout(() => {
-        window.location.reload();        
-      }, 1500);
+      onReviewSubmitted();
     } catch (error) {
       toaster.create({
         description: "리뷰 등록 실패!",

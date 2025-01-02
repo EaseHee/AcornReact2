@@ -1,5 +1,5 @@
 import { Box, Button, Card, HStack } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import StarReviewCard from './StarReviewCard';
 import CustomDialog from './CustomDialog';
 import axios from 'axios';
@@ -10,6 +10,7 @@ export default function StarReviews({no}) {
   };
   const [memberNo, setMemberNo] = useState(0); // 상태로 관리
   const [nickName, setNickName] = useState(""); // 상태로 관리
+  const refreshReviews = useRef();
   useEffect(()=>{
     const fetchMemberNo = async () => {
       try {
@@ -40,11 +41,12 @@ export default function StarReviews({no}) {
             eateryNo={no}
             confirmBtnText="등록"
             closeBtnText="취소"
+            onReviewSubmitted={() => refreshReviews.current()}
           />
         </HStack>
       </Card.Header>
       <Card.Body>
-        <StarReviewCard eateryNo={no} sortBy={sortBy} />
+        <StarReviewCard eateryNo={no} sortBy={sortBy} passRefresh={(fn) => (refreshReviews.current = fn)}/>
       </Card.Body>
     </Card.Root>
   );
