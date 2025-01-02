@@ -33,7 +33,7 @@ const MyTabs = ({ memberNo, nickname }) => {
           
         </Tabs.Content>
 
-        <Tabs.Content value="info">
+        <Tabs.Content value="info">          
           {/* 내 정보 */}
           <ProfileForm />
         </Tabs.Content>

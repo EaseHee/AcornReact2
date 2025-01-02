@@ -5,8 +5,9 @@ import axios from "axios";
 const MyPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [nickname, setNickname] = useState(""); // 닉네임 상태 관리
+  const [nickname, setNickname] = useState("");
   const [memberNo, setMemberNo] = useState(null); // memberNo 상태 관리
+  
   useEffect(() => {
     const fetchNickname = async () => {
       try {
