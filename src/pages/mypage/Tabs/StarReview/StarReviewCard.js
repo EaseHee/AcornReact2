@@ -31,7 +31,6 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
       setHasMore(pageInfo.number < pageInfo.totalPages);
       setIsLoading(false); // 로딩 완료
     } catch (error) {
-      console.error("Failed to fetch reviews:", error);
       setIsLoading(false); // 오류 발생 시 로딩 상태 해제
     }
   };
@@ -86,34 +85,30 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
         endMessage={<p style={{ textAlign: "center" }}>모든 리뷰를 로드했습니다.</p>}
       >
         {sortedReviews.map((review, index) => (
-          <Card.Root maxW="svw" overflow="hidden" key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
+          <Card.Root maxW="svw" overflow="hidden"  key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
           <Card.Body gap="3">
             <Card.Title></Card.Title>
             <Card.Description>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}
-                </div>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <CustomDialog
-                    openBtnText="수정"
-                    title={nickname}
-                    review={review}
-                    memberNo={memberNo}
-                    confirmBtnText="수정"
-                    closeBtnText="취소"
-                    onReviewSubmitted={() => refreshReviews()}
-                  />
-                  <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()} />
-                </div>
-              </div>
-              {review.reviewMembersDto.name}
-              <br />
-              <br />
-              {review.content}
+              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
+              {nickname}
             </Card.Description>
+            <Box alignSelf="end">
+            <CustomDialog
+              alignSelf="end"
+              openBtnText="수정"
+              title={nickname}
+              review={review}
+              memberNo={memberNo}
+              confirmBtnText="수정"
+              closeBtnText="취소"
+              onReviewSubmitted={() => refreshReviews()}
+            />
+            <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()} />
+            </Box>
+            <br></br>
+            {review.content}
           </Card.Body>
-          <Card.Footer>
+          <Card.Footer w="80%" alignSelf="center">
             {review.reviewImagesResponseDto.length>0 ?<Swiper ImgInfo={review.reviewImagesResponseDto}/>:null} 
           </Card.Footer>
         </Card.Root>

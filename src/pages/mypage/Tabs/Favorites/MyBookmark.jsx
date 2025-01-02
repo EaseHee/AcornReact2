@@ -27,8 +27,6 @@ const MyBookmark = () => {
         const bookmarksResponse = await axios.get(`http://localhost:8080/main/mypage/favorites`, {
           withCredentials: true,
         });
-
-        console.log("받아온 데이터:", bookmarksResponse.data); // 데이터 확인
         setBookmarks(Array.isArray(bookmarksResponse.data) ? bookmarksResponse.data : []);
         
         // setBookmarks(bookmarksResponse.data);
