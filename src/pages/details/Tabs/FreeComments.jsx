@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   AccordionItemContent,
 } from '@chakra-ui/react';
 import MySpinner from '../../../components/Spinner';
+import { BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
@@ -50,6 +51,32 @@ const updateComment = async ({ commentNo, content }) => {
     return response.data;
   } catch (err) {
     console.error(err.message);
+  }
+};
+
+const fetchLikes = async ({ eateryNo, memberNo }) => {
+  const response = await axios.get('http://localhost:8080/main/eateries/comments/likes', {
+    params: { eateryNo, memberNo },
+  });
+  return response.data;
+};
+
+// 좋아요 누르기 API 요청
+const likeComment = async ({ memberNo, commentNo }) => {
+  const response = await axios.post('http://localhost:8080/main/eateries/comments/likes', {
+    memberNo,
+    commentNo,
+  });
+  return response.data;
+};
+
+// 좋아요 삭제 API 요청
+const unlikeComment = async (likeNo) => {
+  try {
+    const response = await axios.delete(`http://localhost:8080/main/eateries/comments/likes/${likeNo}`);
+    return response.data;
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -94,6 +121,8 @@ const FreeComments = ({ eateryNo }) => {
   const [replyingToComment, setReplyingToComment] = useState(null); // 대댓글 작성 중인 댓글 추적
   const [newCommentContent, setNewCommentContent] = useState(''); // 새 댓글 내용 추적
   const [newReplyContent, setNewReplyContent] = useState(''); // 대댓글 입력 상태
+  const [likedComments, setLikedComments] = useState([]); // 좋아요를 누른 댓글 추적
+
 
   const observerRef = useRef();
   const queryClient = useQueryClient(); // 댓글 업데이트 후 데이터를 새로고침하기 위한 React Query Client
@@ -124,6 +153,34 @@ const FreeComments = ({ eateryNo }) => {
       setEditedContent('');
       setEditingReply(null);
       setEditedReplyContent('');
+    },
+  });
+
+  // 댓글 좋아요 정보 조회
+  const { data: likeData } = useQuery(['likes', eateryNo, memberNo], () => fetchLikes({ eateryNo, memberNo }), {
+    onSuccess: (data) => {
+      // 좋아요 데이터가 있을 때만 setLikedComments 실행
+      if (data && Array.isArray(data)) {
+        setLikedComments(data.map((like) => like.commentNo)); // 좋아요를 누른 댓글 ID들
+      }
+    },
+  });
+
+  // 좋아요 누르기
+  const { mutate: likeMutate } = useMutation(likeComment, {
+    onSuccess: (newLike) => {
+      setLikedComments((prev) => [...prev, newLike.commentNo]); // 새로 좋아요를 추가한 댓글 ID
+      queryClient.invalidateQueries(['likes', eateryNo, memberNo]);
+      queryClient.invalidateQueries(['comments', eateryNo]);
+    },
+  });
+
+  // 좋아요 삭제
+  const { mutate: unlikeMutate } = useMutation(unlikeComment, {
+    onSuccess: (likeNo) => {
+      setLikedComments((prev) => prev.filter((id) => id !== likeNo)); // 좋아요를 취소한 댓글 ID
+      queryClient.invalidateQueries(['likes', eateryNo, memberNo]);
+      queryClient.invalidateQueries(['comments', eateryNo]);
     },
   });
 
@@ -189,6 +246,20 @@ const FreeComments = ({ eateryNo }) => {
     }
   };
 
+  // 좋아요 누르기
+  const handleLikeClick = (commentNo) => {
+    if (likedComments.includes(commentNo)) {
+      // 좋아요 취소: 이미 좋아요가 눌려있으면 `likeNo`를 찾아서 삭제
+      const likeNo = likeData.find((like) => like.commentNo === commentNo)?.no;
+      if (likeNo) {
+        unlikeMutate(likeNo); // likeNo를 전달
+      }
+    } else {
+      // 좋아요 누르기
+      likeMutate({ eateryNo, memberNo, commentNo });
+    }
+  };
+
   if (isLoading) return <MySpinner />;
 
   return (
@@ -199,15 +270,15 @@ const FreeComments = ({ eateryNo }) => {
           value={newCommentContent}
           onChange={(e) => setNewCommentContent(e.target.value)}
           placeholder={memberNo === 0 ? '댓글을 작성하려면 로그인하세요' : '새 댓글을 작성하세요'}
-          size='sm'
-          rows='4'
-          mb='2'
-          color='black'
+          size="sm"
+          rows="4"
+          mb="2"
+          color="black"
           disabled={memberNo === 0}
         />
         {memberNo !== 0 && (
-          <Flex justify='end'>
-            <Button size='sm' colorPalette="orange" onClick={handleNewCommentSubmit}>
+          <Flex justify="end">
+            <Button size="sm" colorScheme="blue" onClick={handleNewCommentSubmit}>
               작성
             </Button>
           </Flex>
@@ -227,7 +298,7 @@ const FreeComments = ({ eateryNo }) => {
                 borderWidth='1px'
                 borderRadius='lg'
                 mb={4}
-                boxShadow='sm'
+                boxShadow="sm"
                 bg={comment.deleted ? 'gray.300' : 'white'}
               >
                 <Flex justify='space-between' mb={2}>
@@ -251,12 +322,12 @@ const FreeComments = ({ eateryNo }) => {
                     <Textarea
                       value={editedContent}
                       onChange={(e) => setEditedContent(e.target.value)}
-                      size='sm'
-                      color='black'
+                      size="sm"
+                      color="black"
                       rows={4}
                     />
-                    <Flex justify='end' mt={2}>
-                      <Button size='sm' colorPalette="orange" onClick={handleSaveClick} mr={2}>
+                    <Flex justify="end" mt={2}>
+                      <Button size="sm" colorScheme="blue" onClick={handleSaveClick} mr={2}>
                         저장
                       </Button>
                       <Button size='sm' onClick={handleCancelClick}>
@@ -272,11 +343,21 @@ const FreeComments = ({ eateryNo }) => {
 
                 {/* 댓글 버튼들 */}
                 {editingComment !== comment.no && (
-                  <Flex justify='end'>
+                  <Flex justify="end">
                     {memberNo !== 0 && (
-                      <Flex align='center'>
-                        {/* 좋아요 아이콘 위치 */}
-                        <Button colorPalette="orange" size='sm' mx={2} onClick={() => handleReplyClick(comment)}>
+                      <Flex align="center">
+                        {/* 좋아요 아이콘 */}
+                        {!comment.deleted && (
+                          <Flex justify="end" align="center">
+                            {likedComments.includes(comment.no) ? (
+                              <BsHandThumbsUpFill cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
+                            ) : (
+                              <BsHandThumbsUp cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
+                            )}
+                            <Text ml={2}>{comment.likeCount}</Text>
+                          </Flex>
+                        )}
+                        <Button size="sm" mx={2} onClick={() => handleReplyClick(comment)}>
                           대댓글 달기
                         </Button>
                       </Flex>
@@ -299,16 +380,16 @@ const FreeComments = ({ eateryNo }) => {
                 {replyingToComment === comment.no && (
                   <Box mt={2}>
                     <Textarea
-                      placeholder='대댓글을 작성하세요'
-                      size='sm'
+                      placeholder="대댓글을 작성하세요"
+                      size="sm"
                       mb={2}
-                      color='black'
+                      color="black"
                       value={newReplyContent}
                       onChange={(e) => setNewReplyContent(e.target.value)}
                       rows={4}
                     />
-                    <Flex justify='end'>
-                      <Button colorPalette="orange" size='sm' colorScheme='blue' onClick={() => handleReplySubmit(comment.no)} mr={2}>
+                    <Flex justify="end">
+                      <Button size="sm" colorScheme="blue" onClick={() => handleReplySubmit(comment.no)} mr={2}>
                         작성
                       </Button>
                       <Button size='sm' variant="outline" onClick={() => setReplyingToComment(null)}>
@@ -320,10 +401,10 @@ const FreeComments = ({ eateryNo }) => {
 
                 {/* 대댓글 보기 */}
                 {comment.childComments && comment.childComments.length > 0 && (
-                  <AccordionRoot collapsible variant='plain' defaultValue={['b']}>
+                  <AccordionRoot collapsible variant="plain" defaultValue={['b']}>
                     <AccordionItem>
-                      <AccordionItemTrigger cursor='pointer' w='fit-content'>
-                        <Button variant='outline'>{comment.childComments.length}개의 대댓글</Button>
+                      <AccordionItemTrigger cursor="pointer" w="fit-content">
+                        <Button variant="outline">{comment.childComments.length}개의 대댓글</Button>
                       </AccordionItemTrigger>
                       <AccordionItemContent>
                         {comment.childComments.map((childComment) => (
@@ -334,8 +415,8 @@ const FreeComments = ({ eateryNo }) => {
                             borderRadius='lg'
                             mb={4}
                             ml={6}
-                            boxShadow='sm'
-                            bg='white'
+                            boxShadow="sm"
+                            bg="white"
                           >
                             <Flex justify='space-between' mb={2}>
                               <Text fontSize='sm' fontWeight='bold' color='black'>
@@ -358,14 +439,14 @@ const FreeComments = ({ eateryNo }) => {
                                 <Textarea
                                   value={editedReplyContent}
                                   onChange={(e) => setEditedReplyContent(e.target.value)}
-                                  size='sm'
-                                  color='black'
+                                  size="sm"
+                                  color="black"
                                   rows={4}
                                 />
-                                <Flex justify='end' mt={2}>
+                                <Flex justify="end" mt={2}>
                                   <Button
-                                    size='sm'
-                                    colorPalette="orange"
+                                    size="sm"
+                                    colorScheme="blue"
                                     onClick={() => updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })}
                                     mr={2}
                                   >
@@ -383,14 +464,57 @@ const FreeComments = ({ eateryNo }) => {
                             )}
 
                             {/* 대댓글 수정 삭제 버튼 */}
-                            {editingReply !== childComment.no && memberNo === childComment.memberNo && (
-                              <Flex justify='end'>
-                                <Button colorPalette="orange" size='sm' mr={2} onClick={() => handleReplyEditClick(childComment)}>
-                                  수정
-                                </Button>
-                                <Button size='sm' colorPalette="orange" onClick={() => handleCommentDelete(childComment.no)}>
-                                  삭제
-                                </Button>
+                            {editingReply !== childComment.no && (
+                              <Flex justify="end">
+                                {memberNo === 0 ? (
+                                  // 회원 로그인을 하지 않은 경우
+                                  <Flex justify="end" align="center">
+                                    <BsHandThumbsUp size={25} />
+                                    <Text ml={2}>{comment.likeCount}</Text>
+                                  </Flex>
+                                ) : memberNo === childComment.memberNo ? (
+                                  // 회원 로그인을 했고, 작성자인 경우
+                                  <Flex justify="end" align="center">
+                                    {likedComments.includes(childComment.no) ? (
+                                      <BsHandThumbsUpFill
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    ) : (
+                                      <BsHandThumbsUp
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    )}
+                                    <Text ml={2}>{childComment.likeCount}</Text>
+                                    <Button size="sm" mr={2} onClick={() => handleReplyEditClick(childComment)}>
+                                      수정
+                                    </Button>
+                                    <Button size="sm" colorScheme="red" onClick={() => handleCommentDelete(childComment.no)}>
+                                      삭제
+                                    </Button>
+                                  </Flex>
+                                ) : (
+                                  // 회원 로그인을 했고, 작성자가 아닌 경우
+                                  <Flex justify="end" align="center">
+                                    {likedComments.includes(childComment.no) ? (
+                                      <BsHandThumbsUpFill
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    ) : (
+                                      <BsHandThumbsUp
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    )}
+                                    <Text ml={2}>{childComment.likeCount}</Text>
+                                  </Flex>
+                                )}
                               </Flex>
                             )}
                           </Box>
