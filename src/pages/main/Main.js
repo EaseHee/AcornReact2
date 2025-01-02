@@ -126,7 +126,7 @@ export default function Main() {
           >
               <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
                   {eateries.map((eatery, index) => (
-                      <Box key={index} w="30%" borderRadius="md">
+                      <Box key={index} w={{ base: "100%", sm: "48%", md: "30%", lg: "30%" }} borderRadius="md" >
                           <Maincard no={eatery.no} />
                       </Box>
                   ))}

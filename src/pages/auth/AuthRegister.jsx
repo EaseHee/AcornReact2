@@ -92,7 +92,9 @@ const AuthRegister = () => {
           width="full"
         >
           <Stack gap="1" align="flex-start" maxW="lg" width="full">
-            <Logo></Logo>
+            <Box>
+              <Logo />
+            </Box>
             <Box
               display="flex"
               alignItems="center"

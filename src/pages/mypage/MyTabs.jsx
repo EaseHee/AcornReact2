@@ -31,7 +31,7 @@ const MyTabs = ({ memberNo, nickname }) => {
           {/* 자유 댓글 */}
           
         </Tabs.Content>
-        <Tabs.Content value="blog">          
+        <Tabs.Content value="info">          
           {/* 내 정보 */}
           <ProfileForm />
         </Tabs.Content>

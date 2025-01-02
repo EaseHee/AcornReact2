@@ -1,4 +1,4 @@
-﻿import { Link, useLocation } from "react-router-dom";
+﻿import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FaSun, FaMoon } from "react-icons/fa6"; // 다크/라이트 모드 아이콘
 
@@ -10,23 +10,51 @@ import { Box, Button, Flex, HStack, Text } from "@chakra-ui/react";
 import { menuItems } from "../../sidebar/Sidebar";
 import { logout } from "../../../redux/slices/authSlice";
 import Logo from "../../../components/Logo";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   // 사용자의 로그인 상태를 redux에 저장하여 useSelector와 useDispatch 훅을 이용해서 전역적으로 관리
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [nickname, setNickname] = useState("");
 
-    const handleLogout = async () => {
-        try {
-            const response = await axios.post("/auth/logout");
-            if (response.status === 200) {
-                dispatch(logout()); // 로그아웃
-            }
-        } catch (error) {
-            console.error("로그아웃 에러 : ", error);
-            alert("로그아웃 에러");
-        }
+  useEffect(() => {
+    const fetchNickname = async () => {
+      try {
+        const response = await axios.get(
+          "/main/mypage/members/read",
+          {
+            withCredentials: true,
+          }
+        );
+        setNickname(response.data.nickname);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     };
+    if (isLoggedIn) {
+      fetchNickname(); // 로그인 상태일 때 닉네임 가져오기
+    }
+  }, [isLoggedIn]);
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post("/auth/logout");
+      if (response.status === 200) {
+        alert("로그아웃 성공");
+        dispatch(logout()); // 로그아웃
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("로그아웃 에러 : ", error);
+      alert("로그아웃 에러");
+    }
+  };
 
   // 테마 변경을 위해 useTheme 훅을 이용하여 토글로 변경
   const { theme, setTheme } = useTheme(); // 현재 테마와 테마 변경 함수
@@ -69,17 +97,17 @@ const Header = () => {
       align="center"
       p={4}
       w="full"
-      maxW="1200px" // 헤더 너비를 1200px로 제한
-      margin="0 auto" // 중앙 정렬
+      maxW="1200px"
+      margin="0 auto"
       h="60px"
       bg="white"
-      boxShadow="lg" // 좀 더 깊은 그림자 추가
-      position="sticky" // 헤더 고정
-      top="0" // 상단 고정
-      zIndex="10" // 다른 요소들 위로
-      borderBottom="2px solid" // 아래쪽에 경계선 추가
-      borderColor="gray.200" // 경계선 색상 설정
-      borderRadius="md" // 둥근 모서리 추가
+      boxShadow="lg"
+      position="sticky"
+      top="0"
+      zIndex="1000"
+      borderBottom="2px solid"
+      borderColor="gray.200"
+      borderRadius="md"
     >
       {/* 로고 */}
       <Box>
@@ -97,26 +125,34 @@ const Header = () => {
         {renderMenuItems()}
       </HStack>
 
-      {/* 로그인/로그아웃 버튼 + 테마 토글 */}
+      {/* 로그인/로그아웃 버튼 + 닉네임 + 테마 토글 */}
       <Flex align="center" gap={4}>
         {isLoggedIn ? (
-          <Button
-            onClick={handleLogout}
-            size="sm"
-            variant="outline"
-            colorScheme="red" // 로그아웃 버튼에 빨간색 테마 적용
-            _hover={{ bg: "red.500", color: "white" }} // hover 시 색상 변경
-          >
-            로그아웃
-          </Button>
+          <>
+            {/* 닉네임 */}
+            {!loading && !error && (
+              <Text fontSize="lg" fontWeight="bold">
+                {nickname}
+              </Text>
+            )}
+            <Button
+              onClick={handleLogout}
+              size="sm"
+              variant="solid"
+              colorPalette="orange"
+              _hover={{ bg: "orange.500", color: "white" }}
+            >
+              로그아웃
+            </Button>
+          </>
         ) : (
           <Button
             as={Link}
             to="/login"
             size="sm"
             variant="solid"
-            colorPalette="orange" // 로그인 버튼에 파란색 테마 적용
-            _hover={{ bg: "orange.500", color: "white" }} // hover 시 색상 변경
+            colorPalette="orange"
+            _hover={{ bg: "orange.500", color: "white" }}
           >
             로그인
           </Button>
@@ -127,7 +163,7 @@ const Header = () => {
           fontSize="24px"
           cursor="pointer"
           onClick={toggleTheme}
-          _hover={{ color: "yellow.600" }} // hover 시 색상 변경
+          _hover={{ color: "yellow.600" }}
         />
       </Flex>
     </Flex>

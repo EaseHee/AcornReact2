@@ -9,14 +9,14 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo";
-import {useDispatch, useSelector} from "react-redux";
-import {login} from "../../redux/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/slices/authSlice";
 
 const AuthLogin = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState("");
 
-  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
 
   const {
@@ -48,7 +48,7 @@ const AuthLogin = () => {
       Cookies.remove("savedEmail");
       Cookies.remove("checked");
     }
-  
+
     try {
       const response = await axios.post(
         "http://localhost:8080/auth/login",
@@ -57,7 +57,7 @@ const AuthLogin = () => {
           withCredentials: true,
         }
       );
-  
+
       if (response.status === 200) {
         dispatch(login());
         navigate("/");
@@ -65,7 +65,7 @@ const AuthLogin = () => {
     } catch (error) {
       if (error.response) {
         const status = error.response.status;
-  
+
         switch (status) {
           case 404:
             setLoginError("가입된 계정이 없습니다. 이메일을 확인해주세요.");
@@ -77,7 +77,7 @@ const AuthLogin = () => {
             setLoginError("로그인 권한이 없습니다. 회원가입을 해주세요.");
             break;
         }
-  
+
         console.error("Response Error:", error.response.data);
       } else {
         setLoginError("서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
@@ -99,7 +99,9 @@ const AuthLogin = () => {
         height="100vh"
       >
         <Stack gap="4" align="flex-start" maxW="sm" width="full">
-          <Logo></Logo>
+          <Box mt={5}>
+            <Logo />
+          </Box>
           <Box
             display="flex"
             alignItems="center"
