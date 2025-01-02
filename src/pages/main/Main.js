@@ -69,6 +69,8 @@ export default function Main() {
 
     /**
      * 음식점 데이터를 서버에 요청하는 메서드
+     * 로그인 여부에 따라 요청 API 구분 - 추천 알고리즘 적용 여부
+     *
      * @param { page, size } : 페이지 번호, 데이터 개수 요청
      * redux store에 저장된 필터 데이터를 기준으로 서버에 요청
      */
@@ -119,7 +121,7 @@ export default function Main() {
         } finally {
             setLoading(false);
         }
-    }, [dispatch, location.group, location.locations, category.group.no, category.categories?.no, loading, eateries, fetchData]);
+    }, [dispatch, location.group, location.locations, category.group.no, category.categories, loading, eateries, fetchData]);
 
     /**
      * 다음 페이지 요청 메서드
