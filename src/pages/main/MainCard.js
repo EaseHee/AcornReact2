@@ -29,8 +29,11 @@ const MainCard = ({ data }) => {
   // 상세 페이지로 이동
   const handleCardClick = () => {
     // 음식점 상세 페이지 접근 시 조회 수 증가 요청
-    axios(`/main/eateries/${data.no}/viewcount`, { method: "PUT" })
+    axios(`/main/eateries/${data.no}/view/counts`, { method: "PUT", params: { no: data.no} })
     .then((response) => response.data)
+        .then(() => {
+          console.log(data);
+        })
     .catch((error) => console.log("error : " + error));
 
     // 상세 페이지로 이동
@@ -109,7 +112,11 @@ const MainCard = ({ data }) => {
             <Box mt="auto" pt="2">
               {/* 카테고리 정보 */}
               <Text fontSize="sm" color="gray.500" mb="1">
-                {eatery.categoryDto.name || "카테고리 정보 없음"}
+                {eatery.categoryDto?.categoryGroupsDto?.name
+                    ? eatery.categoryDto?.categoryGroupsDto?.name + " > " + eatery.categoryDto.name
+                    : eatery.categoryDto?.categoryGroupsDto?.name
+                }
+                {/*{eatery.categoryDto.name || "카테고리 정보 없음"}*/}
               </Text>
 
               {/* 조회수 */}

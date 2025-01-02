@@ -10,10 +10,10 @@ const Filter = ({applyFilters}) => {
     return (
         <Flex wrap="wrap" >
             <Box borderRadius="md">
-                <CategoryDialog></CategoryDialog>
+                <CategoryDialog/>
             </Box>
             <Box borderRadius="md" >
-                <LocationDialog></LocationDialog>
+                <LocationDialog/>
             </Box>
             <Button ml={"10px"} colorPalette="orange" onClick={applyFilters}>적용</Button>
         </Flex>

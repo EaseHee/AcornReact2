@@ -22,12 +22,13 @@ import { setEateries, setPage } from "../../redux/slices/eateriesSlice";
 export default function Main() {
     const dispatch = useDispatch();
 
-    // Redux 상태 가져오기
+    const { isLoggedIn } = useSelector(state => state.auth);
     const { eateries, pagination } = useSelector((state) => state.eateries);
     const { category, location } = useSelector((state) => state.filter);
 
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     /**
      * 첫 진입 시 사용자 위치 정보를 기반으로 주소 가져오기
@@ -40,14 +41,12 @@ export default function Main() {
                     dispatch(setCoords({ lat: latitude, lng: longitude }));
 
                     try {
-                        console.log("GPS (x : ", longitude, ", y : ", latitude, ")");
                         const data = await (await axios("/main/locations/gps/user", {
                                 method: "GET",
                                 params: { x: longitude, y: latitude },
                             })).data.data;
 
                         const address = data.content[0]?.address.split(" ", 2); // ex. "서울 강남구" -> ["서울", "강남구"]
-                        console.log(address);
                         if (address) {
                             dispatch(
                                 setLocation({
@@ -65,36 +64,85 @@ export default function Main() {
                 }
             );
         }
-    }, [dispatch]);
+    }, []);
+
 
     /**
      * 음식점 데이터를 서버에 요청하는 메서드
+     * @param { page, size } : 페이지 번호, 데이터 개수 요청
      * redux store에 저장된 필터 데이터를 기준으로 서버에 요청
      */
-    const applyFilters = useCallback(async () => {
-        if (!location.group || !category.group.no) return;
+    const fetchData = async ({ page, size }) => {
+        let api;
 
-        setLoading(true);
-        const categoryParam = category.categories?.no
-            ? `categories/small/${category.categories.no}`
-            : `categories/large/${category.group.no}`;
-        const api = `/main/locations/${location.group} ${location.locations}/${categoryParam}`;
+        if (isLoggedIn) {
+            api = `/main/members/eateries/recommends`;
+        } else {
+            const locationParam = location.locations
+                ? location.group + " " + location.locations
+                : location.group;
+
+            const categoryParam = category.categories?.no
+                ? `categories/small/${category.categories.no}`
+                : `categories/large/${category.group.no}`;
+
+            api = `/main/locations/${locationParam}/${categoryParam}`;
+        }
+
+        console.log("[fetchData] API : ", api);
 
         try {
-            const data = await (await axios(api, {
-                method: "GET",
-                params: { page: 1, size: 12 },
-            })).data.data;
+            return await axios.get(api, { params: { page, size } })
+                .then(res => res.data.data)
+        } catch (error) {
+            console.error("데이터 요청 중 오류:", error);
+            return null;
+        }
+    };
 
-            setHasMore(data.page.totalPages > 1);
-            dispatch(setEateries(data.content));
-            dispatch(setPage(1)); // 초기 페이지로 설정
+    /**
+     * 필터 조건 적용 메서드
+     */
+    const applyFilters = useCallback(async () => {
+        if (!location.group || !category.group.no || loading) return;
+        setLoading(true);
+
+        try {
+            const data = await fetchData({ page: 1, size: 12 });
+            if (data) {
+                setHasMore(data.page.totalPages > 1);
+                dispatch(setEateries(data.content));
+                dispatch(setPage(1));
+            }
         } catch (error) {
             console.error("필터 적용 중 오류:", error);
         } finally {
             setLoading(false);
         }
-    }, [dispatch, location, category]);
+    }, [dispatch, location.group, location.locations, category.group.no, category.categories?.no, loading, eateries, fetchData]);
+
+    /**
+     * 다음 페이지 요청 메서드
+     */
+    const getNext = useCallback(async () => {
+        if (!hasMore || loading || !isInitialized) return;
+        setLoading(true);
+        try {
+            const nextPage = pagination.page + 1;
+            const data = await fetchData({ page: nextPage, size: pagination.size });
+
+            if (!data || data.content.length === 0 || nextPage >= data.page.totalPages) {
+                setHasMore(false);
+            } else {
+                dispatch(setEateries([...eateries, ...data.content]));
+                dispatch(setPage(nextPage));
+            }
+        } catch (error) {
+            console.error("다음 페이지 요청 중 오류:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [hasMore, loading, isInitialized, pagination, eateries, dispatch]);
 
 
     /**
@@ -102,86 +150,29 @@ export default function Main() {
      */
     const initializeFilters = useCallback(async () => {
         try {
-            // 카테고리 필터 데이터 요청 및 기본 카테고리 값 정의
-            const categoryData = await (await axios.get(`/main/categories/filter`)).data.data;
+            // 카테고리 필터 데이터 요청
+            const categoryData = await axios.get(`/main/categories/filter`).then((res) => res.data.data);
+            dispatch(setCategoryGroups(categoryData)); // 필터 데이터 저장
 
-            // 카테고리 데이터 Redux에 저장
-            dispatch(setCategoryGroups(categoryData));
+            // 지역 필터 데이터 요청
+            const locationData = await axios.get(`/main/locations/filter`).then((res) => res.data.data);
+            dispatch(setLocationGroups(locationData)); // 필터 데이터 저장
 
-            // 카테고리 기본값 설정
-            if (!category.group.no && !category.categories.no) {
-                dispatch(
-                    setCategory({
-                        group: {
-                            no: categoryData[0]?.no,
-                            name: categoryData[0]?.name
-                        }
-                    })
-                );
-            }
-
-            // 지역 필터 데이터 요청 및 기본 필터값 정의
-            const locationData = await(await axios.get(`/main/locations/filter`)).data.data;
-
-            // 지역 데이터 Redux에 저장
-            dispatch(setLocationGroups(locationData));
-
-            // 지역 기본값 설정
-            if (!location.group && !location.locations) {
-                dispatch(
-                    setLocation({
-                        group: locationData[0]?.name,
-                        locations: locationData[0]?.locationsFilterDtos[0]?.name,
-                    })
-                );
-            }
-
-            // 필터 조건에 맞게 데이터 조회
-            applyFilters();
+            setIsInitialized(true);
+            await applyFilters();
         } catch (error) {
-            console.error("필터 기본값 설정 중 오류:", error);
+            console.error("필터 초기화 중 오류:", error);
         }
-    }, [dispatch, applyFilters, category, location]);
-
-
+    }, [dispatch, category, location, applyFilters]);
 
     /**
      * 첫 진입 시 필터 기본값 설정
      */
     useEffect(() => {
-        initializeFilters();
-    }, [initializeFilters]);
-
-    /**
-     * 다음 페이지 요청 메서드
-     */
-    const getNext = async () => {
-        if (!hasMore || loading) return;
-
-        setLoading(true);
-        const categoryParam = category.categories?.no
-            ? `categories/small/${category.categories.no}`
-            : `categories/large/${category.group.no}`;
-        const api = `/main/locations/${location.group} ${location.locations}/${categoryParam}`;
-
-        try {
-            const data = await (await axios(api, {
-                method: "GET",
-                params: { page: pagination.page, size: pagination.size },
-            })).data.data;
-
-            if (data.content.length === 0 || pagination.page >= data.page.totalPages) {
-                setHasMore(false);
-            } else {
-                dispatch(setEateries([...eateries, ...data.content]));
-                dispatch(setPage(pagination.page + 1));
-            }
-        } catch (error) {
-            console.error("다음 페이지 요청 중 오류:", error);
-        } finally {
-            setLoading(false);
+        if (!isInitialized) {
+            initializeFilters();
         }
-    };
+    }, [initializeFilters, isInitialized]);
 
     return (
         <Box id="scrollableContainer" height="100vh" overflowY="auto">
@@ -197,10 +188,11 @@ export default function Main() {
 
             {/* 3행: 음식점 리스트 */}
             <InfiniteScroll
+                scrollableTarget="scrollableContainer"
                 dataLength={eateries.length}
                 next={getNext}
                 hasMore={hasMore}
-                loader={<MySpinner />}
+                loader={loading ? <MySpinner alignSelf="center"/> : null} // 로딩 중일 때 표시되는 컴포넌트
                 endMessage={<p style={{ textAlign: "center" }}>모든 음식점을 로드했습니다.</p>}
             >
                 <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
