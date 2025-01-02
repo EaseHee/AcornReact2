@@ -4,7 +4,7 @@ import { PasswordInput } from "../../../../components/ui/password-input";
 import { useForm } from "react-hook-form";
 import { DaumPostAPI } from "../../../auth/DaumPostAPI";
 import DuplicatedNickname from "./DuplicatedNickname";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import DeleteAccount from "./DeleteAccount";
@@ -20,10 +20,42 @@ const ProfileForm = () => {
   } = useForm();
 
   const navigate = useNavigate();
-
+  const [userInfo, setUserInfo] = useState(null);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
   const [formError, setFormError] = useState("");
   const watchPassword = watch("changePassword");
+
+  // 사용자 정보 불러오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/main/mypage/members/read",
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (response.data) {
+          setUserInfo(response.data); // 사용자 정보 저장
+        }
+      } catch (err) {
+        setFormError("사용자 정보를 불러올 수 없습니다.");
+      }
+    };
+    fetchUserInfo();
+  }, []);
+
+  // 사용자 정보가 성공적으로 로드되면 setValue로 폼 필드 초기화
+  useEffect(() => {
+    if (userInfo) {
+      setValue("nickname", userInfo.nickname);
+      setValue("phone", userInfo.phone);
+      setValue("postcode", userInfo.postcode);
+      setValue("roadAddress", userInfo.roadAddress);
+      setValue("detailAddress", userInfo.detailAddress);
+    }
+  }, [userInfo, setValue]);
 
   const handleProfileUpdate = async (data) => {
     if (!isNicknameAvailable) {

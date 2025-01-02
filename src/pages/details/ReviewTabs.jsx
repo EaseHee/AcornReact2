@@ -4,6 +4,8 @@ import BlogReviews from './Tabs/BlogReviews';
 import StarReviews from './Tabs/StarReview/StarReviews';
 import FreeComments from './Tabs/FreeComments/FreeComments';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { FaRegCommentAlt, FaRegStar } from 'react-icons/fa';
+import { RiBloggerLine } from 'react-icons/ri';
 
 const queryClient = new QueryClient();
 

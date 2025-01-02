@@ -1,86 +1,129 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "utils/axios";
-
-import { FaEye } from "react-icons/fa";
-import { RiBookmarkLine } from "react-icons/ri";
-
-import { Box, Card, Flex, Icon, Image, Text } from "@chakra-ui/react";
 import { MdCategory } from "react-icons/md";
 
-const Maincard = ({ no }) => {
+import {Box, Card, Flex, Image, Text} from "@chakra-ui/react";
+
+import axios from "utils/axios";
+import {RiBookmarkLine} from "react-icons/ri";
+import {AiOutlineEye} from "react-icons/ai";
+
+const MainCard = ({ data }) => {
   // 서버에 음식점 상세 정보 요청
-  const [eatery, setEatery] = useState({});
+  const [eatery, setEatery] = useState(data);
 
   useEffect(() => {
-    axios(`/main/eateries/${no}`, {
-      method: "GET",
-      withCredentials: true,
-    })
-      .then((response) => response.data)
-      .then((data) => {
-        // 마크업으로 작성된 설명 부분 평문으로 변환
-        let div = document.createElement("div");
-        div.innerHTML = data.description;
-        setEatery({ ...data, description: div.textContent || div.innerText });
-      })
-      .catch((error) => {
-        console.log("error : " + error);
-      });
-  }, [no]);
+    const fetchAdditionalData = async () => {
+      try {
+        // 즐겨찾기 개수 가져오기
+        const favoriteCount = await axios
+            .get(`/main/eateries/${data.no}/favorites/count`)
+            .then((res) => res.data);
+
+        setEatery((prev) => ({
+          ...prev,
+          favoriteCount,
+        }));
+      } catch (error) {
+        console.error("추가 데이터 가져오기 오류:", error);
+      }
+    };
+
+    fetchAdditionalData();
+  }, [data.no]);
 
   const navigate = useNavigate();
 
-  // 상세 페이지로 이동
-  const handleCardClick = () => {
-    // 음식점 상세 페이지 접근 시 조회 수 증가 요청
-    axios(`/main/eateries/${no}/viewcount`, { method: "PUT" })
-      .then((response) => response.data)
-      .then((data) => {})
-      .catch((error) => console.log("error : " + error));
+  // 상세 페이지로 이동 및 조회수 업데이트
+  const handleCardClick = async () => {
+    try {
+      await axios.put(`/main/eateries/${data.no}/view/counts`, {
+        params: { no: data.no },
+      });
 
-    // 상세 페이지로 이동
-    navigate(`/detail/${eatery.no}`);
+      // 로컬 상태에서 조회수 증가
+      setEatery((prev) => ({
+        ...prev,
+        viewCount: prev.viewCount + 1,
+      }));
+
+      // 상세 페이지로 이동
+      navigate(`/detail/${eatery.no}`);
+    } catch (error) {
+      console.error("조회수 업데이트 실패:", error);
+    }
   };
 
-  // thumbnail 도메인이 CORS에 차단된 경우 이미지가 출력되지 않는다.
-  const blockedDomains = [
-    "postfiles.pstatic.net",
-    "dthumb-phinf",
-    "blogfiles.pstatic.net",
-  ];
-
   return (
-    <Card.Root
-      maxW="sm"
-      overflow="hidden"
-      onClick={handleCardClick}
-      style={{ cursor: "pointer" }}
-    >
-      <Flex
-        alignItems="center"
-        justifyContent="center"
-        height="150px"
-        bg="gray.200"
-        borderRadius="md"
+      <Card.Root
+          maxW="sm"
+          overflow="hidden"
+          onClick={handleCardClick}
+          style={{ cursor: "pointer" }}
       >
-        {blockedDomains.some((domain) => eatery.thumbnail?.includes(domain)) ? (
-          // 차단된 도메인의 경우
-          <MdCategory style={{ fontSize: "81px", color: "gray" }} />
-        ) : (
-          // 차단되지 않은 경우
-          <Image
-            src={eatery.thumbnail}
-            onError={(e) => (e.target.style.display = "none")} // 이미지 로드 실패 시 숨김
+        <Flex
             height="150px"
-            width="100%"
-            alt="음식점 이미지"
-            objectFit="cover"
             borderRadius="md"
-          />
-        )}
-      </Flex>
-    </Card.Root>
+            overflow="hidden"
+            boxShadow="md"
+            bg="gray.100"
+        >
+          {/* 이미지 출력 영역 (좌) */}
+          <Box flex="3" overflow="hidden">
+                <Image
+                    src={`http://localhost:8080/proxy/image?url=${encodeURIComponent(eatery?.thumbnail)}`}
+                    height="100%"
+                    width="100%"
+                    objectFit="cover"
+                    alt="음식점 이미지"
+                />
+          </Box>
+
+          {/* 정보 출력 영역 (우) */}
+          <Box
+              flex="2"
+              p="4"
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              textAlign="start"
+              position="relative"
+          >
+            {/* 음식점 이름 */}
+            <Text
+                fontWeight="bold"
+                fontSize="md"
+                mb="auto" // 이름은 위로 밀림
+            >
+              {eatery.name || "음식점 이름 없음"}
+            </Text>
+
+            {/* 하단 정보 영역 */}
+            <Box mt="auto" pt="2">
+              {/* 카테고리 정보 */}
+              <Text fontSize="sm" color="gray.500" mb="1">
+                {eatery.categoryDto?.categoryGroupsDto?.name
+                    ? eatery.categoryDto?.categoryGroupsDto?.name + " > " + eatery.categoryDto.name
+                    : eatery.categoryDto?.categoryGroupsDto?.name
+                }
+                {/*{eatery.categoryDto.name || "카테고리 정보 없음"}*/}
+              </Text>
+
+              {/* 조회수 */}
+              <Flex align="center" gap="2" fontSize="sm" color="gray.600" mb="1">
+                <AiOutlineEye />
+                <Text>{eatery.viewCount || 0}</Text>
+              </Flex>
+
+              {/* 즐겨찾기 */}
+              <Flex align="center" gap="2" fontSize="sm" color="gray.600">
+                <RiBookmarkLine />
+                <Text>{eatery.favoriteCount || 0}</Text>
+              </Flex>
+            </Box>
+          </Box>
+        </Flex>
+      </Card.Root>
   );
 };
-export default Maincard;
+export default MainCard;

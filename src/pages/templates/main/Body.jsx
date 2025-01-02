@@ -1,13 +1,11 @@
-﻿import React from "react";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Flex, Box } from "@chakra-ui/react";
-
 import Main from "../../main/Main";
-import Sidebar from "../../sidebar/Sidebar";
 import DetailPage from "../../details/DetailPage";
 import MyPage from "../../mypage/MyPage";
-
 const Body = () => {
+  
     return (
         <Flex direction="row" wrap="wrap" justify="center" bg="gray.50" p={4} borderRadius="md">
             {/* 메인 콘텐츠 */}
@@ -24,7 +22,7 @@ const Body = () => {
                 <Routes>
                     <Route path="/" element={<Main />} />
                     <Route path="/detail/:no" element={<DetailPage />} />
-                    <Route path="/mypage" element={<MyPage />} />
+                    <Route path="/mypage" element={<MyPage />}/>
                 </Routes>
             </Box>
         </Flex>

@@ -1,18 +1,19 @@
 ﻿import React from "react";
 
-import {Box, Flex, Text} from "@chakra-ui/react";
+import {Box, Flex} from "@chakra-ui/react";
 
 import CategoryDialog from "./CategoryDialog";
 import LocationDialog from "./LocationDialog";
 
+
 const Filter = () => {
     return (
-        <Flex wrap="wrap" >
-            <Box borderRadius="md" >
-                <CategoryDialog></CategoryDialog>
+        <Flex wrap="wrap" pb={3} >
+            <Box borderRadius="md">
+                <CategoryDialog/>
             </Box>
             <Box borderRadius="md" >
-                <LocationDialog></LocationDialog>
+                <LocationDialog/>
             </Box>
         </Flex>
     );

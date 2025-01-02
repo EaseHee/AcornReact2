@@ -6,7 +6,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 // Import required modules
 import { Pagination, Navigation } from 'swiper/modules';
-import './StarReviewSwiper.css';
+import '../../../details/Tabs/StarReview/StarReviewSwiper.css';
 export default function StarReviewSwiper({ImgInfo}) {
     return (
     <div className="swiper-container">

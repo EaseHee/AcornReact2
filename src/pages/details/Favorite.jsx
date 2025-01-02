@@ -62,7 +62,7 @@ const Favorite = ({ restaurantNo, memberNo }) => {
       style={{ cursor: 'pointer' }}
     >
       {isBookmarked ? (
-        <RiBookmarkFill size="24" color="#4299E1" />
+        <RiBookmarkFill size="24" color="#FF4500" />
       ) : (
         <RiBookmarkLine size="24" color="#4A5568" />
       )}

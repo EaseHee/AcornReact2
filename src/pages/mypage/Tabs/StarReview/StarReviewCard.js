@@ -15,28 +15,22 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const fetchReviews = async (currentPage) => {
     setIsLoading(true); // 로딩 시작
     try {
-      // 지연시간 1초 추가
-      setTimeout(async () => {
-        const response = await axios.get(`/main/mypage/review/member/${memberNo}`, {
-          params: { page: currentPage },
-        });
-        const { content, page: pageInfo } = response.data.list;
-
-      // 중복된 리뷰가 추가되지 않도록 처리
-      setReviews((prevReviews) => {
-        const newReviews = content.filter(review => 
-          !prevReviews.some(prevReview => prevReview.no === review.no)
-        );
-        return [...prevReviews, ...newReviews];
+      const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
+        params: { page: currentPage }, // 쿼리 매개변수 설정
+        withCredentials: true, // 쿠키를 함께 전송하도록 설정
       });
-
-        // 모든 페이지 로드 완료 여부 확인
-        setHasMore(pageInfo.number < pageInfo.totalPages);
-
-        setIsLoading(false); // 로딩 완료
-      }, 1000); // 1초 지연
+      const { content, page: pageInfo } = response.data.list;
+    // 중복된 리뷰가 추가되지 않도록 처리
+    setReviews((prevReviews) => {
+      const newReviews = content.filter(review => 
+        !prevReviews.some(prevReview => prevReview.no === review.no)
+      );
+      return [...prevReviews, ...newReviews];
+    });
+      // 모든 페이지 로드 완료 여부 확인
+      setHasMore(pageInfo.number < pageInfo.totalPages);
+      setIsLoading(false); // 로딩 완료
     } catch (error) {
-      console.error("Failed to fetch reviews:", error);
       setIsLoading(false); // 오류 발생 시 로딩 상태 해제
     }
   };
@@ -66,7 +60,12 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
     const emptyStar = '☆';
     return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
   };
-
+  const refreshReviews = async () => {
+    setReviews([]); // 기존 데이터 초기화
+    setPage(1);     // 첫 페이지로 초기화
+    setHasMore(true); // 추가 데이터 로드 가능 상태로 초기화
+    await fetchReviews(1); // 첫 페이지 데이터 다시 로드
+  };
   return (
     <div
       id="scrollableDiv"
@@ -86,27 +85,35 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
         endMessage={<p style={{ textAlign: "center" }}>모든 리뷰를 로드했습니다.</p>}
       >
         {sortedReviews.map((review, index) => (
-          <Card.Root maxW="svw" overflow="hidden" key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
+          <Card.Root maxW="svw" overflow="hidden"  key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
           <Card.Body gap="3">
-            <Card.Title></Card.Title>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Card.Title alignSelf="flex-start">{review.reviewEateriesDto.name}</Card.Title>
+            <Box display="flex" alignItems="center">
+            <CustomDialog
+              alignSelf="end"
+              openBtnText="수정"
+              title={nickname}
+              review={review}
+              memberNo={memberNo}
+              confirmBtnText="수정"
+              closeBtnText="취소"
+              onReviewSubmitted={() => refreshReviews()}
+            />
+            <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()} />
+            </Box>
+            </Box>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
             <Card.Description>
               {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
-              {review.reviewMembersDto.name}<br></br><br></br>
-              {review.content}
+              {nickname}
             </Card.Description>
+            <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
+            </Box>
+            <br></br>
+            {review.content}
           </Card.Body>
-              <Box alignSelf="end">
-                <DeleteDialog reviewNo={review.no}/>
-                <CustomDialog
-                  openBtnText="리뷰 수정"
-                  title={nickname}
-                  review={review}
-                  memberNo={memberNo}
-                  confirmBtnText="수정"
-                  closeBtnText="취소"
-                />
-              </Box>
-          <Card.Footer>
+          <Card.Footer w="80%" alignSelf="center">
             {review.reviewImagesResponseDto.length>0 ?<Swiper ImgInfo={review.reviewImagesResponseDto}/>:null} 
           </Card.Footer>
         </Card.Root>

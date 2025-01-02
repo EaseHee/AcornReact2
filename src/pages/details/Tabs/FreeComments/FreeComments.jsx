@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
 import {
   Box,
@@ -275,15 +275,15 @@ const FreeComments = ({ eateryNo }) => {
           value={newCommentContent}
           onChange={(e) => setNewCommentContent(e.target.value)}
           placeholder={memberNo === 0 ? '댓글을 작성하려면 로그인하세요' : '새 댓글을 작성하세요'}
-          size='sm'
-          rows='4'
-          mb='2'
-          color='black'
+          size="sm"
+          rows="4"
+          mb="2"
+          color="black"
           disabled={memberNo === 0}
         />
         {memberNo !== 0 && (
-          <Flex justify='end'>
-            <Button size='sm' colorScheme='blue' onClick={handleNewCommentSubmit}>
+          <Flex justify="end">
+            <Button size="sm" colorScheme="blue" onClick={handleNewCommentSubmit}>
               작성
             </Button>
           </Flex>
@@ -297,55 +297,56 @@ const FreeComments = ({ eateryNo }) => {
 
             // !comment.parentCommentNo
             return (
-              <Box
-                key={comment.no}
-                ref={isLastItem ? lastElementRef : null}
-                p={4}
-                borderWidth='1px'
-                borderRadius='lg'
-                mb={4}
-                boxShadow='sm'
-                bg={comment.deleted ? 'gray.300' : 'white'}
-              >
-                <Flex justify='space-between' mb={2}>
-                  <Text fontSize='sm' fontWeight='bold' color='black'>
-                    {comment.nickname || <>익명</>}
-                  </Text>
-                  <Flex direction='row' align='center'>
-                    {comment.updatedAt === comment.createdAt ? null : (
-                      <Text fontSize='xx-small' color='black' ml={2}>
-                        (수정일: {new Date(comment.updatedAt).toLocaleString()})
-                      </Text>
-                    )}
-                    <Text fontSize='xx-small' color='black' ml={2}>
-                      작성일: {new Date(comment.createdAt).toLocaleString()}
+              !comment.parentCommentNo && (
+                <Box
+                  key={comment.no}
+                  ref={isLastItem ? lastElementRef : null}
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  mb={4}
+                  boxShadow="sm"
+                  bg={comment.deleted ? 'gray.300' : 'white'}
+                >
+                  <Flex justify="space-between" mb={2}>
+                    <Text fontSize="sm" fontWeight="bold" color="black">
+                      {comment.nickname || <>익명</>}
                     </Text>
-                  </Flex>
-                </Flex>
-
-                {editingComment === comment.no ? (
-                  <Box>
-                    <Textarea
-                      value={editedContent}
-                      onChange={(e) => setEditedContent(e.target.value)}
-                      size='sm'
-                      color='black'
-                      rows={4}
-                    />
-                    <Flex justify='end' mt={2}>
-                      <Button size='sm' colorScheme='blue' onClick={handleSaveClick} mr={2}>
-                        저장
-                      </Button>
-                      <Button size='sm' colorScheme='gray' onClick={handleCancelClick}>
-                        취소
-                      </Button>
+                    <Flex direction="row" align="center">
+                      {comment.updatedAt === comment.createdAt ? null : (
+                        <Text fontSize="sm" color="black" ml={2}>
+                          (수정일: {new Date(comment.updatedAt).toLocaleString()})
+                        </Text>
+                      )}
+                      <Text fontSize="sm" color="black" ml={2}>
+                        작성일: {new Date(comment.createdAt).toLocaleString()}
+                      </Text>
                     </Flex>
-                  </Box>
-                ) : (
-                  <Text fontSize='md' color='black' mb={2}>
-                    {comment.content}
-                  </Text>
-                )}
+                  </Flex>
+
+                  {editingComment === comment.no ? (
+                    <Box>
+                      <Textarea
+                        value={editedContent}
+                        onChange={(e) => setEditedContent(e.target.value)}
+                        size="sm"
+                        color="black"
+                        rows={4}
+                      />
+                      <Flex justify="end" mt={2}>
+                        <Button size="sm" colorScheme="blue" onClick={handleSaveClick} mr={2}>
+                          저장
+                        </Button>
+                        <Button size="sm" onClick={handleCancelClick}>
+                          취소
+                        </Button>
+                      </Flex>
+                    </Box>
+                  ) : (
+                    <Text fontSize="md" color="black" mb={2}>
+                      {comment.content}
+                    </Text>
+                  )}
 
                   {/* 댓글 버튼들 */}
                   {editingComment !== comment.no && (
@@ -405,92 +406,94 @@ const FreeComments = ({ eateryNo }) => {
                     </Flex>
                   )}
 
-                {/* 대댓글 작성창 */}
-                {replyingToComment === comment.no && (
-                  <Box mt={2}>
-                    <Textarea
-                      placeholder='대댓글을 작성하세요'
-                      size='sm'
-                      mb={2}
-                      color='black'
-                      value={newReplyContent}
-                      onChange={(e) => setNewReplyContent(e.target.value)}
-                      rows={4}
-                    />
-                    <Flex justify='end'>
-                      <Button size='sm' colorScheme='blue' onClick={() => handleReplySubmit(comment.no)} mr={2}>
-                        작성
-                      </Button>
-                      <Button size='sm' colorScheme='gray' onClick={() => setReplyingToComment(null)}>
-                        취소
-                      </Button>
-                    </Flex>
-                  </Box>
-                )}
+                  {/* 대댓글 작성창 */}
+                  {replyingToComment === comment.no && (
+                    <Box mt={2}>
+                      <Textarea
+                        placeholder="대댓글을 작성하세요"
+                        size="sm"
+                        mb={2}
+                        color="black"
+                        value={newReplyContent}
+                        onChange={(e) => setNewReplyContent(e.target.value)}
+                        rows={4}
+                      />
+                      <Flex justify="end">
+                        <Button size="sm" colorScheme="blue" onClick={() => handleReplySubmit(comment.no)} mr={2}>
+                          작성
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => setReplyingToComment(null)}>
+                          취소
+                        </Button>
+                      </Flex>
+                    </Box>
+                  )}
 
-                {/* 대댓글 보기 */}
-                {comment.childComments && comment.childComments.length > 0 && (
-                  <AccordionRoot collapsible variant='plain' defaultValue={['b']}>
-                    <AccordionItem>
-                      <AccordionItemTrigger cursor='pointer' w='fit-content'>
-                        <Button variant='outline'>{comment.childComments.length}개의 대댓글</Button>
-                      </AccordionItemTrigger>
-                      <AccordionItemContent>
-                        {comment.childComments.map((childComment) => (
-                          <Box
-                            key={childComment.no}
-                            p={4}
-                            borderWidth='1px'
-                            borderRadius='lg'
-                            mb={4}
-                            ml={6}
-                            boxShadow='sm'
-                            bg='white'
-                          >
-                            <Flex justify='space-between' mb={2}>
-                              <Text fontSize='sm' fontWeight='bold' color='black'>
-                                {childComment.nickname || <>익명</>}
-                              </Text>
-                              <Flex direction='row' align='center'>
-                                {childComment.updatedAt === childComment.createdAt ? null : (
-                                  <Text fontSize='xx-small' color='black' ml={2}>
-                                    (수정일: {new Date(childComment.updatedAt).toLocaleString()})
-                                  </Text>
-                                )}
-                                <Text fontSize='xx-small' color='black' ml={2}>
-                                  작성일: {new Date(childComment.createdAt).toLocaleString()}
+                  {/* 대댓글 보기 */}
+                  {comment.childComments && comment.childComments.length > 0 && (
+                    <AccordionRoot collapsible variant="plain" defaultValue={['b']}>
+                      <AccordionItem>
+                        <AccordionItemTrigger cursor="pointer" w="fit-content">
+                          <Button variant="outline">{comment.childComments.length}개의 대댓글</Button>
+                        </AccordionItemTrigger>
+                        <AccordionItemContent>
+                          {comment.childComments.map((childComment) => (
+                            <Box
+                              key={childComment.no}
+                              p={4}
+                              borderWidth="1px"
+                              borderRadius="lg"
+                              mb={4}
+                              ml={6}
+                              boxShadow="sm"
+                              bg="white"
+                            >
+                              <Flex justify="space-between" mb={2}>
+                                <Text fontSize="sm" fontWeight="bold" color="black">
+                                  {childComment.nickname || <>익명</>}
                                 </Text>
-                              </Flex>
-                            </Flex>
-
-                            {editingReply === childComment.no ? (
-                              <Box>
-                                <Textarea
-                                  value={editedReplyContent}
-                                  onChange={(e) => setEditedReplyContent(e.target.value)}
-                                  size='sm'
-                                  color='black'
-                                  rows={4}
-                                />
-                                <Flex justify='end' mt={2}>
-                                  <Button
-                                    size='sm'
-                                    colorScheme='blue'
-                                    onClick={() => updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })}
-                                    mr={2}
-                                  >
-                                    저장
-                                  </Button>
-                                  <Button size='sm' colorScheme='gray' onClick={() => setEditingReply(null)}>
-                                    취소
-                                  </Button>
+                                <Flex direction="row" align="center">
+                                  {childComment.updatedAt === childComment.createdAt ? null : (
+                                    <Text fontSize="sm" color="black" ml={2}>
+                                      (수정일: {new Date(childComment.updatedAt).toLocaleString()})
+                                    </Text>
+                                  )}
+                                  <Text fontSize="sm" color="black" ml={2}>
+                                    작성일: {new Date(childComment.createdAt).toLocaleString()}
+                                  </Text>
                                 </Flex>
-                              </Box>
-                            ) : (
-                              <Text fontSize='md' color='black' mb={2}>
-                                {childComment.content}
-                              </Text>
-                            )}
+                              </Flex>
+
+                              {editingReply === childComment.no ? (
+                                <Box>
+                                  <Textarea
+                                    value={editedReplyContent}
+                                    onChange={(e) => setEditedReplyContent(e.target.value)}
+                                    size="sm"
+                                    color="black"
+                                    rows={4}
+                                  />
+                                  <Flex justify="end" mt={2}>
+                                    <Button
+                                      size="sm"
+                                      colorScheme="blue"
+                                      onClick={() =>
+                                        updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })
+                                      }
+                                      mr={2}
+                                    >
+                                      저장
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={() => setEditingReply(null)}>
+                                      취소
+                                    </Button>
+                                  </Flex>
+                                </Box>
+                              ) : (
+                                <Text fontSize="md" color="black" mb={2}>
+                                  {childComment.content}
+                                </Text>
+                              )}
 
                               {/* 대댓글 수정 삭제 버튼 */}
                               {editingReply !== childComment.no && (

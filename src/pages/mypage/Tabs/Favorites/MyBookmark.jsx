@@ -27,8 +27,6 @@ const MyBookmark = () => {
         const bookmarksResponse = await axios.get(`http://localhost:8080/main/mypage/favorites`, {
           withCredentials: true,
         });
-
-        console.log("받아온 데이터:", bookmarksResponse.data); // 데이터 확인
         setBookmarks(Array.isArray(bookmarksResponse.data) ? bookmarksResponse.data : []);
         
         // setBookmarks(bookmarksResponse.data);
@@ -60,13 +58,14 @@ const MyBookmark = () => {
       p={4}
     >
       {bookmarks.map((bookmark) => (
-        <GridItem key={bookmark.eateryNo}>
+        <GridItem key={bookmark.no}>
           <BookmarkCard
             name={bookmark.name}
             rating={bookmark.rating}
+            thumbnail={bookmark.thumbnail}
             address={bookmark.address}
             imageUrl={bookmark.imageUrl}
-            eateryNo={bookmark.eateryNo}
+            eateryNo={bookmark.no}
           />
         </GridItem>
       ))}
