@@ -81,11 +81,11 @@ const CategoryDialog = () => {
                 <DialogBody pb="4">
                     <Text fontWeight="medium" mb="4">대분류 카테고리</Text>
                     <Flex gap="2" wrap="wrap">
-                        {categoryGroups.map((group) => (
+                        {Array.isArray(categoryGroups) && categoryGroups.map((group) => (
                             <Button
                                 key={group.no}
                                 onClick={() => handleGroupSelect({ no: group.no, name: group.name })}
-                                bg={selectedCategoryGroup?.no === group.no ? "gray.500" : "gray.100"}
+                                bg={selectedCategoryGroup?.no === group.no ? "orange.600" : "gray.100"}
                                 color={selectedCategoryGroup?.no === group.no ? "white" : "black"}
                                 borderRadius="full"
                             >
@@ -98,13 +98,13 @@ const CategoryDialog = () => {
                         <Box mt="6">
                             <Text fontWeight="medium" mb="4">소분류 카테고리</Text>
                             <Flex gap="2" wrap="wrap">
-                                {categoryGroups
+                                {Array.isArray(categoryGroups) && categoryGroups
                                     .find((group) => group.no === selectedCategoryGroup?.no)
                                     ?.categoriesFilterDtos.map((cat) => (
                                         <Button
                                             key={cat.no}
                                             onClick={() => handleCategorySelect({ no: cat.no, name: cat.name })}
-                                            bg={selectedCategories?.no === cat.no ? "gray.500" : "gray.100"}
+                                            bg={selectedCategories?.no === cat.no ? "orange.600" : "gray.100"}
                                             color={selectedCategories?.no === cat.no ? "white" : "black"}
                                             borderRadius="full"
                                         >
