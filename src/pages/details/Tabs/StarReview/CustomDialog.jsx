@@ -17,7 +17,7 @@ import { Toaster, toaster } from "../../../../components/ui/toaster"
 import axios from 'axios';
 
 export default function CustomDialog({ onReviewSubmitted, openBtnText, title, memberNo, eateryNo, confirmBtnText, closeBtnText }) {
-  const [formData, setFormData] = useState({ rating: "", content: "" });
+  const [formData, setFormData] = useState({ rating: "0", content: "" });
   const [files, setFiles] = useState([]);
 
   const handleInputChange = (e) => {
