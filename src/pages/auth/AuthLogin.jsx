@@ -1,40 +1,94 @@
 import { Box, Button, Input, Stack, Link, Text, Image } from "@chakra-ui/react";
-import { Field } from "../../components/ui/field.jsx";
-import { PasswordInput } from "../../components/ui/password-input.jsx";
-import { Checkbox } from "../../components/ui/checkbox";
-import { KakaoLoginButton } from "./KakaoLogin";
-import { NaverLoginButton } from "./NaverLogin";
-import { GoogleLoginButton } from "./GoogleLogin";
+import { Field } from "../../components/ui/field";
+import { PasswordInput } from "../../components/ui/password-input";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import FindPasswordModal from "./FindPasswordModal";
-import FindEmailModal from "./FindEmailModal";
+import FindPassword from "./FindPassword";
+import FindEmail from "./FindEmail";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import Logo from "../../components/Logo";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/slices/authSlice";
 
 const AuthLogin = () => {
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [loginError, setLoginError] = useState("");
+
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm();
 
-  // 로그인 요청
-  axios
-    .post("http://localhost:8080/main/login", register, {
-      withCredentials: true, // 쿠키 포함 요청
-    })
-    .then((response) => {
-      if (response.status === 200) {
-        //alert('로그인 성공');
-        //navigate('/'); // 로그인 성공 시 이동할 페이지
-      }
-    })
-    .catch((error) => {
-      console.error("로그인 에러: ", error); // 기타 에러 로그
-    });
+  const [checked, setChecked] = useState(false);
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  useEffect(() => {
+    const savedEmail = Cookies.get("savedEmail");
+    const savedChecked = Cookies.get("checked");
+    console.log(savedChecked);
+    if (savedChecked === "true") {
+      setChecked(true);
+    }
+    if (savedEmail) {
+      setValue("email", savedEmail);
+    }
+  }, [setValue]);
+
+  const handleLogin = async (data) => {
+    if (checked) {
+      Cookies.set("savedEmail", data.email, { expires: 7 });
+      Cookies.set("checked", "true", { expires: 7 });
+    } else {
+      Cookies.remove("savedEmail");
+      Cookies.remove("checked");
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/auth/login",
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        dispatch(login());
+        navigate("/");
+      }
+    } catch (error) {
+      if (error.response) {
+        const status = error.response.status;
+
+        switch (status) {
+          case 404:
+            setLoginError("가입된 계정이 없습니다. 이메일을 확인해주세요.");
+            break;
+          case 401:
+            setLoginError("이메일 또는 비밀번호를 확인해주세요.");
+            break;
+          default:
+            setLoginError("로그인 권한이 없습니다. 회원가입을 해주세요.");
+            break;
+        }
+
+        console.error("Response Error:", error.response.data);
+      } else {
+        setLoginError("서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+        console.error("Axios Error:", error.message);
+      }
+    }
+  };
+
+  const onSubmit = handleSubmit((data) => {
+    handleLogin(data);
+  });
 
   return (
     <form onSubmit={onSubmit}>
@@ -45,15 +99,9 @@ const AuthLogin = () => {
         height="100vh"
       >
         <Stack gap="4" align="flex-start" maxW="sm" width="full">
-          <Link href="/">
-            <Image
-              src="https://example.com/logo.png"
-              alt="로고"
-              boxSize="45px"
-              objectFit="contain"
-              mb="4"
-            />
-          </Link>
+          <Box mt={5}>
+            <Logo />
+          </Box>
           <Box
             display="flex"
             alignItems="center"
@@ -74,6 +122,7 @@ const AuthLogin = () => {
           >
             <Input
               size="lg"
+              placeholder="이메일을 입력해주세요."
               {...register("email", {
                 required: "이메일은 필수 입력입니다.",
                 pattern: {
@@ -90,44 +139,94 @@ const AuthLogin = () => {
           >
             <PasswordInput
               size="lg"
+              placeholder="비밀번호를 입력해주세요."
               {...register("password", {
                 required: "비밀번호는 필수 입력입니다.",
-                pattern: {
-                  value:
-                    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,20}$/,
-                  message:
-                    "비밀번호는 최소 8자 이상 최대 20자 이하를 입력해주세요.",
-                },
               })}
             />
           </Field>
+
           <Box
             display="flex"
             alignItems="center"
             justifyContent="space-between"
             width="full"
           >
-            <Checkbox colorPalette="orange" flexShrink={0}>
-              이메일 기억하기
-            </Checkbox>
+            <label style={styles.customCheckbox}>
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => setChecked(e.target.checked)}
+                style={styles.hiddenCheckbox}
+              />
+              <span
+                style={{
+                  ...styles.checkmark,
+                  ...(checked ? styles.checkedCheckmark : {}),
+                }}
+              >
+                {checked && <span style={styles.checkIcon}>✔</span>}
+              </span>
+              <span style={styles.checkboxLabel}>이메일 기억하기</span>{" "}
+            </label>
+
             <Box display="flex" alignItems="center" gap="1" mr="2">
-              <FindEmailModal />
-              <Text fontSize="sm">/</Text>
-              <FindPasswordModal />
+              <FindEmail height="40px" />
+              <FindPassword height="40px" />
             </Box>
           </Box>
-          <Stack spacing="4" width="full" mt="4">
+          {loginError && (
+            <Text color="red.500" fontSize="sm" mb="2">
+              {loginError}
+            </Text>
+          )}
+          <Stack spacing="2" width="full" mt="1">
             <Button type="submit" colorPalette="orange" width="full" size="lg">
               로그인
             </Button>
-            <KakaoLoginButton />
-            <NaverLoginButton />
-            <GoogleLoginButton />
           </Stack>
         </Stack>
       </Box>
     </form>
   );
+};
+
+const styles = {
+  customCheckbox: {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  hiddenCheckbox: {
+    display: "none",
+  },
+  checkmark: {
+    position: "relative",
+    display: "inline-block",
+    width: "20px",
+    height: "20px",
+    border: "2px solid #ccc",
+    borderRadius: "4px",
+    marginRight: "8px",
+    backgroundColor: "#fff",
+    transition: "background-color 0.2s ease, border-color 0.2s ease",
+  },
+  checkedCheckmark: {
+    backgroundColor: "#f85f00",
+    borderColor: "#f85f00",
+  },
+  checkIcon: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    fontSize: "16px",
+    color: "#fff",
+  },
+  checkboxLabel: {
+    fontSize: "14px",
+  },
 };
 
 export default AuthLogin;

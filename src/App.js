@@ -1,18 +1,16 @@
-import Main from './pages/main/Main.js';
 import AuthLogin from './pages/auth/AuthLogin.jsx';
 import AuthRegister from './pages/auth/AuthRegister.jsx';
-import Mypage from './pages/mypage/MyPage.jsx';
-import DetailPage from './pages/details/DetailPage.jsx';
-import { Route, Routes } from 'react-router-dom';
+import {Route,Routes} from 'react-router-dom';
+import MainTemplate from "./pages/templates/main/MainTemplate";
+
 function App() {
+
   return (
     <>
       <Routes>
-        <Route path="/" element={<Main></Main>}></Route>
-        <Route path="/login" element={<AuthLogin></AuthLogin>}></Route>
-        <Route path="/register" element={<AuthRegister></AuthRegister>}></Route>
-        <Route path="/mypage" element={<Mypage></Mypage>}></Route>
-        <Route path="/detail" element={<DetailPage />} />
+        <Route path='/*' element={<MainTemplate />}></Route>
+        <Route path='/login' element={<AuthLogin />} ></Route>
+        <Route path='/register' element={<AuthRegister></AuthRegister>}></Route>
       </Routes>
     </>
   );
