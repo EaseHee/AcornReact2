@@ -99,7 +99,7 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
               {review.content}
             </Card.Description>
           </Card.Body>
-          <Card.Footer>
+          <Card.Footer w="80%" alignSelf="center">
             {review.reviewImagesResponseDto.length>0 ?<Swiper ImgInfo={review.reviewImagesResponseDto}/>:null} 
           </Card.Footer>
         </Card.Root>
