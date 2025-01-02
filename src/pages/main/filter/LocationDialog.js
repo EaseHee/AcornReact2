@@ -75,11 +75,11 @@ const LocationDialog = () => {
                 <DialogBody pb="4">
                     <Text fontWeight="medium" mb="4">대분류 지역</Text>
                     <Flex gap="2" wrap="wrap">
-                        {locationGroups.map((group) => (
+                        {Array.isArray(locationGroups) && locationGroups.map((group) => (
                             <Button
                                 key={group.no}
                                 onClick={() => handleGroupSelect(group.name)}
-                                bg={selectedLocationGroup === group.name ? "gray.500" : "gray.100"}
+                                bg={selectedLocationGroup === group.name ? "orange.600" : "gray.100"}
                                 color={selectedLocationGroup === group.name ? "white" : "black"}
                                 borderRadius="full"
                             >
@@ -92,13 +92,13 @@ const LocationDialog = () => {
                         <Box mt="6">
                             <Text fontWeight="medium" mb="4">소분류 지역</Text>
                             <Flex gap="2" wrap="wrap">
-                                {locationGroups
+                                {Array.isArray(locationGroups) && locationGroups
                                     .find((group) => group.name === selectedLocationGroup)
                                     ?.locationsFilterDtos.map((loc) => (
                                         <Button
                                             key={loc.no}
                                             onClick={() => handleLocationSelect(loc.name)}
-                                            bg={selectedLocation === loc.name ? "gray.500" : "gray.100"}
+                                            bg={selectedLocation === loc.name ? "orange.600" : "gray.100"}
                                             color={selectedLocation === loc.name ? "white" : "black"}
                                             borderRadius="full"
                                         >
