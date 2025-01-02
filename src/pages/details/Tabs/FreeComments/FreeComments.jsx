@@ -12,8 +12,9 @@ import {
   AccordionItemTrigger,
   AccordionItemContent,
 } from '@chakra-ui/react';
-import MySpinner from '../../../components/Spinner';
+import MySpinner from '../../../../components/Spinner';
 import { BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
+import DeleteDialog from './DeleteDialog';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
@@ -63,11 +64,15 @@ const fetchLikes = async ({ eateryNo, memberNo }) => {
 
 // 좋아요 누르기 API 요청
 const likeComment = async ({ memberNo, commentNo }) => {
-  const response = await axios.post('http://localhost:8080/main/eateries/comments/likes', {
-    memberNo,
-    commentNo,
-  });
-  return response.data;
+  try {
+    const response = await axios.post('http://localhost:8080/main/eateries/comments/likes', {
+      memberNo,
+      commentNo,
+    });
+    return response.data;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 // 좋아요 삭제 API 요청
@@ -83,7 +88,7 @@ const unlikeComment = async (likeNo) => {
 /**
  * 자유 댓글 컴포넌트
  * @param {int} eateryNo
- * @returns 해당 식당의 댓글을 무한스크롤 처리하여 나열
+ * @returns 특정 식당의 댓글을 무한스크롤 처리하여 나열
  */
 const FreeComments = ({ eateryNo }) => {
   const [memberNo, setMemberNo] = useState(0);
@@ -109,7 +114,8 @@ const FreeComments = ({ eateryNo }) => {
     ({ pageParam = 0 }) => fetchComments({ pageParam, eateryNo }),
     {
       getNextPageParam: (lastPage) => {
-        return lastPage.page.number + 1 < lastPage.page.totalPages ? lastPage.page.number + 1 : false;
+        const { number, totalPages } = lastPage.page;
+        return number + 1 < totalPages ? number + 1 : null;
       },
     }
   );
@@ -122,7 +128,6 @@ const FreeComments = ({ eateryNo }) => {
   const [newCommentContent, setNewCommentContent] = useState(''); // 새 댓글 내용 추적
   const [newReplyContent, setNewReplyContent] = useState(''); // 대댓글 입력 상태
   const [likedComments, setLikedComments] = useState([]); // 좋아요를 누른 댓글 추적
-
 
   const observerRef = useRef();
   const queryClient = useQueryClient(); // 댓글 업데이트 후 데이터를 새로고침하기 위한 React Query Client
@@ -177,8 +182,8 @@ const FreeComments = ({ eateryNo }) => {
 
   // 좋아요 삭제
   const { mutate: unlikeMutate } = useMutation(unlikeComment, {
-    onSuccess: (likeNo) => {
-      setLikedComments((prev) => prev.filter((id) => id !== likeNo)); // 좋아요를 취소한 댓글 ID
+    onSuccess: (likedCommentNo) => {
+      setLikedComments((prev) => prev.filter((id) => id !== likedCommentNo)); // 좋아요를 취소한 댓글 ID
       queryClient.invalidateQueries(['likes', eateryNo, memberNo]);
       queryClient.invalidateQueries(['comments', eateryNo]);
     },
@@ -258,15 +263,14 @@ const FreeComments = ({ eateryNo }) => {
       // 좋아요 누르기
       likeMutate({ eateryNo, memberNo, commentNo });
     }
-    console.log(commentNo);
   };
 
   if (isLoading) return <MySpinner />;
 
   return (
-    <Box w='full' p={4}>
+    <Box w="full" p={4}>
       {/* 새 댓글 작성 */}
-      <Flex direction='column' mb={4}>
+      <Flex direction="column" mb={4}>
         <Textarea
           value={newCommentContent}
           onChange={(e) => setNewCommentContent(e.target.value)}
@@ -291,6 +295,7 @@ const FreeComments = ({ eateryNo }) => {
           {page.content.map((comment, index) => {
             const isLastItem = pageIndex === data.pages.length - 1 && index === page.content.length - 1;
 
+            // !comment.parentCommentNo
             return (
               !comment.parentCommentNo && (
                 <Box
@@ -371,14 +376,7 @@ const FreeComments = ({ eateryNo }) => {
                               <Button colorPalette="orange" size="sm" mr={2} onClick={() => handleEditClick(comment)}>
                                 수정
                               </Button>
-                              <Button
-                                colorPalette="orange"
-                                size="sm"
-                                colorScheme="red"
-                                onClick={() => handleCommentDelete(comment.no)}
-                              >
-                                삭제
-                              </Button>
+                              <DeleteDialog onClick={() => handleCommentDelete(comment.no)} />
                             </Box>
                           </Flex>
                         ) : (
@@ -526,9 +524,7 @@ const FreeComments = ({ eateryNo }) => {
                                       <Button size="sm" mr={2} onClick={() => handleReplyEditClick(childComment)}>
                                         수정
                                       </Button>
-                                      <Button size="sm" colorScheme="red" onClick={() => handleCommentDelete(childComment.no)}>
-                                        삭제
-                                      </Button>
+                                      <DeleteDialog onClick={() => handleCommentDelete(childComment.no)} />
                                     </Flex>
                                   ) : (
                                     // 회원 로그인을 했고, 작성자가 아닌 경우
