@@ -13,41 +13,46 @@ const MainCard = ({ data }) => {
   const [eatery, setEatery] = useState(data);
 
   useEffect(() => {
-    // 마크업으로 작성된 설명 부분 평문으로 변환
-    let div = document.createElement("div");
-    div.innerHTML = data.description;
-    setEatery({ ...eatery, description: div.textContent || div.innerText });
+    const fetchAdditionalData = async () => {
+      try {
+        // 즐겨찾기 개수 가져오기
+        const favoriteCount = await axios
+            .get(`/main/eateries/${data.no}/favorites/count`)
+            .then((res) => res.data);
 
-    axios(`/main/eateries/${data.no}/favorites/count`, {method: "GET"})
-    .then(response => response.data)
-    .then(data => setEatery({...eatery, favoriteCount: data}) )
-    .catch(error => console.log(error));
-  }, [data]);
+        setEatery((prev) => ({
+          ...prev,
+          favoriteCount,
+        }));
+      } catch (error) {
+        console.error("추가 데이터 가져오기 오류:", error);
+      }
+    };
+
+    fetchAdditionalData();
+  }, [data.no]);
 
   const navigate = useNavigate();
 
-  // 상세 페이지로 이동
-  const handleCardClick = () => {
-    // 음식점 상세 페이지 접근 시 조회 수 증가 요청
-    axios(`/main/eateries/${data.no}/view/counts`, { method: "PUT", params: { no: data.no} })
-    .then((response) => response.data)
-    .catch((error) => console.log("error : " + error));
+  // 상세 페이지로 이동 및 조회수 업데이트
+  const handleCardClick = async () => {
+    try {
+      await axios.put(`/main/eateries/${data.no}/view/counts`, {
+        params: { no: data.no },
+      });
 
-    // 상세 페이지로 이동
-    navigate(`/detail/${eatery.no}`);
+      // 로컬 상태에서 조회수 증가
+      setEatery((prev) => ({
+        ...prev,
+        viewCount: prev.viewCount + 1,
+      }));
+
+      // 상세 페이지로 이동
+      navigate(`/detail/${eatery.no}`);
+    } catch (error) {
+      console.error("조회수 업데이트 실패:", error);
+    }
   };
-
-  // thumbnail 도메인이 CORS에 차단된 경우 이미지가 출력되지 않는다.
-  const blockedDomains = [
-    "postfiles.pstatic.net",
-    "dthumb-phinf",
-    "blogfiles.pstatic.net",
-  ];
-
-  // thumbnail 차단 여부 반환 메서드 - JS.some() : 배열의 요소 중 하나라도 조건을 만족하면 true 반환 "OR 연산과 동일" _ 반대는 JS.every()
-  const isThumbnailBlocked = blockedDomains.some(domain => {
-    return eatery.thumbnail?.includes(domain);
-  });
 
   return (
       <Card.Root
@@ -65,25 +70,13 @@ const MainCard = ({ data }) => {
         >
           {/* 이미지 출력 영역 (좌) */}
           <Box flex="3" overflow="hidden">
-            {eatery.thumbnail && !isThumbnailBlocked ? (
                 <Image
-                    src={eatery.thumbnail}
+                    src={`http://localhost:8080/proxy/image?url=${encodeURIComponent(eatery?.thumbnail)}`}
                     height="100%"
                     width="100%"
                     objectFit="cover"
                     alt="음식점 이미지"
                 />
-            ) : (
-                <Flex
-                    align="center"
-                    justify="center"
-                    height="100%"
-                    bg="gray.200"
-                    color="gray.400"
-                >
-                  <MdCategory style={{ fontSize: "81px" }} />
-                </Flex>
-            )}
           </Box>
 
           {/* 정보 출력 영역 (우) */}
