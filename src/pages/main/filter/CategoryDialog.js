@@ -20,7 +20,7 @@ import {
 } from "components/ui/dialog";
 
 import { setCategory } from "../../../redux/slices/filterSlice";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const CategoryDialog = () => {
     const dispatch = useDispatch();
@@ -31,13 +31,23 @@ const CategoryDialog = () => {
     const [selectedCategoryGroup, setSelectedCategoryGroup] = useState(category.group);
     const [selectedCategories, setSelectedCategories] = useState(category.categories);
 
+    // 초기값으로 설정
+    useEffect(() => {
+        setSelectedCategoryGroup(category.group);
+        setSelectedCategories(category.categories);
+    }, [category]);
+
     const handleGroupSelect = (group) => {
         setSelectedCategoryGroup(group);
         setSelectedCategories(null); // 소분류 초기화
     };
 
     const handleCategorySelect = (cat) => {
-        setSelectedCategories(cat);
+        setSelectedCategories(prev =>
+            prev && prev.no === cat.no // 기존 선택값과 동일 여부 판단
+                ? null // 해제
+                : cat // 선택
+        );
     };
 
     const applyChanges = () => {

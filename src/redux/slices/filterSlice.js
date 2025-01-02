@@ -4,7 +4,7 @@ const filterSlice = createSlice({
     name: "filter",
     initialState: {
         category: {
-            group: { no: null, name: null }, // 대분류
+            group: { no: 1, name: "한식" }, // 대분류
             categories: { no: null, name: null }, // 소분류
         },
         categoryGroups: [], // 카테고리 그룹 데이터
@@ -27,7 +27,7 @@ const filterSlice = createSlice({
         },
         setLocation(state, action) {
             state.location.group = action.payload.group;
-            state.location.locations = action.payload.locations;
+            state.location.locations = action.payload.locations ? action.payload.locations : "";
         },
         setLocationGroups(state, action) {
             state.locationGroups = action.payload;
@@ -46,10 +46,12 @@ const filterSlice = createSlice({
             };
             state.categoryGroups = [];
             state.location = {
-                group: null,
-                locations: null,
-                coords: { lat: "37.498863932227", lng: "127.03167064582" },
-                address: "서울 강남구",
+                group: "서울",
+                locations: "강남구",
+                coords: {
+                    lat: "37.498863932227",
+                    lng: "127.03167064582",
+                }
             };
             state.locationGroups = [];
         },

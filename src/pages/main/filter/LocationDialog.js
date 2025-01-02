@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
 import {
@@ -31,13 +31,23 @@ const LocationDialog = () => {
     const [selectedLocationGroup, setSelectedLocationGroup] = useState(locationFilter.group);
     const [selectedLocation, setSelectedLocation] = useState(locationFilter.locations);
 
+    // 초기값으로 설정
+    useEffect(() => {
+        setSelectedLocationGroup(locationFilter.group);
+        setSelectedLocation(locationFilter.locations);
+    }, [locationFilter]);
+
     const handleGroupSelect = (group) => {
         setSelectedLocationGroup(group);
         setSelectedLocation(null); // 소분류 초기화
     };
 
     const handleLocationSelect = (location) => {
-        setSelectedLocation(location);
+        setSelectedLocation(prev =>
+            prev && prev === location // 기존 선택값과 동일 여부 판단
+                ? null // 선택 해제
+                : location // 선택
+        );
     };
 
     const applyChanges = () => {
