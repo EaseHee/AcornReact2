@@ -1,6 +1,5 @@
-﻿import React from "react";
+import React from "react";
 import { Stack } from "@chakra-ui/react";
-
 import Header from "./Header";
 import Body from "./Body";
 import Footer from "./Footer";

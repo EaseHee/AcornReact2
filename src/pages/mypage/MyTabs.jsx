@@ -9,7 +9,7 @@ const queryClient = new QueryClient();
 
 const MyTabs = ({ memberNo, nickname }) => {
   return (
-    <Tabs.Root mt={4} variant="enclosed" defaultValue="stars">
+    <Tabs.Root mt={4} variant="enclosed" defaultValue="favorites">
       <Tabs.List>
         <Tabs.Trigger value="favorites">즐겨 찾기</Tabs.Trigger>
         <Tabs.Trigger value="stars">별점 리뷰</Tabs.Trigger>
@@ -27,10 +27,12 @@ const MyTabs = ({ memberNo, nickname }) => {
           {/* 별점 리뷰 */}          
           <StarReviews memberNo={memberNo} nickname={nickname} />
         </Tabs.Content>
+
         <Tabs.Content value="comments">
           {/* 자유 댓글 */}
           
         </Tabs.Content>
+
         <Tabs.Content value="info">          
           {/* 내 정보 */}
           <ProfileForm />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import axios from "axios";
+import axios from "utils/axios";
 import MySpinner from "../../../../components/Spinner.js";
 import { Box, Card } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
@@ -15,26 +15,21 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const fetchReviews = async (currentPage) => {
     setIsLoading(true); // 로딩 시작
     try {
-      // 지연시간 1초 추가
-      setTimeout(async () => {
-        const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
-          params: { page: currentPage },
-        });
-        const { content, page: pageInfo } = response.data.list;
-
-      // 중복된 리뷰가 추가되지 않도록 처리
-      setReviews((prevReviews) => {
-        const newReviews = content.filter(review => 
-          !prevReviews.some(prevReview => prevReview.no === review.no)
-        );
-        return [...prevReviews, ...newReviews];
+      const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
+        params: { page: currentPage }, // 쿼리 매개변수 설정
+        withCredentials: true, // 쿠키를 함께 전송하도록 설정
       });
-
-        // 모든 페이지 로드 완료 여부 확인
-        setHasMore(pageInfo.number < pageInfo.totalPages);
-
-        setIsLoading(false); // 로딩 완료
-      }, 1000); // 1초 지연
+      const { content, page: pageInfo } = response.data.list;
+    // 중복된 리뷰가 추가되지 않도록 처리
+    setReviews((prevReviews) => {
+      const newReviews = content.filter(review => 
+        !prevReviews.some(prevReview => prevReview.no === review.no)
+      );
+      return [...prevReviews, ...newReviews];
+    });
+      // 모든 페이지 로드 완료 여부 확인
+      setHasMore(pageInfo.number < pageInfo.totalPages);
+      setIsLoading(false); // 로딩 완료
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
       setIsLoading(false); // 오류 발생 시 로딩 상태 해제
@@ -66,7 +61,12 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
     const emptyStar = '☆';
     return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
   };
-
+  const refreshReviews = async () => {
+    setReviews([]); // 기존 데이터 초기화
+    setPage(1);     // 첫 페이지로 초기화
+    setHasMore(true); // 추가 데이터 로드 가능 상태로 초기화
+    await fetchReviews(1); // 첫 페이지 데이터 다시 로드
+  };
   return (
     <div
       id="scrollableDiv"
@@ -96,7 +96,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
             </Card.Description>
           </Card.Body>
               <Box alignSelf="end">
-                <DeleteDialog reviewNo={review.no}/>
+                <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()}/>
                 <CustomDialog
                   openBtnText="리뷰 수정"
                   title={nickname}
@@ -104,6 +104,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
                   memberNo={memberNo}
                   confirmBtnText="수정"
                   closeBtnText="취소"
+                  onReviewSubmitted={() => refreshReviews()}
                 />
               </Box>
           <Card.Footer>

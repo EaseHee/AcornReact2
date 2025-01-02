@@ -1,5 +1,5 @@
 import { Box, Button, Card, HStack } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import StarReviewCard from './StarReviewCard';
 import CustomDialog from './CustomDialog';
 import axios from 'axios';
@@ -10,6 +10,7 @@ export default function StarReviews({no}) {
   };
   const [memberNo, setMemberNo] = useState(0); // 상태로 관리
   const [nickName, setNickName] = useState(""); // 상태로 관리
+  const refreshReviews = useRef();
   useEffect(()=>{
     const fetchMemberNo = async () => {
       try {
@@ -33,20 +34,19 @@ export default function StarReviews({no}) {
             <Button mr="3" onClick={() => handleSortChange("createdAt")} variant={sortBy === "createdAt" ? "subtle" : "outline"}>최신순</Button>
             <Button onClick={() => handleSortChange("rating")} variant={sortBy === "rating" ? "subtle" : "outline"}>추천순</Button>
           </Box>
-          <Box>
-            <CustomDialog
-              openBtnText="리뷰 쓰기"
-              title={nickName}
-              memberNo={memberNo}
-              eateryNo={no}
-              confirmBtnText="등록"
-              closeBtnText="취소"
-            />
-          </Box>
+          <CustomDialog
+            openBtnText="리뷰 쓰기"
+            title={nickName}
+            memberNo={memberNo}
+            eateryNo={no}
+            confirmBtnText="등록"
+            closeBtnText="취소"
+            onReviewSubmitted={() => refreshReviews.current()}
+          />
         </HStack>
       </Card.Header>
       <Card.Body>
-        <StarReviewCard eateryNo={no} sortBy={sortBy} />
+        <StarReviewCard eateryNo={no} sortBy={sortBy} passRefresh={(fn) => (refreshReviews.current = fn)}/>
       </Card.Body>
     </Card.Root>
   );

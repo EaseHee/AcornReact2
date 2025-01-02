@@ -21,13 +21,18 @@ const fetchComments = async ({ pageParam = 0, eateryNo }) => {
 };
 
 // 댓글 작성
-const postComment = async ({ eateryNo, content, memberNo }) => {
-  const response = await axios.post(`http://localhost:8080/main/eateries/comments`, {
-    eateryNo,
-    content,
-    memberNo,
-  });
-  return response.data;
+const postComment = async ({ eateryNo, content, memberNo, parentCommentNo }) => {
+  try {
+    const response = await axios.post(`http://localhost:8080/main/eateries/comments`, {
+      eateryNo,
+      content,
+      memberNo,
+      parentCommentNo, // 대댓글 작성 시 포함
+    });
+    return response.data;
+  } catch (err) {
+    console.error(err.message);
+  }
 };
 
 // 댓글 삭제
@@ -37,17 +42,22 @@ const deleteComment = async (commentNo) => {
 };
 
 // 댓글 수정
-const updateComment = async (commentNo, content) => {
+const updateComment = async ({ commentNo, content }) => {
   try {
     const response = await axios.put(`http://localhost:8080/main/eateries/comments/${commentNo}`, {
       content,
     });
     return response.data;
   } catch (err) {
-    console.log('commentNo:', commentNo);
+    console.error(err.message);
   }
 };
 
+/**
+ * 자유 댓글 컴포넌트
+ * @param {int} eateryNo
+ * @returns 해당 식당의 댓글을 무한스크롤 처리하여 나열
+ */
 const FreeComments = ({ eateryNo }) => {
   const [memberNo, setMemberNo] = useState(0);
 
@@ -83,6 +93,7 @@ const FreeComments = ({ eateryNo }) => {
   const [editedReplyContent, setEditedReplyContent] = useState(''); // 수정된 대댓글 내용 추적
   const [replyingToComment, setReplyingToComment] = useState(null); // 대댓글 작성 중인 댓글 추적
   const [newCommentContent, setNewCommentContent] = useState(''); // 새 댓글 내용 추적
+  const [newReplyContent, setNewReplyContent] = useState(''); // 대댓글 입력 상태
 
   const observerRef = useRef();
   const queryClient = useQueryClient(); // 댓글 업데이트 후 데이터를 새로고침하기 위한 React Query Client
@@ -111,6 +122,8 @@ const FreeComments = ({ eateryNo }) => {
       queryClient.invalidateQueries(['comments', eateryNo]);
       setEditingComment(null);
       setEditedContent('');
+      setEditingReply(null);
+      setEditedReplyContent('');
     },
   });
 
@@ -136,13 +149,18 @@ const FreeComments = ({ eateryNo }) => {
 
   const handleSaveClick = async () => {
     if (editedContent.trim()) {
-      updateCommentMutate({ commentNo: editingComment.commentNo, content: editedContent });
+      updateCommentMutate({ commentNo: editingComment, content: editedContent });
     }
   };
 
   const handleCancelClick = () => {
     setEditingComment(null);
     setEditedContent('');
+  };
+
+  const handleReplyEditClick = (childComment) => {
+    setEditingReply(childComment.no);
+    setEditedReplyContent(childComment.content);
   };
 
   const handleReplyClick = (comment) => {
@@ -153,8 +171,12 @@ const FreeComments = ({ eateryNo }) => {
     setReplyingToComment(replyingToComment === comment.no ? null : comment.no);
   };
 
-  const handleReplySubmit = () => {
-    setReplyingToComment(null);
+  const handleReplySubmit = (commentNo) => {
+    if (newReplyContent.trim()) {
+      addComment({ eateryNo, content: newReplyContent, memberNo, parentCommentNo: commentNo });
+      setReplyingToComment(null);
+      setNewReplyContent('');
+    }
   };
 
   const handleCommentDelete = (commentNo) => {
@@ -170,21 +192,22 @@ const FreeComments = ({ eateryNo }) => {
   if (isLoading) return <MySpinner />;
 
   return (
-    <Box w="full" p={4}>
+    <Box w='full' p={4}>
       {/* 새 댓글 작성 */}
-      <Flex direction="column" mb={4}>
+      <Flex direction='column' mb={4}>
         <Textarea
           value={newCommentContent}
           onChange={(e) => setNewCommentContent(e.target.value)}
           placeholder={memberNo === 0 ? '댓글을 작성하려면 로그인하세요' : '새 댓글을 작성하세요'}
-          size="sm"
-          rows="4"
-          mb="2"
+          size='sm'
+          rows='4'
+          mb='2'
+          color='black'
           disabled={memberNo === 0}
         />
         {memberNo !== 0 && (
-          <Flex justify="flex-end">
-            <Button size="sm" colorScheme="blue" onClick={handleNewCommentSubmit}>
+          <Flex justify='end'>
+            <Button size='sm' colorScheme='blue' onClick={handleNewCommentSubmit}>
               작성
             </Button>
           </Flex>
@@ -201,22 +224,23 @@ const FreeComments = ({ eateryNo }) => {
                 key={comment.no}
                 ref={isLastItem ? lastElementRef : null}
                 p={4}
-                borderWidth="1px"
-                borderRadius="lg"
+                borderWidth='1px'
+                borderRadius='lg'
                 mb={4}
-                boxShadow="sm"
+                boxShadow='sm'
+                bg={comment.deleted ? 'gray.300' : 'white'}
               >
-                <Flex justify="space-between" mb={2}>
-                  <Text fontSize="sm" fontWeight="bold" color="black">
+                <Flex justify='space-between' mb={2}>
+                  <Text fontSize='sm' fontWeight='bold' color='black'>
                     {comment.nickname || <>익명</>}
                   </Text>
-                  <Flex direction="row" align="center">
+                  <Flex direction='row' align='center'>
                     {comment.updatedAt === comment.createdAt ? null : (
-                      <Text fontSize="xx-small" color="black" ml={2}>
+                      <Text fontSize='xx-small' color='black' ml={2}>
                         (수정일: {new Date(comment.updatedAt).toLocaleString()})
                       </Text>
                     )}
-                    <Text fontSize="xx-small" color="black" ml={2}>
+                    <Text fontSize='xx-small' color='black' ml={2}>
                       작성일: {new Date(comment.createdAt).toLocaleString()}
                     </Text>
                   </Flex>
@@ -224,37 +248,46 @@ const FreeComments = ({ eateryNo }) => {
 
                 {editingComment === comment.no ? (
                   <Box>
-                    <Textarea value={editedContent} onChange={(e) => setEditedContent(e.target.value)} size="sm" />
-                    <Flex justify="flex-end" mt={2}>
-                      <Button size="sm" colorScheme="blue" onClick={handleSaveClick} mr={2}>
+                    <Textarea
+                      value={editedContent}
+                      onChange={(e) => setEditedContent(e.target.value)}
+                      size='sm'
+                      color='black'
+                      rows={4}
+                    />
+                    <Flex justify='end' mt={2}>
+                      <Button size='sm' colorScheme='blue' onClick={handleSaveClick} mr={2}>
                         저장
                       </Button>
-                      <Button size="sm" colorScheme="gray" onClick={handleCancelClick}>
+                      <Button size='sm' colorScheme='gray' onClick={handleCancelClick}>
                         취소
                       </Button>
                     </Flex>
                   </Box>
                 ) : (
-                  <Text fontSize="md" color="black" mb={2}>
+                  <Text fontSize='md' color='black' mb={2}>
                     {comment.content}
                   </Text>
                 )}
 
                 {/* 댓글 버튼들 */}
                 {editingComment !== comment.no && (
-                  <Flex justify="flex-end">
+                  <Flex justify='end'>
                     {memberNo !== 0 && (
-                      <Button size="sm" mr={2} onClick={() => handleReplyClick(comment)}>
-                        대댓글
-                      </Button>
+                      <Flex align='center'>
+                        {/* 좋아요 아이콘 위치 */}
+                        <Button size='sm' mx={2} onClick={() => handleReplyClick(comment)}>
+                          대댓글 달기
+                        </Button>
+                      </Flex>
                     )}
 
-                    {memberNo === comment.memberNo && (
+                    {memberNo === comment.memberNo && !comment.deleted && (
                       <Box>
-                        <Button size="sm" mr={2} onClick={() => handleEditClick(comment)}>
+                        <Button size='sm' mr={2} onClick={() => handleEditClick(comment)}>
                           수정
                         </Button>
-                        <Button size="sm" colorScheme="red" onClick={() => handleCommentDelete(comment.no)}>
+                        <Button size='sm' colorScheme='red' onClick={() => handleCommentDelete(comment.no)}>
                           삭제
                         </Button>
                       </Box>
@@ -265,12 +298,20 @@ const FreeComments = ({ eateryNo }) => {
                 {/* 대댓글 작성창 */}
                 {replyingToComment === comment.no && (
                   <Box mt={2}>
-                    <Textarea placeholder="대댓글을 작성하세요" size="sm" mb={2} />
-                    <Flex justify="flex-end">
-                      <Button size="sm" colorScheme="blue" onClick={() => handleReplySubmit(comment)} mr={2}>
-                        제출
+                    <Textarea
+                      placeholder='대댓글을 작성하세요'
+                      size='sm'
+                      mb={2}
+                      color='black'
+                      value={newReplyContent}
+                      onChange={(e) => setNewReplyContent(e.target.value)}
+                      rows={4}
+                    />
+                    <Flex justify='end'>
+                      <Button size='sm' colorScheme='blue' onClick={() => handleReplySubmit(comment.no)} mr={2}>
+                        작성
                       </Button>
-                      <Button size="sm" colorScheme="gray" onClick={() => setReplyingToComment(null)}>
+                      <Button size='sm' colorScheme='gray' onClick={() => setReplyingToComment(null)}>
                         취소
                       </Button>
                     </Flex>
@@ -279,33 +320,34 @@ const FreeComments = ({ eateryNo }) => {
 
                 {/* 대댓글 보기 */}
                 {comment.childComments && comment.childComments.length > 0 && (
-                  <AccordionRoot collapsible variant="plain">
+                  <AccordionRoot collapsible variant='plain' defaultValue={['b']}>
                     <AccordionItem>
-                      <AccordionItemTrigger cursor="pointer" w="fit-content">
-                        <Text color="black">{comment.childComments.length}개의 대댓글 보기</Text>
+                      <AccordionItemTrigger cursor='pointer' w='fit-content'>
+                        <Button variant='outline'>{comment.childComments.length}개의 대댓글</Button>
                       </AccordionItemTrigger>
                       <AccordionItemContent>
                         {comment.childComments.map((childComment) => (
                           <Box
                             key={childComment.no}
                             p={4}
-                            borderWidth="1px"
-                            borderRadius="lg"
+                            borderWidth='1px'
+                            borderRadius='lg'
                             mb={4}
                             ml={6}
-                            boxShadow="sm"
+                            boxShadow='sm'
+                            bg='white'
                           >
-                            <Flex justify="space-between" mb={2}>
-                              <Text fontSize="sm" fontWeight="bold" color="black">
+                            <Flex justify='space-between' mb={2}>
+                              <Text fontSize='sm' fontWeight='bold' color='black'>
                                 {childComment.nickname || <>익명</>}
                               </Text>
-                              <Flex direction="row" align="center">
+                              <Flex direction='row' align='center'>
                                 {childComment.updatedAt === childComment.createdAt ? null : (
-                                  <Text fontSize="xx-small" color="black" ml={2}>
+                                  <Text fontSize='xx-small' color='black' ml={2}>
                                     (수정일: {new Date(childComment.updatedAt).toLocaleString()})
                                   </Text>
                                 )}
-                                <Text fontSize="xx-small" color="black" ml={2}>
+                                <Text fontSize='xx-small' color='black' ml={2}>
                                   작성일: {new Date(childComment.createdAt).toLocaleString()}
                                 </Text>
                               </Flex>
@@ -316,41 +358,37 @@ const FreeComments = ({ eateryNo }) => {
                                 <Textarea
                                   value={editedReplyContent}
                                   onChange={(e) => setEditedReplyContent(e.target.value)}
-                                  size="sm"
+                                  size='sm'
+                                  color='black'
+                                  rows={4}
                                 />
-                                <Flex justify="flex-end" mt={2}>
+                                <Flex justify='end' mt={2}>
                                   <Button
-                                    size="sm"
-                                    colorScheme="blue"
-                                    onClick={() =>
-                                      updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })
-                                    }
+                                    size='sm'
+                                    colorScheme='blue'
+                                    onClick={() => updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })}
                                     mr={2}
                                   >
                                     저장
                                   </Button>
-                                  <Button size="sm" colorScheme="gray" onClick={() => setEditingReply(null)}>
+                                  <Button size='sm' colorScheme='gray' onClick={() => setEditingReply(null)}>
                                     취소
                                   </Button>
                                 </Flex>
                               </Box>
                             ) : (
-                              <Text fontSize="md" color="black" mb={2}>
+                              <Text fontSize='md' color='black' mb={2}>
                                 {childComment.content}
                               </Text>
                             )}
 
                             {/* 대댓글 수정 삭제 버튼 */}
-                            {editingReply !== childComment.no && memberNo === childComment.no && (
-                              <Flex justify="flex-end">
-                                <Button size="sm" mr={2} onClick={() => setEditingReply(childComment.no)}>
+                            {editingReply !== childComment.no && memberNo === childComment.memberNo && (
+                              <Flex justify='end'>
+                                <Button size='sm' mr={2} onClick={() => handleReplyEditClick(childComment)}>
                                   수정
                                 </Button>
-                                <Button
-                                  size="sm"
-                                  colorScheme="red"
-                                  onClick={() => handleCommentDelete(childComment.no)}
-                                >
+                                <Button size='sm' colorScheme='red' onClick={() => handleCommentDelete(childComment.no)}>
                                   삭제
                                 </Button>
                               </Flex>
