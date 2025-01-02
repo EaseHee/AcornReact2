@@ -87,7 +87,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
         {sortedReviews.map((review, index) => (
           <Card.Root maxW="svw" overflow="hidden"  key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
           <Card.Body gap="3">
-            <Card.Title></Card.Title>
+            <Card.Title>{review.reviewEateriesDto.name}</Card.Title>
             <Card.Description>
               {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
               {nickname}
