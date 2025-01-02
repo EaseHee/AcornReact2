@@ -64,7 +64,7 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
     <DialogRoot placement="center">
       <Toaster/>
       <DialogTrigger asChild>
-        <Button size="sm"> {openBtnText}</Button>
+        <Button colorPalette="orange" size="sm"> {openBtnText}</Button>
       </DialogTrigger>
       <DialogContent >
         <DialogHeader>
@@ -104,11 +104,11 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
           </Fieldset.Root>
         </DialogBody>
         <DialogFooter>
-          <DialogActionTrigger asChild>
-            <Button variant="outline">{closeBtnText}</Button>
+        <DialogActionTrigger asChild>
+          <Button colorPalette="orange" onClick={handleSubmit} >{confirmBtnText}</Button>
           </DialogActionTrigger>
           <DialogActionTrigger asChild>
-          <Button onClick={handleSubmit} >{confirmBtnText}</Button>
+            <Button variant="outline">{closeBtnText}</Button>
           </DialogActionTrigger>
         </DialogFooter>
         <DialogCloseTrigger/>

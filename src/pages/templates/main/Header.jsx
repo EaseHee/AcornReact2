@@ -44,13 +44,13 @@ const Header = () => {
     try {
       const response = await axios.post("/auth/logout");
       if (response.status === 200) {
-        alert("로그아웃 성공");
+        //alert("로그아웃 성공");
         dispatch(logout()); // 로그아웃
         navigate("/login");
       }
     } catch (error) {
       console.error("로그아웃 에러 : ", error);
-      alert("로그아웃 에러");
+      //alert("로그아웃 에러");
     }
   };
 

@@ -40,7 +40,7 @@ export default function StarReviews({no}) {
           </Box>
           {isLoggedIn ?
           <CustomDialog
-            openBtnText="리뷰 쓰기"
+            openBtnText="리뷰 작성"
             title={nickName}
             memberNo={memberNo}
             eateryNo={no}

@@ -40,7 +40,7 @@ const DeleteDialog = ({reviewNo, onReviewSubmitted}) => {
         <Toaster/>
         <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-            리뷰 삭제
+            삭제
             </Button>
         </DialogTrigger>
         <DialogContent>
@@ -54,10 +54,10 @@ const DeleteDialog = ({reviewNo, onReviewSubmitted}) => {
             </DialogBody>
             <DialogFooter>
             <DialogActionTrigger asChild>
-                <Button variant="outline">취소</Button>
+            <Button colorPalette="orange" onClick={() => deleteMyReview(reviewNo)}>삭제</Button>
             </DialogActionTrigger>
             <DialogActionTrigger asChild>
-            <Button colorPalette="red" onClick={() => deleteMyReview(reviewNo)}>삭제</Button>
+                <Button variant="outline">취소</Button>
             </DialogActionTrigger>
             </DialogFooter>
             <DialogCloseTrigger />

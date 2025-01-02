@@ -90,23 +90,29 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
           <Card.Body gap="3">
             <Card.Title></Card.Title>
             <Card.Description>
-              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
-              {review.reviewMembersDto.name}<br></br><br></br>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}
+                </div>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <CustomDialog
+                    openBtnText="수정"
+                    title={nickname}
+                    review={review}
+                    memberNo={memberNo}
+                    confirmBtnText="수정"
+                    closeBtnText="취소"
+                    onReviewSubmitted={() => refreshReviews()}
+                  />
+                  <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()} />
+                </div>
+              </div>
+              {review.reviewMembersDto.name}
+              <br />
+              <br />
               {review.content}
             </Card.Description>
           </Card.Body>
-              <Box alignSelf="end">
-                <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()}/>
-                <CustomDialog
-                  openBtnText="리뷰 수정"
-                  title={nickname}
-                  review={review}
-                  memberNo={memberNo}
-                  confirmBtnText="수정"
-                  closeBtnText="취소"
-                  onReviewSubmitted={() => refreshReviews()}
-                />
-              </Box>
           <Card.Footer>
             {review.reviewImagesResponseDto.length>0 ?<Swiper ImgInfo={review.reviewImagesResponseDto}/>:null} 
           </Card.Footer>
