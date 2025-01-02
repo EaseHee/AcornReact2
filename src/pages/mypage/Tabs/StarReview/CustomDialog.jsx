@@ -98,7 +98,8 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
                 <input 
                   type="file" 
                   name="files" 
-                  multiple 
+                  multiple
+                  accept='image/*'
                   onChange={handleFileChange} 
                 />
               </Field>
