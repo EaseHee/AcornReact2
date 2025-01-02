@@ -70,7 +70,8 @@ const DetailPage = () => {
                 longitude={parseFloat(restaurant.longitude)}
             />
           </Box>
-        </Box>      
+        </Box>
+        
       <ReviewTabs restaurant={restaurant} no={no}>
         <BlogReviews />
       </ReviewTabs>

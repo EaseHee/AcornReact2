@@ -1,3 +1,7 @@
+import { useDispatch, useSelector } from "react-redux";
+import {useEffect, useState} from "react";
+import { FaMapMarkerAlt } from "react-icons/fa";
+
 import {
     Button,
     Text,
@@ -14,137 +18,107 @@ import {
     DialogRoot,
     DialogTitle,
     DialogTrigger,
-} from "../../../components/ui/dialog";
+} from "components/ui/dialog";
 
-import {FaMapMarkerAlt} from "react-icons/fa";
-
-import region from "./region.js"; // 지역 데이터를 가져오기
-
-import {useState} from "react";
-import axios from "utils/axios";
-import {useDispatch} from "react-redux";
-import {setEateries, setPage} from "../../../redux/slices/eateriesSlice";
+import { setLocation } from "../../../redux/slices/filterSlice";
 
 const LocationDialog = () => {
-    // 대분류, 소분류 select-box 데이터 상태변수로 관리
-    const [selectedRegion, setSelectedRegion] = useState(null);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [isOpen, setIsOpen] = useState(false); // 모달 열림 상태
-
     const dispatch = useDispatch();
+    const locationFilter = useSelector((state) => state.filter.location);
+    const locationGroups = useSelector((state) => state.filter.locationGroups); // Redux에서 가져오기
 
-    // 대분류 선택 메서드
-    const handleRegionSelect = (region) => {
-        setSelectedRegion(region); // 대분류 선택
+    // 선택된 값 (selected)
+    const [selectedLocationGroup, setSelectedLocationGroup] = useState(locationFilter.group);
+    const [selectedLocation, setSelectedLocation] = useState(locationFilter.locations);
+
+    // 초기값으로 설정
+    useEffect(() => {
+        setSelectedLocationGroup(locationFilter.group);
+        setSelectedLocation(locationFilter.locations);
+    }, [locationFilter]);
+
+    const handleGroupSelect = (group) => {
+        setSelectedLocationGroup(group);
         setSelectedLocation(null); // 소분류 초기화
     };
 
-    // 소분류 선택 메서드
     const handleLocationSelect = (location) => {
-        setSelectedLocation(location); // 소분류 선택
+        setSelectedLocation(prev =>
+            prev && prev === location // 기존 선택값과 동일 여부 판단
+                ? null // 선택 해제
+                : location // 선택
+        );
     };
 
-    const handleSubmit = async () => {
-        console.log("대분류:", selectedRegion);
-        console.log("소분류:", selectedLocation);
+    const applyChanges = () => {
+        dispatch(setLocation({ group: selectedLocationGroup, locations: selectedLocation }));
+    };
 
-        // 대분류나 소분류 중 하나를 반드시 선택해야 함
-        if (!selectedRegion) {
-            console.error("대분류를 선택하세요.");
-            return;
-        }
-
-        try {
-            // Redux 상태 초기화
-            dispatch(setPage(1));
-
-            // 서버 요청
-            const response = await axios(`/main/locations/${selectedRegion} ${selectedLocation}`, {
-                method: "GET",
-                params: {page: 1, size: 12},
-            });
-
-            const data = response.data.data;
-
-            dispatch(setEateries(data.content)); // 음식점 목록 업데이트
-            console.log("서버 응답 데이터:", data.content);
-        } catch (error) {
-            console.error("서버 요청 오류:", error);
-        } finally {
-            setIsOpen(false); // 모달 닫기
-        }
+    const resetChanges = () => {
+        setSelectedLocationGroup(locationFilter.group);
+        setSelectedLocation(locationFilter.locations);
     };
 
     return (
-        <DialogRoot isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <DialogRoot>
             <DialogTrigger asChild>
                 <Button variant="outline">
-                    <FaMapMarkerAlt/>
-                    지역 카테고리
+                    <FaMapMarkerAlt />
+                    {locationFilter.group || "지역 선택"}
+                    {locationFilter.locations && ` > ${locationFilter.locations}`}
                 </Button>
             </DialogTrigger>
-
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>지역 선택</DialogTitle>
                 </DialogHeader>
-
                 <DialogBody pb="4">
-                    {/* 대분류 카테고리 */}
-                    <Text fontWeight="medium" mb="4">
-                        대분류 카테고리
-                    </Text>
+                    <Text fontWeight="medium" mb="4">대분류 지역</Text>
                     <Flex gap="2" wrap="wrap">
-                        {region.map((group) => (
+                        {locationGroups.map((group) => (
                             <Button
                                 key={group.no}
-                                onClick={() => handleRegionSelect(group.name)}
-                                bg={selectedRegion === group.name ? "gray.500" : "gray.100"}
-                                color={selectedRegion === group.name ? "white" : "black"}
+                                onClick={() => handleGroupSelect(group.name)}
+                                bg={selectedLocationGroup === group.name ? "gray.500" : "gray.100"}
+                                color={selectedLocationGroup === group.name ? "white" : "black"}
                                 borderRadius="full"
-                                px={4}
-                                py={2}
-                                _hover={{bg: "gray.500", color: "white"}}
                             >
                                 {group.name}
                             </Button>
                         ))}
                     </Flex>
 
-                    {/* 소분류 카테고리 */}
-                    {selectedRegion && (
-                        <Box mt={6}>
-                            <Text fontWeight="medium" mb="4">
-                                {region.find((group) => group.name === selectedRegion)?.name} 하위 카테고리
-                            </Text>
+                    {selectedLocationGroup && (
+                        <Box mt="6">
+                            <Text fontWeight="medium" mb="4">소분류 지역</Text>
                             <Flex gap="2" wrap="wrap">
-                                {region
-                                    .find((group) => group.name === selectedRegion)
-                                    ?.locations.map((location) => (
+                                {locationGroups
+                                    .find((group) => group.name === selectedLocationGroup)
+                                    ?.locationsFilterDtos.map((loc) => (
                                         <Button
-                                            key={location.no}
-                                            onClick={() => handleLocationSelect(location.name)}
-                                            bg={selectedLocation === location.name ? "gray.500" : "gray.100"}
-                                            color={selectedLocation === location.name ? "white" : "black"}
+                                            key={loc.no}
+                                            onClick={() => handleLocationSelect(loc.name)}
+                                            bg={selectedLocation === loc.name ? "gray.500" : "gray.100"}
+                                            color={selectedLocation === loc.name ? "white" : "black"}
                                             borderRadius="full"
-                                            px={4}
-                                            py={2}
-                                            _hover={{bg: "gray.500", color: "white"}}
                                         >
-                                            {location.name}
+                                            {loc.name}
                                         </Button>
                                     ))}
                             </Flex>
                         </Box>
                     )}
                 </DialogBody>
-
                 <DialogFooter>
                     <DialogActionTrigger asChild>
-                        <Button colorPalette="orange" onClick={handleSubmit}>적용</Button>
+                        <Button colorPalette="orange" onClick={applyChanges}>
+                            적용
+                        </Button>
                     </DialogActionTrigger>
                     <DialogActionTrigger asChild>
-                        <Button variant="outline">닫기</Button>
+                        <Button variant="outline" onClick={resetChanges}>
+                            닫기
+                        </Button>
                     </DialogActionTrigger>
                 </DialogFooter>
             </DialogContent>
