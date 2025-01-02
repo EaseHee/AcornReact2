@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "utils/axios";
 
-import { Box, Flex } from "@chakra-ui/react";
+import {Box, Flex} from "@chakra-ui/react";
 import MainCard from "./MainCard.js";
 import Filter from "./filter/Filter";
 import Swiper from "components/swiper/Swiper.js";
 import MySpinner from "components/Spinner.js";
 
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {
     setCoords,
     setAddress,
@@ -17,14 +17,15 @@ import {
     setLocationGroups,
     setCategoryGroups
 } from "../../redux/slices/filterSlice";
-import { setEateries, setPage } from "../../redux/slices/eateriesSlice";
+import {setEateries, setPage} from "../../redux/slices/eateriesSlice";
+
 
 export default function Main() {
     const dispatch = useDispatch();
 
-    const { isLoggedIn } = useSelector(state => state.auth);
-    const { eateries, pagination } = useSelector((state) => state.eateries);
-    const { category, location } = useSelector((state) => state.filter);
+    const {isLoggedIn} = useSelector(state => state.auth);
+    const {eateries, pagination} = useSelector((state) => state.eateries);
+    const {category, location} = useSelector((state) => state.filter);
 
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -37,14 +38,14 @@ export default function Main() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    dispatch(setCoords({ lat: latitude, lng: longitude }));
+                    const {latitude, longitude} = position.coords;
+                    dispatch(setCoords({lat: latitude, lng: longitude}));
 
                     try {
                         const data = await (await axios("/main/locations/gps/user", {
-                                method: "GET",
-                                params: { x: longitude, y: latitude },
-                            })).data.data;
+                            method: "GET",
+                            params: {x: longitude, y: latitude},
+                        })).data.data;
 
                         const address = data.content[0]?.address.split(" ", 2); // ex. "서울 강남구" -> ["서울", "강남구"]
                         if (address) {
@@ -74,14 +75,13 @@ export default function Main() {
      * @param { page, size } : 페이지 번호, 데이터 개수 요청
      * redux store에 저장된 필터 데이터를 기준으로 서버에 요청
      */
-    const fetchData = async ({ page, size }) => {
+    const fetchData = async ({page, size}) => {
         let api;
 
-        if (isLoggedIn) {
-            api = `/main/members/eateries/recommends`;
-        } else {
+        // 필터 조건이 있는 경우 우선 적용
+        if (category?.group?.no && location?.group) {
             const locationParam = location.locations
-                ? location.group + " " + location.locations
+                ? `${location.group} ${location.locations}`
                 : location.group;
 
             const categoryParam = category.categories?.no
@@ -90,11 +90,15 @@ export default function Main() {
 
             api = `/main/locations/${locationParam}/${categoryParam}`;
         }
+        // 필터 조건이 없고 로그인 상태인 경우 사용자 추천 API 호출
+        else if (isLoggedIn) {
+            api = `/main/members/eateries/recommends`;
+        }
 
         console.log("[fetchData] API : ", api);
 
         try {
-            return await axios.get(api, { params: { page, size } })
+            return await axios.get(api, {params: {page, size}})
                 .then(res => res.data.data)
         } catch (error) {
             console.error("데이터 요청 중 오류:", error);
@@ -108,9 +112,11 @@ export default function Main() {
     const applyFilters = useCallback(async () => {
         if (!location.group || !category.group.no || loading) return;
         setLoading(true);
+        // 필터 적용 시 기존 음식점 데이터 초기화
+        dispatch(setEateries([]));
 
         try {
-            const data = await fetchData({ page: 1, size: 12 });
+            const data = await fetchData({page: 1, size: 12});
             if (data) {
                 setHasMore(data.page.totalPages > 1);
                 dispatch(setEateries(data.content));
@@ -121,7 +127,7 @@ export default function Main() {
         } finally {
             setLoading(false);
         }
-    }, [dispatch, location.group, location.locations, category.group.no, category.categories, loading, eateries, fetchData]);
+    }, [dispatch, category, location, loading]);
 
     /**
      * 다음 페이지 요청 메서드
@@ -131,7 +137,7 @@ export default function Main() {
         setLoading(true);
         try {
             const nextPage = pagination.page + 1;
-            const data = await fetchData({ page: nextPage, size: pagination.size });
+            const data = await fetchData({page: nextPage, size: pagination.size});
 
             if (!data || data.content.length === 0 || nextPage >= data.page.totalPages) {
                 setHasMore(false);
@@ -180,12 +186,12 @@ export default function Main() {
         <Box id="scrollableContainer" height="100vh" overflowY="auto">
             {/* 1행: 상단 메뉴 */}
             <Box position="sticky" top="0" zIndex={10} bg="white" boxShadow="md">
-                <Filter applyFilters={applyFilters} />
+                <Filter applyFilters={applyFilters}/>
             </Box>
 
             {/* 2행: Swiper */}
             <Box>
-                <Swiper />
+                <Swiper/>
             </Box>
 
             {/* 3행: 음식점 리스트 */}
@@ -195,12 +201,12 @@ export default function Main() {
                 next={getNext}
                 hasMore={hasMore}
                 loader={loading ? <MySpinner alignSelf="center"/> : null} // 로딩 중일 때 표시되는 컴포넌트
-                endMessage={<p style={{ textAlign: "center" }}>모든 음식점을 로드했습니다.</p>}
+                endMessage={<p style={{textAlign: "center"}}>모든 음식점을 로드했습니다.</p>}
             >
                 <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
                     {eateries.map((eatery, index) => (
-                        <Box key={index} w={{ base: "100%", sm: "48%", md: "30%", lg: "30%" }} borderRadius="md">
-                            <MainCard data={eatery} />
+                        <Box key={index} w={{base: "100%", sm: "48%", md: "30%", lg: "30%"}} borderRadius="md">
+                            <MainCard data={eatery}/>
                         </Box>
                     ))}
                 </Flex>
