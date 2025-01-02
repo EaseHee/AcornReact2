@@ -13,7 +13,7 @@ import {
 } from "../../../../components/ui/dialog"
 import { Toaster, toaster } from "../../../../components/ui/toaster";
 import axios from 'axios';
-const DeleteDialog = ({reviewNo, onClose}) => {
+const DeleteDialog = ({reviewNo, onReviewSubmitted}) => {
     //리뷰 삭제
     const deleteMyReview= async (reviewNo)=>{
     try {
@@ -26,8 +26,8 @@ const DeleteDialog = ({reviewNo, onClose}) => {
             type: "success",
         })}
         setTimeout(() => {
-            window.location.reload();        
-          }, 1500);
+            onReviewSubmitted();
+          }, 700);
     } catch (error) {
         toaster.create({
         description: "리뷰 삭제 실패!",
