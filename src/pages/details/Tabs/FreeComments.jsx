@@ -236,11 +236,11 @@ const FreeComments = ({ eateryNo }) => {
                   </Text>
                   <Flex direction='row' align='center'>
                     {comment.updatedAt === comment.createdAt ? null : (
-                      <Text fontSize='xx-small' color='black' ml={2}>
+                      <Text fontSize='sm' color='black' ml={2}>
                         (수정일: {new Date(comment.updatedAt).toLocaleString()})
                       </Text>
                     )}
-                    <Text fontSize='xx-small' color='black' ml={2}>
+                    <Text fontSize='sm' color='black' ml={2}>
                       작성일: {new Date(comment.createdAt).toLocaleString()}
                     </Text>
                   </Flex>

@@ -18,7 +18,7 @@ const Terms2 = () => {
           fontSize="sm"
           p={0}
           minW="unset"
-          color="blue.500"
+          color="orange.500"
         >
           개인 정보 보호 정책
         </Button>
