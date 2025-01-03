@@ -306,7 +306,7 @@ const FreeComments = ({ eateryNo }) => {
                 mb={4}
                 boxShadow="sm"
                 bg={comment.deleted ? 'gray.300' : 'white'}
-                style={comment.parentCommentNo ? { display: 'block' } : { display: 'block' }}
+                style={comment.parentCommentNo ? { display: 'none' } : { display: 'block' }}
               >
                 <Flex justify="space-between" mb={2}>
                   <Text fontSize="sm" fontWeight="bold" color="black">
@@ -496,13 +496,51 @@ const FreeComments = ({ eateryNo }) => {
                             {/* 대댓글 수정 삭제 버튼 */}
                             {editingReply !== childComment.no && (
                               <Flex justify="end">
-                                {memberNo === childComment.memberNo && (
-                                  // 작성자인 경우
+                                {memberNo === 0 ? (
+                                  // 회원 로그인을 하지 않은 경우
                                   <Flex justify="end" align="center">
+                                    <BsHandThumbsUp size={25} />
+                                    <Text ml={2}>{childComment.likeCount}</Text>
+                                  </Flex>
+                                ) : memberNo === childComment.memberNo ? (
+                                  // 회원 로그인을 했고, 작성자인 경우
+                                  <Flex justify="end" align="center">
+                                    {likedComments.includes(childComment.no) ? (
+                                      <BsHandThumbsUpFill
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    ) : (
+                                      <BsHandThumbsUp
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    )}
+                                    <Text mx={2}>{childComment.likeCount}</Text>
                                     <Button size="sm" mr={2} onClick={() => handleReplyEditClick(childComment)}>
                                       수정
                                     </Button>
                                     <DeleteDialog onClick={() => handleCommentDelete(childComment.no)} />
+                                  </Flex>
+                                ) : (
+                                  // 회원 로그인을 했고, 작성자가 아닌 경우
+                                  <Flex justify="end" align="center">
+                                    {likedComments.includes(childComment.no) ? (
+                                      <BsHandThumbsUpFill
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    ) : (
+                                      <BsHandThumbsUp
+                                        cursor="pointer"
+                                        size={25}
+                                        onClick={() => handleLikeClick(childComment.no)}
+                                      />
+                                    )}
+                                    <Text mx={2}>{childComment.likeCount}</Text>
                                   </Flex>
                                 )}
                               </Flex>
