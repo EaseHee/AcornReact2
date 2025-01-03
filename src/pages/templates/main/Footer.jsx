@@ -38,7 +38,7 @@ const Footer = () => {
       boxShadow="lg"
       position="sticky"
       bottom="0"
-      zIndex="1000"
+      zIndex="900"
     >
       {menuItems.map((item, index) => {
         const isActive = location.pathname === item.path;

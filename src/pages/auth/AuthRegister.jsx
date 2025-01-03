@@ -367,10 +367,11 @@ const AuthRegister = () => {
         >
           <Box
             bg="white"
-            p={6}
+            p={8}
             borderRadius="md"
             boxShadow="lg"
-            maxWidth="400px"
+            maxWidth="600px"
+            width="80%" // 화면 크기에 따라 적응하도록 설정
             textAlign="center"
             transform="scale(1)"
             transition="all 0.3s ease"
@@ -379,7 +380,7 @@ const AuthRegister = () => {
             <Text fontSize="lg" fontWeight="bold" color="orange.500" mb={4}>
               🎉 회원가입을 축하합니다!
             </Text>
-            <Text fontSize="md" color="gray.600" mb={6}>
+            <Text fontSize="md" color="black.600" mb={6}>
               로그인 페이지로 이동합니다.
             </Text>
 

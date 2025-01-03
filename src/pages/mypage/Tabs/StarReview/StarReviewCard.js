@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "utils/axios";
 import MySpinner from "../../../../components/Spinner.js";
-import { Box, Card } from "@chakra-ui/react"
+import { Box, Card, Text } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
 import CustomDialog from './CustomDialog';
 import DeleteDialog from './DeleteDialog.js'
@@ -11,6 +11,8 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const [page, setPage] = useState(1); // 현재 페이지 번호
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 여부
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const [error, setError] = useState(false);
+  const [formError, setFormError] = useState("");
   // 서버에서 리뷰 데이터를 가져오는 함수
   const fetchReviews = async (currentPage) => {
     setIsLoading(true); // 로딩 시작
@@ -31,6 +33,8 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
       setHasMore(pageInfo.number < pageInfo.totalPages);
       setIsLoading(false); // 로딩 완료
     } catch (error) {
+      setError(true);
+      setFormError("리뷰를 불러오는 데 실패했습니다.", error);
       setIsLoading(false); // 오류 발생 시 로딩 상태 해제
     }
   };
@@ -76,6 +80,11 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
         overflowX: "hidden", // 가로 스크롤 비활성화
       }}
     >
+      {error && (
+        <Text color="red.500" mb="4">
+          {formError}
+        </Text>
+      )}
       <InfiniteScroll
         scrollableTarget="scrollableDiv"
         dataLength={sortedReviews.length} // 현재까지 로드된 데이터 개수
@@ -103,10 +112,13 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
             <DeleteDialog reviewNo={review.no} onReviewSubmitted={() => refreshReviews()} />
             </Box>
             </Box>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
             <Card.Description>
               {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
               {nickname}
             </Card.Description>
+            <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
+            </Box>
             <br></br>
             {review.content}
           </Card.Body>

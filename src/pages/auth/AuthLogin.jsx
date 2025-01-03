@@ -31,7 +31,7 @@ const AuthLogin = () => {
   useEffect(() => {
     const savedEmail = Cookies.get("savedEmail");
     const savedChecked = Cookies.get("checked");
-    console.log(savedChecked);
+    //console.log(savedChecked);
     if (savedChecked === "true") {
       setChecked(true);
     }
@@ -70,6 +70,9 @@ const AuthLogin = () => {
           case 404:
             setLoginError("가입된 계정이 없습니다. 이메일을 확인해주세요.");
             break;
+          case 403:
+            setLoginError("비활성화된 계정입니다. 고객센터에 문의해주세요.");
+            break;
           case 401:
             setLoginError("이메일 또는 비밀번호를 확인해주세요.");
             break;
@@ -78,10 +81,10 @@ const AuthLogin = () => {
             break;
         }
 
-        console.error("Response Error:", error.response.data);
+        //console.error("Response Error:", error.response.data);
       } else {
         setLoginError("서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
-        console.error("Axios Error:", error.message);
+        //console.error("Axios Error:", error.message);
       }
     }
   };

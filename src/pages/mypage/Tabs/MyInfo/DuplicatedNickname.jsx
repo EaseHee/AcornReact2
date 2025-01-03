@@ -20,7 +20,7 @@ const DuplicatedNickname = ({ nickname, setIsNicknameAvailable }) => {
 
   const handleCheckNickname = async () => {
     try {
-      console.log(nickname);
+      //console.log(nickname);
       const response = await axios.get("http://localhost:8080/main/mypage/members/check-nickname", {
         withCredentials: true,
         params: { nickname }, 

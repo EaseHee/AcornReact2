@@ -29,11 +29,19 @@ const FindEmail = () => {
         message: `회원님의 이메일은 ${email} 입니다.`,
       });
     } catch (error) {
-      setResult({
-        status: "error",
-        title: "정보 불일치",
-        message: "정보 불일치 : 입력하신 정보를 확인해주세요.",
-      });
+      if (error.response) {
+        setResult({
+          status: "error",
+          title: "오류 발생",
+          message: error.response.data.message, // 서버의 오류 메시지 출력
+        });
+      } else {
+        setResult({
+          status: "error",
+          title: "서버 연결 실패",
+          message: "서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -125,7 +133,7 @@ const FindEmail = () => {
       width: "100%",
     },
     resultMessage: {
-      color: result?.status === "error" ? "red" : "green",
+      color: result?.status === "error" ? "red" : "orange",
       fontSize: "1em",
       marginLeft: "15px",
       display: "flex",

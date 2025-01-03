@@ -41,10 +41,9 @@ const filterSlice = createSlice({
         },
         resetFilter(state) {
             state.category = {
-                group: { no: null, name: null },
+                group: { no: 1, name: "한식" },
                 categories: { no: null, name: null },
             };
-            state.categoryGroups = [];
             state.location = {
                 group: "서울",
                 locations: "강남구",
@@ -53,7 +52,6 @@ const filterSlice = createSlice({
                     lng: "127.03167064582",
                 }
             };
-            state.locationGroups = [];
         },
     },
 });

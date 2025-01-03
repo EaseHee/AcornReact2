@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import MySpinner from "../../../../components/Spinner.js";
-import { Card } from "@chakra-ui/react"
+import { Box, Card, Text } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
 const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(1); // 현재 페이지 번호
   const [hasMore, setHasMore] = useState(true); // 추가 데이터가 있는지 여부
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const [error, setError] = useState(false);
+  const [formError, setFormError] = useState("");
   // 서버에서 리뷰 데이터를 가져오는 함수
   const fetchReviews = async (currentPage) => {
     setIsLoading(true); // 로딩 시작
@@ -34,7 +36,8 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
         setIsLoading(false); // 로딩 완료
       }, 1000); // 1초 지연
     } catch (error) {
-      console.error("Failed to fetch reviews:", error);
+      setError(true);
+      setFormError("리뷰를 불러 오는 데 실패 했습니다.", error);
       setIsLoading(false); // 오류 발생 시 로딩 상태 해제
     }
   };
@@ -81,6 +84,11 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
         overflowX: "hidden", // 가로 스크롤 비활성화
       }}
     >
+      {error && (
+        <Text color="red.500" mb="4">
+          {formError}
+        </Text>
+      )}
       <InfiniteScroll
         scrollableTarget="scrollableDiv"
         dataLength={sortedReviews.length} // 현재까지 로드된 데이터 개수
@@ -92,10 +100,12 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
         {sortedReviews.map((review, index) => (
           <Card.Root maxW="svw" overflow="hidden" key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
           <Card.Body gap="3">
-            <Card.Title></Card.Title>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Card.Title alignSelf="flex-start">{review.reviewMembersDto.name} 님</Card.Title>
+            <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
+            </Box>
             <Card.Description>
-              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
-              {review.reviewMembersDto.name}<br></br><br></br>
+              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br><br></br>
               {review.content}
             </Card.Description>
           </Card.Body>
