@@ -1,4 +1,4 @@
-import { Box, Button, Card, HStack } from '@chakra-ui/react';
+import { Box, Button, Card, HStack, Text } from '@chakra-ui/react';
 import { useSelector } from "react-redux";
 import React, { useEffect, useState, useRef } from 'react';
 import StarReviewCard from './StarReviewCard';
@@ -13,6 +13,8 @@ export default function StarReviews({no}) {
   const [nickName, setNickName] = useState(""); // 상태로 관리
   const refreshReviews = useRef();
   const isLoggedIn = useSelector(state=>state.auth.isLoggedIn);
+  const [error, setError] = useState(false);
+  const [formError, setFormError] = useState("");
   useEffect(()=>{
     if(isLoggedIn){
       const fetchMemberNo = async () => {
@@ -24,7 +26,8 @@ export default function StarReviews({no}) {
           setMemberNo(response.data.no); // 상태를 업데이트
           setNickName(response.data.nickname); // 상태를 업데이트
         } catch (error) {
-          console.error("닉네임을 가져오는 데 실패했습니다:", error);
+          setError(true);
+          setFormError("사용자 정보를 가져오는 데 실패 했습니다.", error);
         }
       };
       fetchMemberNo();
@@ -33,6 +36,11 @@ export default function StarReviews({no}) {
   return (
     <Card.Root w="11/12" mx="auto">
       <Card.Header>
+        {error && (
+          <Text color="red.500" mb="4">
+            {formError}
+          </Text>
+        )}
         <HStack justifyContent="space-between">
           <Box>
             <Button mr="3" onClick={() => handleSortChange("createdAt")} variant={sortBy === "createdAt" ? "subtle" : "outline"}>최신순</Button>
