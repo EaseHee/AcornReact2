@@ -21,6 +21,7 @@ import {
 } from "components/ui/dialog";
 
 import { setLocation } from "../../../redux/slices/filterSlice";
+import {setRecommendation} from "../../../redux/slices/eateriesSlice";
 
 const LocationDialog = () => {
     const dispatch = useDispatch();
@@ -51,6 +52,7 @@ const LocationDialog = () => {
     };
 
     const applyChanges = () => {
+        dispatch(setRecommendation(false));
         dispatch(setLocation({ group: selectedLocationGroup, locations: selectedLocation }));
     };
 

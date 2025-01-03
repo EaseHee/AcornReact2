@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {memo, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { MdCategory } from "react-icons/md";
 
@@ -8,7 +8,7 @@ import axios from "utils/axios";
 import {RiBookmarkLine} from "react-icons/ri";
 import {AiOutlineEye} from "react-icons/ai";
 
-const MainCard = ({ data }) => {
+const MainCard = memo(({ data }) => {
   // 서버에 음식점 상세 정보 요청
   const [eatery, setEatery] = useState(data);
 
@@ -125,5 +125,5 @@ const MainCard = ({ data }) => {
         </Flex>
       </Card.Root>
   );
-};
+});
 export default MainCard;

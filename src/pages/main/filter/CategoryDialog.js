@@ -21,6 +21,7 @@ import {
 
 import { setCategory } from "../../../redux/slices/filterSlice";
 import {useEffect, useState} from "react";
+import {setRecommendation} from "../../../redux/slices/eateriesSlice";
 
 const CategoryDialog = () => {
     const dispatch = useDispatch();
@@ -51,6 +52,7 @@ const CategoryDialog = () => {
     };
 
     const applyChanges = () => {
+        dispatch(setRecommendation(false));
         dispatch(
             setCategory({
                 group: selectedCategoryGroup,

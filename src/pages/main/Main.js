@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 
-import {Box, Flex} from "@chakra-ui/react";
+import {Box, Button, Flex, Text} from "@chakra-ui/react";
 
 import Swiper from "components/swiper/Swiper.js";
 import MySpinner from "components/Spinner.js";
@@ -13,25 +13,31 @@ import MainCard from "./MainCard.js";
 import Filter from "./filter/Filter";
 import NoDataComponent from "./NoDataComponent";
 
-import {useDispatch, useSelector} from "react-redux";
+import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {
     setLocationGroups,
-    setCategoryGroups
+    setCategoryGroups, resetFilter
 } from "../../redux/slices/filterSlice";
-import {setEateries, setPage} from "../../redux/slices/eateriesSlice";
+import {setEateries, setPage, setRecommendation} from "../../redux/slices/eateriesSlice";
 import GeoLocationWithKakaoAPI from "./GeoLocationWithKakaoAPI";
+
 
 export default function Main() {
     const dispatch = useDispatch();
 
     // 사용자의 로그인 정보, 음식점 목록 정보, 필터 정보를 저장, 관리하고 있는 redux 상태 변수
     const {isLoggedIn} = useSelector(state => state.auth);
-    const {eateries, pagination} = useSelector((state) => state.eateries);
+    const {pagination, isRecommended} = useSelector((state) => state.eateries);
+    const eateries = useSelector((state) => state.eateries.eateries, shallowEqual);
     const {category, location} = useSelector((state) => state.filter);
 
     const [hasMore, setHasMore] = useState(true);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [isInitialized, setIsInitialized] = useState(false);
+
+    // 오류 처리용 상태 변수
+    const [error, setError] = useState(false);
+    const [formError, setFormError] = useState("");
 
     /**
      * 음식점 데이터를 서버에 요청하는 메서드
@@ -40,41 +46,33 @@ export default function Main() {
      * @param { page, size } : 페이지 번호, 데이터 개수 요청
      * redux store에 저장된 필터 데이터를 기준으로 서버에 요청
      */
-    const fetchData = async ({page, size}) => {
+    const fetchData = useCallback(async ({page, size}) => {
         let api;
-
-        // 필터 조건이 있는 경우 우선 적용
         if (category?.group?.no && location?.group) {
             const locationParam = location.locations
                 ? `${location.group} ${location.locations}`
                 : location.group;
-
             const categoryParam = category.categories?.no
                 ? `categories/small/${category.categories.no}`
                 : `categories/large/${category.group.no}`;
-
             api = `/main/locations/${locationParam}/${categoryParam}`;
-        }
-        // 필터 조건이 없고 로그인 상태인 경우 사용자 추천 API 호출
-        else if (isLoggedIn) {
+        } else if (isLoggedIn) {
             api = `/main/members/eateries/recommends`;
         }
-
-        console.log("[fetchData] API : ", api);
-
         try {
-            return await axios.get(api, {params: {page, size}})
-                .then(res => res.data.data)
-        } catch (error) {
-            console.error("데이터 요청 중 오류:", error);
-            return null;
+            return await axios.get(api, {params: {page, size}}).then((res) => res.data.data);
+        } catch (e) {
+            setFormError("음식점 목록을 불러오는데 실패하였습니다.")
+            console.error("데이터 요청 중 오류:", e);
         }
-    };
+    }, [isLoggedIn, category, location]);
 
     /**
      * 필터 조건 적용 메서드
      */
     const applyFilters = useCallback(async () => {
+        if (isRecommended) return;
+
         if (!location?.group || !category?.group?.no || loading) return;
         setLoading(true);
         // 필터 적용 시 기존 음식점 데이터 초기화
@@ -89,12 +87,13 @@ export default function Main() {
             } else {
                 setHasMore(false);
             }
-        } catch (error) {
-            console.error("필터 적용 중 오류:", error);
+        } catch (e) {
+            setFormError("음식점 목록을 불러오는데 실패하였습니다.");
+            console.error("필터 적용 중 오류:", e);
         } finally {
             setLoading(false);
         }
-    }, [isInitialized, fetchData, category, location]);
+    }, [isRecommended, fetchData, category, location, loading]);
 
 
     /**
@@ -106,7 +105,20 @@ export default function Main() {
         setLoading(true);
         try {
             const nextPage = pagination.page + 1;
-            const data = await fetchData({ page: nextPage, size: pagination.size });
+            let data;
+
+            if (isRecommended) {
+                // 추천 상태인 경우 추천 API 호출
+                data = await axios.get(`/main/members/eateries/recommends`, {
+                    params: {
+                        page: nextPage,
+                        size: pagination.size
+                    }
+                }).then(res => res.data.data);
+            } else {
+                // 일반 필터 조건에 따른 데이터 호출
+                data = await fetchData({page: nextPage, size: pagination.size});
+            }
             if (data) {
                 dispatch(setEateries([...eateries, ...data.content]));
                 dispatch(setPage(nextPage));
@@ -114,8 +126,9 @@ export default function Main() {
             } else {
                 setHasMore(false);
             }
-        } catch (error) {
-            console.error("다음 페이지 요청 중 오류:", error);
+        } catch (e) {
+            setFormError("다음 페이지를 불러오는데 실패하였습니다.");
+            console.error("다음 페이지 요청 중 오류:", e);
         } finally {
             setLoading(false);
         }
@@ -124,22 +137,25 @@ export default function Main() {
 
     /**
      * 기본값 설정 후 데이터 로드
-     * Promise.allSettled([]) :   Promise 객체를 모두 처리하되 실패도 포함한다.
+     * Promise.all([]) :   Promise 객체를 모두 처리
      */
     const initializeFilters = useCallback(async () => {
         try {
             // 기본 필터 데이터 요청
             const [categoryData, locationData]
                 = await Promise.all([
-                    axios.get(`/main/categories/filter`).then((res) => res.data.data),
-                    axios.get(`/main/locations/filter`).then((res) => res.data.data),
-                ]);
+                axios.get(`/main/categories/filter`).then((res) => res.data.data),
+                axios.get(`/main/locations/filter`).then((res) => res.data.data),
+            ]);
             dispatch(setCategoryGroups(categoryData));
             dispatch(setLocationGroups(locationData));
 
             setIsInitialized(true);
-        } catch (error) {
-            console.error("필터 초기화 중 오류:", error);
+        } catch (e) {
+            setFormError("검색 필터 조건을 불러오는 데 실패하였습니다.");
+            console.error("필터 초기화 오류:", e);
+        } finally {
+            setLoading(false);
         }
     }, [dispatch, applyFilters]);
 
@@ -152,8 +168,20 @@ export default function Main() {
         } else {
             applyFilters();
         }
-    }, [isInitialized, category, location]);
+    }, [isInitialized, isRecommended, category, location]);
 
+
+    // 오류 상태 JSX
+    const ErrorState = ({ formError, resetHandler }) => (
+        <Flex justify="center" align="center" flexDirection="column">
+            <Text color="red.500" fontSize="lg" mb={4}>
+                {formError || "알 수 없는 오류가 발생했습니다."}
+            </Text>
+            <Button onClick={resetHandler} colorScheme="orange">
+                다시 시도하기
+            </Button>
+        </Flex>
+    );
 
     return (
         <Box id="scrollableContainer" height="100vh" overflowY="auto">
@@ -171,26 +199,39 @@ export default function Main() {
 
             {/* 3행: 음식점 리스트 */}
             {/* 데이터 표시 */}
-            {eateries.length === 0 && !loading ? (
-                <NoDataComponent applyFilters={applyFilters} />
-            ) : (
-            <InfiniteScroll
-                scrollableTarget="scrollableContainer"
-                dataLength={eateries.length}
-                next={getNext}
-                hasMore={hasMore}
-                loader={loading && <MySpinner alignSelf="center"/>} // 로딩 중일 때 표시되는 컴포넌트
-                endMessage={<p style={{textAlign: "center"}}>모든 음식점을 로드했습니다.</p>}
-            >
-                <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
-                    {eateries.map((eatery, index) => (
-                        <Box key={index} w={{base: "100%", sm: "48%", md: "30%", lg: "30%"}} borderRadius="md">
-                            <MainCard data={eatery}/>
-                        </Box>
-                    ))}
-                </Flex>
-            </InfiniteScroll>
-            )}
+            {
+                eateries.length ? (
+                    <InfiniteScroll
+                        scrollableTarget="scrollableContainer"
+                        dataLength={eateries.length}
+                        next={getNext}
+                        hasMore={hasMore}
+                        loader={<MySpinner alignSelf="center" />}
+                        endMessage={<p style={{ textAlign: "center" }}>마지막 목록입니다.</p>}
+                    >
+                        <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
+                            {eateries.map((eatery, index) => (
+                                <Box
+                                    key={index}
+                                    w={{ base: "100%", sm: "48%", md: "30%", lg: "30%" }}
+                                    borderRadius="md"
+                                >
+                                    <MainCard data={eatery} />
+                                </Box>
+                            ))}
+                        </Flex>
+                    </InfiniteScroll>
+                ) : error ? (
+                    <ErrorState
+                        formError={formError}
+                        resetHandler={() => dispatch(resetFilter())}
+                    />
+                ) : loading ? (
+                    <MySpinner alignSelf="center" />
+                ) : (
+                    <NoDataComponent />
+                )
+            }
         </Box>
     );
 }
