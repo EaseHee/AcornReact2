@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from "@chakra-ui/react";
-import ImageSlider from './ImageSlider'
-import RestaurantInfo from './RestaurantInfo'
-import Map from './Map'
-import ReviewTabs from './ReviewTabs'
+import { Box, Text } from "@chakra-ui/react";
+import ImageSlider from './ImageSlider';
+import RestaurantInfo from './RestaurantInfo';
+import Map from './Map';
+import ReviewTabs from './ReviewTabs';
 import axios from 'axios';
 import BlogReviews from './Tabs/BlogReviews';
 import { useParams } from "react-router-dom";
@@ -13,28 +13,27 @@ const DetailPage = () => {
   const [restaurant, setRestaurant] = useState(null);
   const [memberNo, setMemberNo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
+  const [formError, setFormError] = useState("");
 
   // 사용자 정보 가져오기
   useEffect(() => {
-  const fetchUserInfo = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
-        withCredentials: true, // 쿠키 자동 전송
-      });
-      
-      if (response.data) {
-        setMemberNo(response.data);
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
+          withCredentials: true, // 쿠키 자동 전송
+        });
+
+        if (response.data) {
+          setMemberNo(response.data);
+        }
+      } catch (err) {
+         // 사용자 정보를 가져오지 못했을 경우(비로그인), memberNo를 null로 유지
       }
-    } catch (err) {
-      console.error("사용자 정보 조회 실패:", err);
-      setMemberNo(null); // 로그인되지 않은 경우 null로 처리
-    }
-  };
+    };
 
-  fetchUserInfo();
-}, []);
-
+    fetchUserInfo();
+  }, []);
 
   // 식당 정보 가져오기
   useEffect(() => {
@@ -43,7 +42,8 @@ const DetailPage = () => {
         const response = await axios.get(`http://localhost:8080/main/eateries/${no}`);
         setRestaurant(response.data);
       } catch (err) {
-        setError(err.message);
+        setFormError("식당 정보를 가져오는 데 실패했습니다.");
+        setError(true);
       } finally {
         setIsLoading(false);
       }
@@ -53,25 +53,29 @@ const DetailPage = () => {
   }, [no]);
 
   if (isLoading) return <Box>로딩 중...</Box>;
-  if (error) return <Box>에러: {error}</Box>;
+  if (error) return (
+    <Box>
+      <Text color="red.500" mb="4">{formError}</Text>
+    </Box>
+  );
   if (!restaurant) return <Box>식당 정보를 찾을 수 없습니다</Box>;
 
   return (
-      <Box>
-        <ImageSlider restaurant={restaurant}/>
+    <Box>
+      <ImageSlider restaurant={restaurant} />
 
-        <Box display="flex" flexDirection={"column"} gap={3}>
-          <Box flex={2}>
-            <RestaurantInfo restaurant={restaurant} memberNo={memberNo} />
-          </Box>
-          <Box flex={1}>
-            <Map
-                latitude={parseFloat(restaurant.latitude)}
-                longitude={parseFloat(restaurant.longitude)}
-            />
-          </Box>
+      <Box display="flex" flexDirection={"column"} gap={3}>
+        <Box flex={2}>
+          <RestaurantInfo restaurant={restaurant} memberNo={memberNo} />
         </Box>
-        
+        <Box flex={1}>
+          <Map
+            latitude={parseFloat(restaurant.latitude)}
+            longitude={parseFloat(restaurant.longitude)}
+          />
+        </Box>
+      </Box>
+
       <ReviewTabs restaurant={restaurant} no={no}>
         <BlogReviews />
       </ReviewTabs>
