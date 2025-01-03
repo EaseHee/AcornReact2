@@ -23,6 +23,7 @@ const ProfileForm = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
   const [formError, setFormError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const watchPassword = watch("changePassword");
 
   // 사용자 정보 불러오기
@@ -65,7 +66,7 @@ const ProfileForm = () => {
       });
       return;
     }
-    console.log("클라이언트에서 보내는 데이터: ", data);
+    //console.log("클라이언트에서 보내는 데이터: ", data);
     try {
       const response = await axios.put(
         "http://localhost:8080/main/mypage/members/update",
@@ -76,8 +77,11 @@ const ProfileForm = () => {
       );
 
       if (response.status === 200) {
-        alert("프로필 수정 완료");
-        navigate("/");
+        //alert("프로필 수정 완료");
+        setIsModalOpen(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       }
     } catch (error) {
       if (error.response) {
@@ -112,6 +116,7 @@ const ProfileForm = () => {
   });
 
   return (
+    <>
     <form onSubmit={onSubmit}>
       <Box
         display="flex"
@@ -311,6 +316,52 @@ const ProfileForm = () => {
         </Stack>
       </Box>
     </form>
+    {isModalOpen && (
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          bg="rgba(0, 0, 0, 0.4)" // 반투명 배경
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          zIndex="1000"
+        >
+          <Box
+            bg="white"
+            p={8}
+            borderRadius="md"
+            boxShadow="lg"
+            maxWidth="600px"
+            width="80%" // 화면 크기에 따라 적응하도록 설정
+            textAlign="center"
+            transform="scale(1)"
+            transition="all 0.3s ease"
+            _hover={{ transform: "scale(1.05)" }} // 호버시 크기 증가
+          >
+            <Text fontSize="lg" fontWeight="bold" color="orange.500" mb={4}>
+              프로필 수정이 완료되었습니다.
+            </Text>
+            <Text fontSize="md" color="black.600" mb={6}>
+              메인 페이지로 이동합니다.
+            </Text>
+
+            <Button
+              colorPalette="orange"
+              size="lg"
+              onClick={() => {
+                navigate("/");
+              }}
+              width="100%"
+            >
+              메인 페이지로 가기
+            </Button>
+          </Box>
+        </Box>
+      )}
+    </>
   );
 };
 
