@@ -1,0 +1,36 @@
+/* 화살표 크기 조정 */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 30px; /* 원하는 크기로 조정 */
+  height: 30px; /* 원하는 크기로 조정 */
+}
+
+/* 화살표 색상 변경 */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 20px; /* 아이콘 크기 변경 */
+  color: #333; /* 원하는 색상으로 변경 */
+}
+div.chakra-card__footer.css-1pqmo65 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.swiper-container {
+  display: flex;
+  align-self: center;
+  height: 70%;
+}
+
+.swiper-slide-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+img.slide-image {
+  max-width: 60%; /* 이미지를 100% 너비로 설정 */
+  object-fit: contain; /* 이미지 비율을 유지하면서 공간에 맞추기 */
+}

@@ -18,7 +18,7 @@ const Terms1 = () => {
           fontSize="sm"
           p={0}
           minW="unset"
-          color="blue.500"
+          color="orange.500"
         >
           서비스 이용 약관
         </Button>
