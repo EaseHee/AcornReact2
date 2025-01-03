@@ -227,13 +227,13 @@ const AuthRegister = () => {
             >
               <Input
                 size="md"
-                placeholder="YYYYMMDD 형식으로 입력해주세요."
+                placeholder="YYYY-MM-DD 형식으로 입력해주세요."
                 width="100%"
                 {...register("birthDate", {
                   required: "생년월일은 필수 입력입니다.",
                   pattern: {
-                    value: /^\d{8}$/,
-                    message: "생년월일은 YYYYMMDD 형식이어야 합니다.",
+                    value: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/,
+                    message: "올바른 생년월일을 입력해주세요.",
                   },
                 })}
               />
