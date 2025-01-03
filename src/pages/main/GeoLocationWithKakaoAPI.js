@@ -21,10 +21,7 @@ const GeoLocationWithKakaoAPI = () => {
                         },
                     }
                 );
-
                 const address = response.data.documents[0]?.address?.address_name;
-                console.log("카카오 주소 API 응답:", address);
-
                 if (address) {
                     const addressParts = address.split(" ");
                     dispatch(
@@ -44,7 +41,6 @@ const GeoLocationWithKakaoAPI = () => {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude } = position.coords;
-                        console.log("사용자 좌표:", latitude, longitude);
                         dispatch(setCoords({ lat: latitude, lng: longitude }));
                         fetchAddressFromKakao(latitude, longitude);
                     },
