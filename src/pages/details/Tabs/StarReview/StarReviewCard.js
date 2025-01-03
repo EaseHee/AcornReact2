@@ -101,7 +101,7 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
           <Card.Root maxW="svw" overflow="hidden" key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
           <Card.Body gap="3">
             <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Card.Title alignSelf="flex-start">{review.reviewMembersDto.name} 님</Card.Title>
+            <Card.Title alignSelf="flex-start">{review.reviewMembersDto.nickname} 님</Card.Title>
             <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
             </Box>
             <Card.Description>
