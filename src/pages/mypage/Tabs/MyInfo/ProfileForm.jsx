@@ -191,6 +191,7 @@ const ProfileForm = () => {
               placeholder="수정할 비밀번호를 입력해주세요."
               width="100%"
               {...register("changePassword", {
+                required: "수정할 비밀번호는 필수 입력입니다.",
                 pattern: {
                   value:
                     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,20}$/,
@@ -210,6 +211,7 @@ const ProfileForm = () => {
               placeholder="비밀번호 확인"
               width="100%"
               {...register("passwordConfirm", {
+                required: "비밀번호 확인은 필수 입력입니다.",
                 validate: (value) =>
                   value === watchPassword || "비밀번호가 일치하지 않습니다.",
               })}
