@@ -7,9 +7,9 @@ import {Box, Card, Flex, Image, Text} from "@chakra-ui/react";
 import axios from "utils/axios";
 import {RiBookmarkLine} from "react-icons/ri";
 import {AiOutlineEye} from "react-icons/ai";
+import {HiMiniStar} from "react-icons/hi2";
 
 const MainCard = memo(({ data }) => {
-  // 서버에 음식점 상세 정보 요청
   const [eatery, setEatery] = useState(data);
 
   useEffect(() => {
@@ -106,19 +106,24 @@ const MainCard = memo(({ data }) => {
                     ? eatery.categoryDto?.categoryGroupsDto?.name + " > " + eatery.categoryDto.name
                     : eatery.categoryDto?.categoryGroupsDto?.name
                 }
-                {/*{eatery.categoryDto.name || "카테고리 정보 없음"}*/}
               </Text>
 
-              {/* 조회수 */}
+              {/* 별점 평점 */}
               <Flex align="center" gap="2" fontSize="sm" color="gray.600" mb="1">
-                <AiOutlineEye />
-                <Text>{eatery.viewCount || 0}</Text>
+                <HiMiniStar />
+                <Text>{eatery.rating || "-"}</Text>
               </Flex>
+
+              {/* 조회수 */}
+              {/*<Flex align="center" gap="2" fontSize="sm" color="gray.600" mb="1">*/}
+              {/*  <AiOutlineEye />*/}
+              {/*  <Text>{eatery.viewCount || 0}</Text>*/}
+              {/*</Flex>*/}
 
               {/* 즐겨찾기 */}
               <Flex align="center" gap="2" fontSize="sm" color="gray.600">
                 <RiBookmarkLine />
-                <Text>{eatery.favoriteCount || 0}</Text>
+                <Text>{eatery.favoriteCount || "-"}</Text>
               </Flex>
             </Box>
           </Box>

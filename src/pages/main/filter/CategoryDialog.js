@@ -1,3 +1,4 @@
+import {useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 
@@ -20,9 +21,15 @@ import {
 } from "components/ui/dialog";
 
 import { setCategory } from "../../../redux/slices/filterSlice";
-import {useEffect, useState} from "react";
 import {setRecommendation} from "../../../redux/slices/eateriesSlice";
 
+/**
+ * 음식 카테고리 필터 모달 컴포넌트
+ * 음식 카테고리 필터 변수 Redux 상태로 관리
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const CategoryDialog = () => {
     const dispatch = useDispatch();
     const category = useSelector((state) => state.filter.category);

@@ -1,6 +1,6 @@
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import {FaMapMarkerAlt} from "react-icons/fa";
 
 import {
     Button,
@@ -20,9 +20,17 @@ import {
     DialogTrigger,
 } from "components/ui/dialog";
 
-import { setLocation } from "../../../redux/slices/filterSlice";
+import {setLocation} from "../../../redux/slices/filterSlice";
 import {setRecommendation} from "../../../redux/slices/eateriesSlice";
 
+/**
+ * 지역 필터 모달 컴포넌트
+ * 지역 필터 변수 Redux 상태로 관리
+ *
+ * 필터 조건 선택 사항은 임시로 State 훅의 로컬 상태변수로 관리하고
+ * 적용 버튼을 클릭하면 Reducer에 action을 요청하여
+ * 상태 변수 변경 내역을 Main 컴포넌트에 반영한다
+ */
 const LocationDialog = () => {
     const dispatch = useDispatch();
     const locationFilter = useSelector((state) => state.filter.location);
@@ -51,11 +59,18 @@ const LocationDialog = () => {
         );
     };
 
+    /**
+     * 적용 버튼 클릭 시 Reducer에 Action 요청
+     * 상태 변경 시 Main 컴포넌트 내 applyFilters 메서드 호출 -> 화면 재렌더링
+     */
     const applyChanges = () => {
         dispatch(setRecommendation(false));
-        dispatch(setLocation({ group: selectedLocationGroup, locations: selectedLocation }));
+        dispatch(setLocation({group: selectedLocationGroup, locations: selectedLocation}));
     };
 
+    /**
+     * 취소 버튼 클릭 시 로컬 상태 변수 Reducer에 저장된 상태로 초기화
+     */
     const resetChanges = () => {
         setSelectedLocationGroup(locationFilter.group);
         setSelectedLocation(locationFilter.locations);
@@ -65,7 +80,7 @@ const LocationDialog = () => {
         <DialogRoot>
             <DialogTrigger asChild>
                 <Button variant="outline">
-                    <FaMapMarkerAlt style={{ color: '#FF4500' }} />
+                    <FaMapMarkerAlt style={{color: '#FF4500'}}/>
                     {locationFilter.group || "지역 선택"}
                     {locationFilter.locations && ` > ${locationFilter.locations}`}
                 </Button>
