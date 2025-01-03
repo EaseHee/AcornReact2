@@ -1,3 +1,5 @@
+// 이미지 슬라이더에서 이미지 가져오는 api 컴포넌트
+
 // 이미지 URL이 유효한지 확인하는 함수
 const validateImage = (url) => {
   return new Promise((resolve) => {
@@ -20,8 +22,6 @@ const fetchRestaurantImages = async (restaurantName, restaurantAddress) => {
   const API_KEY = "60ddc85bdd372041c11e1dc97e03d442";
 
   const API_URL = `https://dapi.kakao.com/v2/search/image?query=${encodeURIComponent(restaurantName)}&size=30`; // 카카오 API URL
-
-  console.log("카카오 검색어:", restaurantName); // 확인용 로그 출력
 
   try {
     const response = await fetch(API_URL, {

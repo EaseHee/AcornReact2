@@ -14,7 +14,7 @@ const RestaurantInfo = ({ restaurant, memberNo }) => {
           {restaurant.name}
         </Text>
         
-        <Favorite restaurantNo={restaurant.no} memberNo={memberNo} />
+        <Favorite restaurantNo={restaurant.no} memberNo={memberNo} restaurantName={restaurant.name}/>
       </Box>
       <Text fontSize="sm">별점: {restaurant.rating}</Text>
       <Box display="flex" alignItems="center" gap={2} mt={2}></Box>
