@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "utils/axios";
 
 const FindEmail = () => {
   const {
@@ -19,7 +19,7 @@ const FindEmail = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/find-email",
+        "/auth/find-email",
         data
       );
       const email = response.data.email;

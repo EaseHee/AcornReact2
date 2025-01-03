@@ -12,12 +12,12 @@ import {
   DialogTrigger,
 } from "../../../../components/ui/dialog"
 import { Toaster, toaster } from "../../../../components/ui/toaster";
-import axios from 'axios';
+import axios from 'utils/axios';
 const DeleteDialog = ({reviewNo, onReviewSubmitted}) => {
     //리뷰 삭제
     const deleteMyReview= async (reviewNo)=>{
     try {
-        const response = await axios.delete(`http://localhost:8080/main/mypage/review/${reviewNo}`, {
+        const response = await axios.delete(`/main/mypage/review/${reviewNo}`, {
             withCredentials: true, // 쿠키를 함께 전송하도록 설정
           });
         if(response.data){

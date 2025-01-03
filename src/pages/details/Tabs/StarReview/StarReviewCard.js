@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import axios from "axios";
+import axios from "utils/axios";
 import MySpinner from "../../../../components/Spinner.js";
 import { Box, Card, Text } from "@chakra-ui/react"
 import Swiper from "./StarReviewSwiper.js";
@@ -17,7 +17,7 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
     try {
       // 지연시간 1초 추가
       setTimeout(async () => {
-        const response = await axios.get(`http://localhost:8080/main/eateries/${eateryNo}/reviews`, {
+        const response = await axios.get(`/main/eateries/${eateryNo}/reviews`, {
           params: { page: currentPage },
         });
         const { content, page: pageInfo } = response.data.list;

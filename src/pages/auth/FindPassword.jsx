@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "utils/axios";
 
 const FindPassword = () => {
   const {
@@ -20,7 +20,7 @@ const FindPassword = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/find-password",
+        "/auth/find-password",
         data
       );
       //console.log("응답:", response.data);

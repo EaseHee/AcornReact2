@@ -17,9 +17,8 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const fetchReviews = async (currentPage) => {
     setIsLoading(true); // 로딩 시작
     try {
-      const response = await axios.get(`http://localhost:8080/main/mypage/review/member/${memberNo}`, {
+      const response = await axios.get(`/main/mypage/review/member/${memberNo}`, {
         params: { page: currentPage }, // 쿼리 매개변수 설정
-        withCredentials: true, // 쿠키를 함께 전송하도록 설정
       });
       const { content, page: pageInfo } = response.data.list;
     // 중복된 리뷰가 추가되지 않도록 처리

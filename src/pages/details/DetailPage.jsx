@@ -4,7 +4,7 @@ import ImageSlider from './ImageSlider';
 import RestaurantInfo from './RestaurantInfo';
 import Map from './Map';
 import ReviewTabs from './ReviewTabs';
-import axios from 'axios';
+import axios from 'utils/axios';
 import BlogReviews from './Tabs/BlogReviews';
 import { useParams } from "react-router-dom";
 
@@ -20,7 +20,7 @@ const DetailPage = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
+        const response = await axios.get("/main/mypage/members/member-no", {
           withCredentials: true, // 쿠키 자동 전송
         });
 
@@ -39,7 +39,7 @@ const DetailPage = () => {
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/main/eateries/${no}`);
+        const response = await axios.get(`/main/eateries/${no}`);
         setRestaurant(response.data);
       } catch (err) {
         setFormError("식당 정보를 가져오는 데 실패했습니다.");

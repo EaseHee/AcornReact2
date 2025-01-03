@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
-import axios from 'axios';
+import axios from 'utils/axios';
 import {
   Box,
   Button,
@@ -18,14 +18,14 @@ import DeleteDialog from './DeleteDialog';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
-  const response = await axios.get(`http://localhost:8080/main/eateries/${eateryNo}/comments?page=${pageParam}`);
+  const response = await axios.get(`/main/eateries/${eateryNo}/comments?page=${pageParam}`);
   return response.data;
 };
 
 // 댓글 작성
 const postComment = async ({ eateryNo, content, memberNo, parentCommentNo }) => {
   try {
-    const response = await axios.post(`http://localhost:8080/main/eateries/comments`, {
+    const response = await axios.post(`/main/eateries/comments`, {
       eateryNo,
       content,
       memberNo,
@@ -39,14 +39,14 @@ const postComment = async ({ eateryNo, content, memberNo, parentCommentNo }) => 
 
 // 댓글 삭제
 const deleteComment = async (commentNo) => {
-  const response = await axios.delete(`http://localhost:8080/main/eateries/comments/${commentNo}`);
+  const response = await axios.delete(`/main/eateries/comments/${commentNo}`);
   return response.data;
 };
 
 // 댓글 수정
 const updateComment = async ({ commentNo, content }) => {
   try {
-    const response = await axios.put(`http://localhost:8080/main/eateries/comments/${commentNo}`, {
+    const response = await axios.put(`/main/eateries/comments/${commentNo}`, {
       content,
     });
     return response.data;
@@ -56,7 +56,7 @@ const updateComment = async ({ commentNo, content }) => {
 };
 
 const fetchLikes = async ({ eateryNo, memberNo }) => {
-  const response = await axios.get('http://localhost:8080/main/eateries/comments/likes', {
+  const response = await axios.get('/main/eateries/comments/likes', {
     params: { eateryNo, memberNo },
   });
   return response.data;
@@ -65,7 +65,7 @@ const fetchLikes = async ({ eateryNo, memberNo }) => {
 // 좋아요 누르기 API 요청
 const likeComment = async ({ memberNo, commentNo }) => {
   try {
-    const response = await axios.post('http://localhost:8080/main/eateries/comments/likes', {
+    const response = await axios.post('/main/eateries/comments/likes', {
       memberNo,
       commentNo,
     });
@@ -78,7 +78,7 @@ const likeComment = async ({ memberNo, commentNo }) => {
 // 좋아요 삭제 API 요청
 const unlikeComment = async (likeNo) => {
   try {
-    const response = await axios.delete(`http://localhost:8080/main/eateries/comments/likes/${likeNo}`);
+    const response = await axios.delete(`/main/eateries/comments/likes/${likeNo}`);
     return response.data;
   } catch (err) {
     console.error(err);
@@ -96,7 +96,7 @@ const FreeComments = ({ eateryNo }) => {
   useEffect(() => {
     const fetchMemberNo = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/main/mypage/members/member-no', {
+        const response = await axios.get('/main/mypage/members/member-no', {
           withCredentials: true,
         });
         if (response.data) {

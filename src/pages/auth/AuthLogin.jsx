@@ -2,7 +2,7 @@ import { Box, Button, Input, Stack, Link, Text, Image } from "@chakra-ui/react";
 import { Field } from "../../components/ui/field";
 import { PasswordInput } from "../../components/ui/password-input";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "utils/axios";
 import FindPassword from "./FindPassword";
 import FindEmail from "./FindEmail";
 import { useEffect, useState } from "react";
@@ -51,11 +51,8 @@ const AuthLogin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/login",
+        "/auth/login",
         data,
-        {
-          withCredentials: true,
-        }
       );
 
       if (response.status === 200) {

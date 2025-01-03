@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { DaumPostAPI } from "../../../auth/DaumPostAPI";
 import DuplicatedNickname from "./DuplicatedNickname";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "utils/axios";
 import { useNavigate } from "react-router-dom";
 import DeleteAccount from "./DeleteAccount";
 
@@ -31,11 +31,7 @@ const ProfileForm = () => {
     const fetchUserInfo = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/main/mypage/members/read",
-          {
-            withCredentials: true,
-          }
-        );
+          "/main/mypage/members/read");
 
         if (response.data) {
           setUserInfo(response.data); // 사용자 정보 저장
@@ -69,11 +65,8 @@ const ProfileForm = () => {
     //console.log("클라이언트에서 보내는 데이터: ", data);
     try {
       const response = await axios.put(
-        "http://localhost:8080/main/mypage/members/update",
-        data,
-        {
-          withCredentials: true,
-        }
+        "/main/mypage/members/update",
+        data
       );
 
       if (response.status === 200) {

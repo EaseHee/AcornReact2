@@ -1,7 +1,7 @@
 import { Grid, GridItem, Box, Text } from "@chakra-ui/react";
 import BookmarkCard from "./BookmarkCard";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "utils/axios";
 
 const MyBookmark = () => {
   const [bookmarks, setBookmarks] = useState([]);
@@ -12,9 +12,7 @@ const MyBookmark = () => {
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
-        const memberResponse = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
-          withCredentials: true,
-        });
+        const memberResponse = await axios.get("/main/mypage/members/member-no");
 
         if (!memberResponse.data) {
           setError(true);
@@ -23,9 +21,7 @@ const MyBookmark = () => {
           return;
         }
 
-        const bookmarksResponse = await axios.get(`http://localhost:8080/main/mypage/favorites`, {
-          withCredentials: true,
-        });
+        const bookmarksResponse = await axios.get(`/main/mypage/favorites`);
 
         setBookmarks(Array.isArray(bookmarksResponse.data) ? bookmarksResponse.data : []);
       } catch (error) {
