@@ -5,6 +5,7 @@ const eateriesSlice = createSlice({
     initialState: {
         eateries: [], // 음식점 목록
         pagination: { page: 1, size: 12 }, // 페이지 정보
+        isRecommended: false, // 추천 상태
     },
     reducers: {
         setEateries(state, action) {
@@ -13,9 +14,12 @@ const eateriesSlice = createSlice({
         setPage(state, action) {
             state.pagination.page = action.payload;
         },
+        setRecommendation(state, action) {
+            state.isRecommended = action.payload; // 추천 여부 설정
+        },
     },
 });
 
-export const { setEateries, setPage } = eateriesSlice.actions;
+export const { setEateries, setPage, shuffleEateries, setRecommendation } = eateriesSlice.actions;
 
 export default eateriesSlice.reducer;
