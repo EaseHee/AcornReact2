@@ -199,10 +199,17 @@ export default function Main() {
             <Text color="red.500" fontSize="lg" mb={4}>
                 {formError || "알 수 없는 오류가 발생했습니다."}
             </Text>
-            <Button onClick={resetHandler} colorScheme="orange">
+            <Button onClick={resetHandler} bg="orange.600">
                 다시 시도하기
             </Button>
         </Flex>
+    );
+
+    const EndMessage = ({text, component}) => (
+        <Box>
+            <Text textAlign="center" m={"3"}>{text}</Text>
+            {component}
+        </Box>
     );
 
     return (
@@ -229,9 +236,9 @@ export default function Main() {
                         next={getNext}
                         hasMore={hasMore}
                         loader={<MySpinner alignSelf="center"/>}
-                        endMessage={<p style={{textAlign: "center"}}>마지막 목록입니다.</p>}
+                        endMessage={<EndMessage text={"마지막 목록입니다."} component={Filter()}/>}
                     >
-                        <Flex justify="space-between" wrap="wrap" gap={4} p={2}>
+                        <Flex justify="space-between" wrap="wrap" gap={4} p={2} h={"fit-content"}>
                             {eateries.map((eatery, index) => (
                                 <Box
                                     key={index}
