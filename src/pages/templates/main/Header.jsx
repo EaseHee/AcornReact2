@@ -70,7 +70,7 @@ const Header = () => {
       boxShadow="lg"
       position="sticky"
       top="0"
-      zIndex="1000"
+      zIndex="900"
       borderBottom="2px solid"
       borderColor="gray.200"
       borderRadius="md"
