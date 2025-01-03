@@ -31,7 +31,7 @@ const DeleteDialog = ({ onClick }) => {
         </DialogBody>
         <DialogFooter>
           <DialogActionTrigger asChild>
-            <Button colorPalette="red" onClick={onClick}>
+            <Button colorPalette="orange" onClick={onClick}>
               삭제
             </Button>
           </DialogActionTrigger>
