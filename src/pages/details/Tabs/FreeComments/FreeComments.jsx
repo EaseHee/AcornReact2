@@ -284,7 +284,7 @@ const FreeComments = ({ eateryNo }) => {
         />
         {memberNo !== 0 && (
           <Flex justify="end">
-            <Button size="sm" colorScheme="blue" onClick={handleNewCommentSubmit}>
+            <Button size="sm" colorPalette="orange" onClick={handleNewCommentSubmit}>
               작성
             </Button>
           </Flex>
@@ -334,10 +334,10 @@ const FreeComments = ({ eateryNo }) => {
                       rows={4}
                     />
                     <Flex justify="end" mt={2}>
-                      <Button size="sm" colorScheme="blue" onClick={handleSaveClick} mr={2}>
+                      <Button size="sm" colorPalette="orange" onClick={handleSaveClick} mr={2}>
                         저장
                       </Button>
-                      <Button size="sm" onClick={handleCancelClick}>
+                      <Button variant="outline" size="sm" onClick={handleCancelClick}>
                         취소
                       </Button>
                     </Flex>
@@ -368,7 +368,7 @@ const FreeComments = ({ eateryNo }) => {
                                 <Text ml={2}>{comment.likeCount}</Text>
                               </Flex>
                             )}
-                            <Button size="sm" mx={2} onClick={() => handleReplyClick(comment)}>
+                            <Button size="sm" colorPalette="orange" mx={2} onClick={() => handleReplyClick(comment)}>
                               대댓글 달기
                             </Button>
                           </Flex>
@@ -392,7 +392,7 @@ const FreeComments = ({ eateryNo }) => {
                               <Text ml={2}>{comment.likeCount}</Text>
                             </Flex>
                           )}
-                          <Button size="sm" mx={2} onClick={() => handleReplyClick(comment)}>
+                          <Button size="sm" colorPalette="orange" mx={2} onClick={() => handleReplyClick(comment)}>
                             대댓글 달기
                           </Button>
                         </Flex>
@@ -419,7 +419,7 @@ const FreeComments = ({ eateryNo }) => {
                       rows={4}
                     />
                     <Flex justify="end">
-                      <Button size="sm" colorScheme="blue" onClick={() => handleReplySubmit(comment.no)} mr={2}>
+                      <Button size="sm" colorPalette="orange" onClick={() => handleReplySubmit(comment.no)} mr={2}>
                         작성
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => setReplyingToComment(null)}>
@@ -476,7 +476,7 @@ const FreeComments = ({ eateryNo }) => {
                                 <Flex justify="end" mt={2}>
                                   <Button
                                     size="sm"
-                                    colorScheme="blue"
+                                    colorPalette="orange"
                                     onClick={() => updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })}
                                     mr={2}
                                   >
@@ -519,7 +519,12 @@ const FreeComments = ({ eateryNo }) => {
                                       />
                                     )}
                                     <Text mx={2}>{childComment.likeCount}</Text>
-                                    <Button size="sm" mr={2} onClick={() => handleReplyEditClick(childComment)}>
+                                    <Button
+                                      size="sm"
+                                      colorPalette="orange"
+                                      mr={2}
+                                      onClick={() => handleReplyEditClick(childComment)}
+                                    >
                                       수정
                                     </Button>
                                     <DeleteDialog onClick={() => handleCommentDelete(childComment.no)} />
