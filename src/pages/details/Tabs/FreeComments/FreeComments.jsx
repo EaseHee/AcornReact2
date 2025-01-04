@@ -55,6 +55,10 @@ const updateComment = async ({ commentNo, content }) => {
     const response = await axios.put(`http://localhost:8080/main/eateries/comments/${commentNo}`, {
       content,
     });
+    toaster.create({
+      description: '댓글 수정 성공!',
+      type: 'success',
+    });
     return response.data;
   } catch (err) {
     console.error(err.message);
