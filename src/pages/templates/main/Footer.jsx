@@ -2,10 +2,12 @@ import { Box, Flex, Link as ChakraLink } from "@chakra-ui/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaHouse, FaUser } from "react-icons/fa6";
 import { useSelector } from "react-redux";
+import { BsChatFill } from "react-icons/bs";
 
 // 메뉴 항목 데이터
 export const menuItems = [
   { icon: <FaHouse />, label: "메인 화면", path: "/" },
+  { icon: <BsChatFill />, label: "오픈채팅", path: "/chat" },
   { icon: <FaUser />, label: "마이페이지", path: "/mypage" },
 ];
 
@@ -19,6 +21,9 @@ const Footer = () => {
     if (path === "/mypage" && !isLoggedIn) {
       e.preventDefault(); // 기본 이동 방지
       navigate("/login"); // 로그인되지 않은 경우 로그인 페이지로 리디렉션
+    } else if (path === "/chat" && !isLoggedIn) {
+      e.preventDefault();
+      navigate("/login");
     } else {
       navigate(path); // 다른 경로는 그대로 이동
     }
