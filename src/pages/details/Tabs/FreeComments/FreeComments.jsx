@@ -15,6 +15,7 @@ import {
 import MySpinner from '../../../../components/Spinner';
 import { BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import DeleteDialog from './DeleteDialog';
+import { useSelector } from 'react-redux';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
@@ -92,21 +93,24 @@ const unlikeComment = async (likeNo) => {
  */
 const FreeComments = ({ eateryNo }) => {
   const [memberNo, setMemberNo] = useState(0);
+  const isLoggedIn = useSelector(state=>state.auth.isLoggedIn);
 
   useEffect(() => {
-    const fetchMemberNo = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/main/mypage/members/member-no', {
-          withCredentials: true,
-        });
-        if (response.data) {
-          setMemberNo(response.data);
+    if(isLoggedIn){
+      const fetchMemberNo = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/main/mypage/members/member-no', {
+            withCredentials: true,
+          });
+          if (response.data) {
+            setMemberNo(response.data);
+          }
+        } catch (err) {
+          console.error('사용자 정보 조회 실패:', err);
         }
-      } catch (err) {
-        console.error('사용자 정보 조회 실패:', err);
-      }
-    };
-    fetchMemberNo();
+      };
+      fetchMemberNo();
+    }
   }, []);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
@@ -434,7 +438,9 @@ const FreeComments = ({ eateryNo }) => {
                   <AccordionRoot collapsible variant="plain" defaultValue={['b']}>
                     <AccordionItem>
                       <AccordionItemTrigger cursor="pointer" w="fit-content">
-                        <Button variant="outline">{comment.childComments.length}개의 대댓글</Button>
+                        <Box rounded="md" borderWidth="thin" p="1.5" _hover={{bg: 'gray.200'}}>
+                        <Text>{comment.childComments.length}개의 대댓글</Text>
+                        </Box>
                       </AccordionItemTrigger>
                       <AccordionItemContent>
                         {comment.childComments.map((childComment) => (

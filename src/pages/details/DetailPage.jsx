@@ -7,6 +7,7 @@ import ReviewTabs from './ReviewTabs';
 import axios from 'axios';
 import BlogReviews from './Tabs/BlogReviews';
 import { useParams } from "react-router-dom";
+import { useSelector } from 'react-redux';
 
 const DetailPage = () => {
   const { no } = useParams();
@@ -15,24 +16,27 @@ const DetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [formError, setFormError] = useState("");
+  const isLoggedIn = useSelector(state=>state.auth.isLoggedIn); // 로그인 여부 추적
 
   // 사용자 정보 가져오기
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
-          withCredentials: true, // 쿠키 자동 전송
-        });
-
-        if (response.data) {
-          setMemberNo(response.data);
+    if(isLoggedIn){ // 로그인했을 경우에만 사용자정보 가져오기
+      const fetchUserInfo = async () => {
+        try {
+          const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
+            withCredentials: true, // 쿠키 자동 전송
+          });
+  
+          if (response.data) {
+            setMemberNo(response.data);
+          }
+        } catch (err) {
+           // 사용자 정보를 가져오지 못했을 경우(비로그인), memberNo를 null로 유지
         }
-      } catch (err) {
-         // 사용자 정보를 가져오지 못했을 경우(비로그인), memberNo를 null로 유지
-      }
-    };
-
-    fetchUserInfo();
+      };
+  
+      fetchUserInfo();
+    }
   }, []);
 
   // 식당 정보 가져오기
