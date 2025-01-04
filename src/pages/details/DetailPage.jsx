@@ -37,7 +37,7 @@ const DetailPage = () => {
   
       fetchUserInfo();
     }
-  }, []);
+  }, [isLoggedIn]);
 
   // 식당 정보 가져오기
   useEffect(() => {
