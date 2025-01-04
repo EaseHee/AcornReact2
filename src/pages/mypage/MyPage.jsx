@@ -1,7 +1,7 @@
 import { Box, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from 'react';
 import MyTabs from './MyTabs'
-import axios from "axios";
+import axios from "utils/axios";
 import { useSelector } from "react-redux";
 const MyPage = () => {
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ const MyPage = () => {
     if(isLoggedIn){
       const fetchNickname = async () => {
         try {
-          const response = await axios.get("http://localhost:8080/main/mypage/members/read", {
+          const response = await axios.get("/main/mypage/members/read", {
             withCredentials: true, // 쿠키를 함께 전송하도록 설정
           });
           setNickname(response.data.nickname); // 응답에서 닉네임을 설정

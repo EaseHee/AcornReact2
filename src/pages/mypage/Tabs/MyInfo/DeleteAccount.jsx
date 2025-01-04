@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "utils/axios";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
@@ -39,7 +39,7 @@ const DeleteAccount = () => {
     //console.log("폼 데이터:", data);
 
     try {
-        const response = await axios.delete("http://localhost:8080/main/mypage/members/delete", {
+        const response = await axios.delete("/main/mypage/members/delete", {
             data: {
               email: data.email,
               currentPassword: data.currentPassword,

@@ -4,7 +4,7 @@ import ImageSlider from './ImageSlider';
 import RestaurantInfo from './RestaurantInfo';
 import Map from './Map';
 import ReviewTabs from './ReviewTabs';
-import axios from 'axios';
+import axios from 'utils/axios';
 import BlogReviews from './Tabs/BlogReviews';
 import { useParams } from "react-router-dom";
 import { useSelector } from 'react-redux';
@@ -20,30 +20,28 @@ const DetailPage = () => {
 
   // 사용자 정보 가져오기
   useEffect(() => {
-    if(isLoggedIn){ // 로그인했을 경우에만 사용자정보 가져오기
-      const fetchUserInfo = async () => {
-        try {
-          const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
-            withCredentials: true, // 쿠키 자동 전송
-          });
-  
-          if (response.data) {
-            setMemberNo(response.data);
-          }
-        } catch (err) {
-           // 사용자 정보를 가져오지 못했을 경우(비로그인), memberNo를 null로 유지
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
+          withCredentials: true, // 쿠키 자동 전송
+        });
+
+        if (response.data) {
+          setMemberNo(response.data);
         }
-      };
-  
-      fetchUserInfo();
-    }
-  }, [isLoggedIn]);
+      } catch (err) {
+         // 사용자 정보를 가져오지 못했을 경우(비로그인), memberNo를 null로 유지
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   // 식당 정보 가져오기
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/main/eateries/${no}`);
+        const response = await axios.get(`/main/eateries/${no}`);
         setRestaurant(response.data);
       } catch (err) {
         setFormError("식당 정보를 가져오는 데 실패했습니다.");

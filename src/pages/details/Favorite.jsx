@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { Toaster, toaster } from "../../components/ui/toaster";
-import axios from 'axios';
+import axios from 'utils/axios';
 
 const Favorite = ({ restaurantNo, memberNo, restaurantName }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -24,7 +24,7 @@ const Favorite = ({ restaurantNo, memberNo, restaurantName }) => {
       
       try {
         const response = await axios.get(
-          `http://localhost:8080/main/eateries/${restaurantNo}/favorites/${memberNo}`,
+          `/main/eateries/${restaurantNo}/favorites/${memberNo}`,
           { withCredentials: true }
         );
         
@@ -48,7 +48,7 @@ const Favorite = ({ restaurantNo, memberNo, restaurantName }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/main/eateries/${restaurantNo}/favorites`,
+        `/main/eateries/${restaurantNo}/favorites`,
         { 
           memberNo,
           status: isBookmarked ? 0 : 1

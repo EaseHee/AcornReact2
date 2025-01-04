@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/ui/dialog";
-import axios from "axios";
+import axios from "utils/axios";
 
 const DuplicatedEmail = ({ email, setIsEmailAvailable }) => {
   const [message, setMessage] = useState(""); // 응답 메시지 저장
@@ -19,7 +19,7 @@ const DuplicatedEmail = ({ email, setIsEmailAvailable }) => {
 
   const handleCheckEmail = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/auth/check-email", {
+      const response = await axios.get("/auth/check-email", {
         params: { email },
       });
       if (response.status === 200) {

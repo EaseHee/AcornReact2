@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import React, { useEffect, useState, useRef } from 'react';
 import StarReviewCard from './StarReviewCard';
 import CustomDialog from './CustomDialog';
-import axios from 'axios';
+import axios from 'utils/axios';
 export default function StarReviews({no}) {
   const [sortBy, setSortBy] = useState("createdAt"); // 기본 정렬 기준
   const handleSortChange = (criterion) => {
@@ -20,7 +20,7 @@ export default function StarReviews({no}) {
       const fetchMemberNo = async () => {
         try {
           // 서버에서 사용자 정보를 가져옵니다.
-          const response = await axios.get("http://localhost:8080/main/mypage/members/read", {
+          const response = await axios.get("/main/mypage/members/read", {
             withCredentials: true, // 쿠키를 함께 전송하도록 설정
           });
           setMemberNo(response.data.no); // 상태를 업데이트
