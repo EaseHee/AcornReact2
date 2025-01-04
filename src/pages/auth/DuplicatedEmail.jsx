@@ -28,10 +28,15 @@ const DuplicatedEmail = ({ email, setIsEmailAvailable }) => {
         setIsEmailAvailable(true);  // 이메일이 사용 가능하면 상태 변경
       }
     } catch (error) {
-      if (error.response && error.response.status === 400) {
+      const { code } = error.response.data;
+      if (code === "DM") {
         setMessage("이미 사용 중인 이메일입니다.");
         setIsSuccess(false);
         setIsEmailAvailable(false);  // 이메일이 중복되면 상태 변경
+      } else if (code === "VF") {
+        setMessage("이메일 형식이 아닙니다.");
+        setIsSuccess(false);
+        setIsEmailAvailable(false);  // 이메일이 형식이 아니라면 상태 변경
       } else {
         setMessage("이메일 확인 중 오류가 발생했습니다.");
       }
