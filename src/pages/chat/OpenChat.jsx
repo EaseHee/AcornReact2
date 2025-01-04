@@ -7,6 +7,8 @@ const OpenChat = ({
   handleSend,
   handleKeyDown,
   chats,
+  currentMemberNo,
+  nickname
 }) => {
   return (
     <div className={stylesChat.container}>
@@ -16,10 +18,10 @@ const OpenChat = ({
             <div
               key={index}
               className={`${stylesChat.chatMessage} ${
-                c.sendOtherUser ? stylesChat.otheruser : stylesChat.currentUser
+                c.memberNo !== currentMemberNo ? stylesChat.otheruser : stylesChat.currentUser
               }`}
             >
-              {c.sendOtherUser ? "유저: " : ""} {c.content}
+              {c.memberNo !== currentMemberNo ? `${c.nickname} : ` : ``} {c.content}
             </div>
           ))}
       </div>
