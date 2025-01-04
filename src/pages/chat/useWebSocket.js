@@ -12,7 +12,7 @@ const useWebSocket = (setChats) => {
         const client = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log("STOMP Debug: ", str),
-            reconnectDelay: 5000,
+            reconnectDelay: 2000,
             heartbeatIncoming: 0,
             heartbeatOutgoing: 0,
         });

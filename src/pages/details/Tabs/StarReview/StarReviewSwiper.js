@@ -8,7 +8,7 @@ import 'swiper/css/pagination';
 import { Pagination, Navigation } from 'swiper/modules';
 import './StarReviewSwiper.css';
 
-const baseURL = REACT_APP_BASE_URL || "https://port-0-forklog-m10lhqc01e8bd7d0.sel4.cloudtype.app";
+const baseURL = REACT_APP_API_BASE_URL || "https://port-0-forklog-m10lhqc01e8bd7d0.sel4.cloudtype.app";
 
 export default function StarReviewSwiper({ImgInfo}) {
     return (
