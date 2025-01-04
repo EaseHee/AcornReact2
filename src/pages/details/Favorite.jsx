@@ -24,9 +24,7 @@ const Favorite = ({ restaurantNo, memberNo, restaurantName }) => {
       
       try {
         const response = await axios.get(
-          `/main/eateries/${restaurantNo}/favorites/${memberNo}`,
-          { withCredentials: true }
-        );
+          `/main/eateries/${restaurantNo}/favorites/${memberNo}`);
         
         setIsBookmarked(response.data);
       } catch (error) {

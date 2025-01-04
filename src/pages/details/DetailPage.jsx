@@ -22,7 +22,7 @@ const DetailPage = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/main/mypage/members/member-no", {
+        const response = await axios.get("/main/mypage/members/member-no", {
           withCredentials: true, // 쿠키 자동 전송
         });
 
