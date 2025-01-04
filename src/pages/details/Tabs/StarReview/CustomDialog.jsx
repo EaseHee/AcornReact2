@@ -14,7 +14,7 @@ import {
 import { NativeSelectField, NativeSelectRoot } from "../../../../components/ui/native-select"
 import { Field } from "../../../../components/ui/field"
 import { Toaster, toaster } from "../../../../components/ui/toaster"
-import axios from 'axios';
+import axios from 'utils/axios';
 
 export default function CustomDialog({ onReviewSubmitted, openBtnText, title, memberNo, eateryNo, confirmBtnText, closeBtnText }) {
   const [formData, setFormData] = useState({ rating: "0", content: "" });
@@ -45,7 +45,7 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
     // 파일들을 FormData에 추가
     files.forEach((file) => payload.append("files", file));
     try {
-      await axios.post("http://localhost:8080/main/mypage/review", payload, {
+      await axios.post("/main/mypage/review", payload, {
         withCredentials: true, // 쿠키를 함께 전송하도록 설정
       });
       toaster.create({

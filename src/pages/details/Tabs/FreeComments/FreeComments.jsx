@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
-import axios from 'axios';
+import axios from 'utils/axios';
 import {
   Box,
   Button,
@@ -20,14 +20,14 @@ import { Toaster, toaster } from '../../../../components/ui/toaster';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
-  const response = await axios.get(`http://localhost:8080/main/eateries/${eateryNo}/comments?page=${pageParam}`);
+  const response = await axios.get(`/main/eateries/${eateryNo}/comments?page=${pageParam}`);
   return response.data;
 };
 
 // 댓글 작성
 const postComment = async ({ eateryNo, content, memberNo, parentCommentNo }) => {
   try {
-    const response = await axios.post(`http://localhost:8080/main/eateries/comments`, {
+    const response = await axios.post(`/main/eateries/comments`, {
       eateryNo,
       content,
       memberNo,
@@ -45,14 +45,14 @@ const postComment = async ({ eateryNo, content, memberNo, parentCommentNo }) => 
 
 // 댓글 삭제
 const deleteComment = async (commentNo) => {
-  const response = await axios.delete(`http://localhost:8080/main/eateries/comments/${commentNo}`);
+  const response = await axios.delete(`/main/eateries/comments/${commentNo}`);
   return response.data;
 };
 
 // 댓글 수정
 const updateComment = async ({ commentNo, content }) => {
   try {
-    const response = await axios.put(`http://localhost:8080/main/eateries/comments/${commentNo}`, {
+    const response = await axios.put(`/main/eateries/comments/${commentNo}`, {
       content,
     });
     toaster.create({
@@ -66,7 +66,7 @@ const updateComment = async ({ commentNo, content }) => {
 };
 
 const fetchLikes = async ({ eateryNo, memberNo }) => {
-  const response = await axios.get('http://localhost:8080/main/eateries/comments/likes', {
+  const response = await axios.get('/main/eateries/comments/likes', {
     params: { eateryNo, memberNo },
   });
   return response.data;
@@ -75,7 +75,7 @@ const fetchLikes = async ({ eateryNo, memberNo }) => {
 // 좋아요 누르기 API 요청
 const likeComment = async ({ memberNo, commentNo }) => {
   try {
-    const response = await axios.post('http://localhost:8080/main/eateries/comments/likes', {
+    const response = await axios.post('/main/eateries/comments/likes', {
       memberNo,
       commentNo,
     });
@@ -88,7 +88,7 @@ const likeComment = async ({ memberNo, commentNo }) => {
 // 좋아요 삭제 API 요청
 const unlikeComment = async (likeNo) => {
   try {
-    const response = await axios.delete(`http://localhost:8080/main/eateries/comments/likes/${likeNo}`);
+    const response = await axios.delete(`/main/eateries/comments/likes/${likeNo}`);
     return response.data;
   } catch (err) {
     console.error(err);
@@ -108,9 +108,7 @@ const FreeComments = ({ eateryNo }) => {
     if (isLoggedIn) {
       const fetchMemberNo = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/main/mypage/members/member-no', {
-            withCredentials: true,
-          });
+          const response = await axios.get('/main/mypage/members/member-no');
           if (response.data) {
             setMemberNo(response.data);
           }
@@ -123,14 +121,14 @@ const FreeComments = ({ eateryNo }) => {
   }, [isLoggedIn]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
-    ['comments', eateryNo],
-    ({ pageParam = 0 }) => fetchComments({ pageParam, eateryNo }),
-    {
-      getNextPageParam: (lastPage) => {
-        const { number, totalPages } = lastPage.page;
-        return number + 1 < totalPages ? number + 1 : null;
-      },
-    }
+      ['comments', eateryNo],
+      ({ pageParam = 0 }) => fetchComments({ pageParam, eateryNo }),
+      {
+        getNextPageParam: (lastPage) => {
+          const { number, totalPages } = lastPage.page;
+          return number + 1 < totalPages ? number + 1 : null;
+        },
+      }
   );
 
   const [editingComment, setEditingComment] = useState(null); // 수정 중인 댓글의 ID를 추적
@@ -203,17 +201,17 @@ const FreeComments = ({ eateryNo }) => {
   });
 
   const lastElementRef = useCallback(
-    (node) => {
-      if (isFetchingNextPage) return;
-      if (observerRef.current) observerRef.current.disconnect();
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
-      });
-      if (node) observerRef.current.observe(node);
-    },
-    [isFetchingNextPage, hasNextPage, fetchNextPage]
+      (node) => {
+        if (isFetchingNextPage) return;
+        if (observerRef.current) observerRef.current.disconnect();
+        observerRef.current = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && hasNextPage) {
+            fetchNextPage();
+          }
+        });
+        if (node) observerRef.current.observe(node);
+      },
+      [isFetchingNextPage, hasNextPage, fetchNextPage]
   );
 
   const handleEditClick = (comment) => {
@@ -282,304 +280,304 @@ const FreeComments = ({ eateryNo }) => {
   if (isLoading) return <MySpinner />;
 
   return (
-    <Box w="full" p={4}>
-      <Toaster />
-      {/* 새 댓글 작성 */}
-      <Flex direction="column" mb={4}>
-        <Textarea
-          value={newCommentContent}
-          onChange={(e) => setNewCommentContent(e.target.value)}
-          placeholder={memberNo === 0 ? '댓글을 작성하려면 로그인하세요' : '새 댓글을 작성하세요'}
-          size="sm"
-          rows="4"
-          mb="2"
-          color="black"
-          disabled={memberNo === 0}
-        />
-        {memberNo !== 0 && (
-          <Flex justify="end">
-            <Button size="sm" colorPalette="orange" onClick={handleNewCommentSubmit}>
-              작성
-            </Button>
-          </Flex>
-        )}
-      </Flex>
+      <Box w="full" p={4}>
+        <Toaster />
+        {/* 새 댓글 작성 */}
+        <Flex direction="column" mb={4}>
+          <Textarea
+              value={newCommentContent}
+              onChange={(e) => setNewCommentContent(e.target.value)}
+              placeholder={memberNo === 0 ? '댓글을 작성하려면 로그인하세요' : '새 댓글을 작성하세요'}
+              size="sm"
+              rows="4"
+              mb="2"
+              color="black"
+              disabled={memberNo === 0}
+          />
+          {memberNo !== 0 && (
+              <Flex justify="end">
+                <Button size="sm" colorPalette="orange" onClick={handleNewCommentSubmit}>
+                  작성
+                </Button>
+              </Flex>
+          )}
+        </Flex>
 
-      {data.pages.map((page, pageIndex) => (
-        <div key={pageIndex}>
-          {page.content.map((comment, index) => {
-            const isLastItem = pageIndex === data.pages.length - 1 && index === page.content.length - 1;
+        {data.pages.map((page, pageIndex) => (
+            <div key={pageIndex}>
+              {page.content.map((comment, index) => {
+                const isLastItem = pageIndex === data.pages.length - 1 && index === page.content.length - 1;
 
-            return (
-              <Box
-                key={comment.no}
-                ref={isLastItem ? lastElementRef : null}
-                p={4}
-                borderWidth="1px"
-                borderRadius="lg"
-                mb={4}
-                boxShadow="sm"
-                bg={comment.deleted ? 'gray.300' : 'white'}
-                style={comment.parentCommentNo ? { display: 'none' } : { display: 'block' }}
-              >
-                <Flex justify="space-between" mb={2}>
-                  <Text fontSize="sm" fontWeight="bold" color="black">
-                    {comment.nickname || <>익명</>}
-                  </Text>
-                  <Flex direction="row" align="center">
-                    {comment.updatedAt === comment.createdAt ? null : (
-                      <Text fontSize="sm" color="black" ml={2}>
-                        (수정일: {new Date(comment.updatedAt).toLocaleString()})
-                      </Text>
-                    )}
-                    <Text fontSize="sm" color="black" ml={2}>
-                      작성일: {new Date(comment.createdAt).toLocaleString()}
-                    </Text>
-                  </Flex>
-                </Flex>
-
-                {editingComment === comment.no ? (
-                  <Box>
-                    <Textarea
-                      value={editedContent}
-                      onChange={(e) => setEditedContent(e.target.value)}
-                      size="sm"
-                      color="black"
-                      rows={4}
-                    />
-                    <Flex justify="end" mt={2}>
-                      <Button size="sm" colorPalette="orange" onClick={handleSaveClick} mr={2}>
-                        저장
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={handleCancelClick}>
-                        취소
-                      </Button>
-                    </Flex>
-                  </Box>
-                ) : (
-                  <Text fontSize="md" color="black" mb={2}>
-                    {comment.content}
-                  </Text>
-                )}
-
-                {/* 댓글 버튼들 */}
-                {editingComment !== comment.no && (
-                  <Flex justify="end">
-                    {comment.deleted ? (
-                      <></>
-                    ) : memberNo ? (
-                      memberNo === comment.memberNo ? (
-                        <Flex justify="end">
-                          <Flex align="center">
-                            {/* 좋아요 아이콘 */}
-                            {!comment.deleted && (
-                              <Flex justify="end" align="center">
-                                {likedComments.includes(comment.no) ? (
-                                  <BsHandThumbsUpFill cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
-                                ) : (
-                                  <BsHandThumbsUp cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
-                                )}
-                                <Text ml={2}>{comment.likeCount}</Text>
-                              </Flex>
-                            )}
-                            <Button size="sm" colorPalette="orange" mx={2} onClick={() => handleReplyClick(comment)}>
-                              대댓글 달기
-                            </Button>
-                          </Flex>
-                          <Box>
-                            <Button colorPalette="orange" size="sm" mr={2} onClick={() => handleEditClick(comment)}>
-                              수정
-                            </Button>
-                            <DeleteDialog onClick={() => handleCommentDelete(comment.no)} />
-                          </Box>
-                        </Flex>
-                      ) : (
-                        <Flex justify="end" align="center">
-                          {/* 좋아요 아이콘 */}
-                          {!comment.deleted && (
-                            <Flex justify="end" align="center">
-                              {likedComments.includes(comment.no) ? (
-                                <BsHandThumbsUpFill cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
-                              ) : (
-                                <BsHandThumbsUp cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
-                              )}
-                              <Text ml={2}>{comment.likeCount}</Text>
-                            </Flex>
+                return (
+                    <Box
+                        key={comment.no}
+                        ref={isLastItem ? lastElementRef : null}
+                        p={4}
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        mb={4}
+                        boxShadow="sm"
+                        bg={comment.deleted ? 'gray.300' : 'white'}
+                        style={comment.parentCommentNo ? { display: 'none' } : { display: 'block' }}
+                    >
+                      <Flex justify="space-between" mb={2}>
+                        <Text fontSize="sm" fontWeight="bold" color="black">
+                          {comment.nickname || <>익명</>}
+                        </Text>
+                        <Flex direction="row" align="center">
+                          {comment.updatedAt === comment.createdAt ? null : (
+                              <Text fontSize="sm" color="black" ml={2}>
+                                (수정일: {new Date(comment.updatedAt).toLocaleString()})
+                              </Text>
                           )}
-                          <Button size="sm" colorPalette="orange" mx={2} onClick={() => handleReplyClick(comment)}>
-                            대댓글 달기
-                          </Button>
+                          <Text fontSize="sm" color="black" ml={2}>
+                            작성일: {new Date(comment.createdAt).toLocaleString()}
+                          </Text>
                         </Flex>
-                      )
-                    ) : (
-                      <Flex justify="end" align="center">
-                        <BsHandThumbsUp size={25} />
-                        <Text ml={2}>{comment.likeCount}</Text>
                       </Flex>
-                    )}
-                  </Flex>
-                )}
 
-                {/* 대댓글 작성창 */}
-                {replyingToComment === comment.no && (
-                  <Box mt={2}>
-                    <Textarea
-                      placeholder="대댓글을 작성하세요"
-                      size="sm"
-                      mb={2}
-                      color="black"
-                      value={newReplyContent}
-                      onChange={(e) => setNewReplyContent(e.target.value)}
-                      rows={4}
-                    />
-                    <Flex justify="end">
-                      <Button size="sm" colorPalette="orange" onClick={() => handleReplySubmit(comment.no)} mr={2}>
-                        작성
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setReplyingToComment(null)}>
-                        취소
-                      </Button>
-                    </Flex>
-                  </Box>
-                )}
-
-                {/* 대댓글 보기 */}
-                {comment.childComments && comment.childComments.length > 0 && (
-                  <AccordionRoot collapsible variant="plain" defaultValue={['b']}>
-                    <AccordionItem>
-                      <AccordionItemTrigger cursor="pointer" w="fit-content">
-                        <Box rounded="md" borderWidth="thin" p="1.5" _hover={{ bg: 'gray.200' }}>
-                          <Text>{comment.childComments.length}개의 대댓글</Text>
-                        </Box>
-                      </AccordionItemTrigger>
-                      <AccordionItemContent>
-                        {comment.childComments.map((childComment) => (
-                          <Box
-                            key={childComment.no}
-                            p={4}
-                            borderWidth="1px"
-                            borderRadius="lg"
-                            mb={4}
-                            ml={6}
-                            boxShadow="sm"
-                            bg="white"
-                          >
-                            <Flex justify="space-between" mb={2}>
-                              <Text fontSize="sm" fontWeight="bold" color="black">
-                                {childComment.nickname || <>익명</>}
-                              </Text>
-                              <Flex direction="row" align="center">
-                                {childComment.updatedAt === childComment.createdAt ? null : (
-                                  <Text fontSize="sm" color="black" ml={2}>
-                                    (수정일: {new Date(childComment.updatedAt).toLocaleString()})
-                                  </Text>
-                                )}
-                                <Text fontSize="sm" color="black" ml={2}>
-                                  작성일: {new Date(childComment.createdAt).toLocaleString()}
-                                </Text>
-                              </Flex>
+                      {editingComment === comment.no ? (
+                          <Box>
+                            <Textarea
+                                value={editedContent}
+                                onChange={(e) => setEditedContent(e.target.value)}
+                                size="sm"
+                                color="black"
+                                rows={4}
+                            />
+                            <Flex justify="end" mt={2}>
+                              <Button size="sm" colorPalette="orange" onClick={handleSaveClick} mr={2}>
+                                저장
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={handleCancelClick}>
+                                취소
+                              </Button>
                             </Flex>
-
-                            {editingReply === childComment.no ? (
-                              <Box>
-                                <Textarea
-                                  value={editedReplyContent}
-                                  onChange={(e) => setEditedReplyContent(e.target.value)}
-                                  size="sm"
-                                  color="black"
-                                  rows={4}
-                                />
-                                <Flex justify="end" mt={2}>
-                                  <Button
-                                    size="sm"
-                                    colorPalette="orange"
-                                    onClick={() => updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })}
-                                    mr={2}
-                                  >
-                                    저장
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={() => setEditingReply(null)}>
-                                    취소
-                                  </Button>
-                                </Flex>
-                              </Box>
-                            ) : (
-                              <Text fontSize="md" color="black" mb={2}>
-                                {childComment.content}
-                              </Text>
-                            )}
-
-                            {/* 대댓글 수정 삭제 버튼 */}
-                            {editingReply !== childComment.no && (
-                              <Flex justify="end">
-                                {memberNo === 0 ? (
-                                  // 회원 로그인을 하지 않은 경우
-                                  <Flex justify="end" align="center">
-                                    <BsHandThumbsUp size={25} />
-                                    <Text ml={2}>{childComment.likeCount}</Text>
-                                  </Flex>
-                                ) : memberNo === childComment.memberNo ? (
-                                  // 회원 로그인을 했고, 작성자인 경우
-                                  <Flex justify="end" align="center">
-                                    {likedComments.includes(childComment.no) ? (
-                                      <BsHandThumbsUpFill
-                                        cursor="pointer"
-                                        size={25}
-                                        onClick={() => handleLikeClick(childComment.no)}
-                                      />
-                                    ) : (
-                                      <BsHandThumbsUp
-                                        cursor="pointer"
-                                        size={25}
-                                        onClick={() => handleLikeClick(childComment.no)}
-                                      />
-                                    )}
-                                    <Text mx={2}>{childComment.likeCount}</Text>
-                                    <Button
-                                      size="sm"
-                                      colorPalette="orange"
-                                      mr={2}
-                                      onClick={() => handleReplyEditClick(childComment)}
-                                    >
-                                      수정
-                                    </Button>
-                                    <DeleteDialog onClick={() => handleCommentDelete(childComment.no)} />
-                                  </Flex>
-                                ) : (
-                                  // 회원 로그인을 했고, 작성자가 아닌 경우
-                                  <Flex justify="end" align="center">
-                                    {likedComments.includes(childComment.no) ? (
-                                      <BsHandThumbsUpFill
-                                        cursor="pointer"
-                                        size={25}
-                                        onClick={() => handleLikeClick(childComment.no)}
-                                      />
-                                    ) : (
-                                      <BsHandThumbsUp
-                                        cursor="pointer"
-                                        size={25}
-                                        onClick={() => handleLikeClick(childComment.no)}
-                                      />
-                                    )}
-                                    <Text mx={2}>{childComment.likeCount}</Text>
-                                  </Flex>
-                                )}
-                              </Flex>
-                            )}
                           </Box>
-                        ))}
-                      </AccordionItemContent>
-                    </AccordionItem>
-                  </AccordionRoot>
-                )}
-              </Box>
-            );
-          })}
-        </div>
-      ))}
+                      ) : (
+                          <Text fontSize="md" color="black" mb={2}>
+                            {comment.content}
+                          </Text>
+                      )}
 
-      {isFetchingNextPage || hasNextPage ? <MySpinner /> : <p style={{ textAlign: 'center' }}>모든 댓글을 로드했습니다.</p>}
-    </Box>
+                      {/* 댓글 버튼들 */}
+                      {editingComment !== comment.no && (
+                          <Flex justify="end">
+                            {comment.deleted ? (
+                                <></>
+                            ) : memberNo ? (
+                                memberNo === comment.memberNo ? (
+                                    <Flex justify="end">
+                                      <Flex align="center">
+                                        {/* 좋아요 아이콘 */}
+                                        {!comment.deleted && (
+                                            <Flex justify="end" align="center">
+                                              {likedComments.includes(comment.no) ? (
+                                                  <BsHandThumbsUpFill cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
+                                              ) : (
+                                                  <BsHandThumbsUp cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
+                                              )}
+                                              <Text ml={2}>{comment.likeCount}</Text>
+                                            </Flex>
+                                        )}
+                                        <Button size="sm" colorPalette="orange" mx={2} onClick={() => handleReplyClick(comment)}>
+                                          대댓글 달기
+                                        </Button>
+                                      </Flex>
+                                      <Box>
+                                        <Button colorPalette="orange" size="sm" mr={2} onClick={() => handleEditClick(comment)}>
+                                          수정
+                                        </Button>
+                                        <DeleteDialog onClick={() => handleCommentDelete(comment.no)} />
+                                      </Box>
+                                    </Flex>
+                                ) : (
+                                    <Flex justify="end" align="center">
+                                      {/* 좋아요 아이콘 */}
+                                      {!comment.deleted && (
+                                          <Flex justify="end" align="center">
+                                            {likedComments.includes(comment.no) ? (
+                                                <BsHandThumbsUpFill cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
+                                            ) : (
+                                                <BsHandThumbsUp cursor="pointer" size={25} onClick={() => handleLikeClick(comment.no)} />
+                                            )}
+                                            <Text ml={2}>{comment.likeCount}</Text>
+                                          </Flex>
+                                      )}
+                                      <Button size="sm" colorPalette="orange" mx={2} onClick={() => handleReplyClick(comment)}>
+                                        대댓글 달기
+                                      </Button>
+                                    </Flex>
+                                )
+                            ) : (
+                                <Flex justify="end" align="center">
+                                  <BsHandThumbsUp size={25} />
+                                  <Text ml={2}>{comment.likeCount}</Text>
+                                </Flex>
+                            )}
+                          </Flex>
+                      )}
+
+                      {/* 대댓글 작성창 */}
+                      {replyingToComment === comment.no && (
+                          <Box mt={2}>
+                            <Textarea
+                                placeholder="대댓글을 작성하세요"
+                                size="sm"
+                                mb={2}
+                                color="black"
+                                value={newReplyContent}
+                                onChange={(e) => setNewReplyContent(e.target.value)}
+                                rows={4}
+                            />
+                            <Flex justify="end">
+                              <Button size="sm" colorPalette="orange" onClick={() => handleReplySubmit(comment.no)} mr={2}>
+                                작성
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setReplyingToComment(null)}>
+                                취소
+                              </Button>
+                            </Flex>
+                          </Box>
+                      )}
+
+                      {/* 대댓글 보기 */}
+                      {comment.childComments && comment.childComments.length > 0 && (
+                          <AccordionRoot collapsible variant="plain" defaultValue={['b']}>
+                            <AccordionItem>
+                              <AccordionItemTrigger cursor="pointer" w="fit-content">
+                                <Box rounded="md" borderWidth="thin" p="1.5" _hover={{ bg: 'gray.200' }}>
+                                  <Text>{comment.childComments.length}개의 대댓글</Text>
+                                </Box>
+                              </AccordionItemTrigger>
+                              <AccordionItemContent>
+                                {comment.childComments.map((childComment) => (
+                                    <Box
+                                        key={childComment.no}
+                                        p={4}
+                                        borderWidth="1px"
+                                        borderRadius="lg"
+                                        mb={4}
+                                        ml={6}
+                                        boxShadow="sm"
+                                        bg="white"
+                                    >
+                                      <Flex justify="space-between" mb={2}>
+                                        <Text fontSize="sm" fontWeight="bold" color="black">
+                                          {childComment.nickname || <>익명</>}
+                                        </Text>
+                                        <Flex direction="row" align="center">
+                                          {childComment.updatedAt === childComment.createdAt ? null : (
+                                              <Text fontSize="sm" color="black" ml={2}>
+                                                (수정일: {new Date(childComment.updatedAt).toLocaleString()})
+                                              </Text>
+                                          )}
+                                          <Text fontSize="sm" color="black" ml={2}>
+                                            작성일: {new Date(childComment.createdAt).toLocaleString()}
+                                          </Text>
+                                        </Flex>
+                                      </Flex>
+
+                                      {editingReply === childComment.no ? (
+                                          <Box>
+                                            <Textarea
+                                                value={editedReplyContent}
+                                                onChange={(e) => setEditedReplyContent(e.target.value)}
+                                                size="sm"
+                                                color="black"
+                                                rows={4}
+                                            />
+                                            <Flex justify="end" mt={2}>
+                                              <Button
+                                                  size="sm"
+                                                  colorPalette="orange"
+                                                  onClick={() => updateCommentMutate({ commentNo: editingReply, content: editedReplyContent })}
+                                                  mr={2}
+                                              >
+                                                저장
+                                              </Button>
+                                              <Button size="sm" variant="outline" onClick={() => setEditingReply(null)}>
+                                                취소
+                                              </Button>
+                                            </Flex>
+                                          </Box>
+                                      ) : (
+                                          <Text fontSize="md" color="black" mb={2}>
+                                            {childComment.content}
+                                          </Text>
+                                      )}
+
+                                      {/* 대댓글 수정 삭제 버튼 */}
+                                      {editingReply !== childComment.no && (
+                                          <Flex justify="end">
+                                            {memberNo === 0 ? (
+                                                // 회원 로그인을 하지 않은 경우
+                                                <Flex justify="end" align="center">
+                                                  <BsHandThumbsUp size={25} />
+                                                  <Text ml={2}>{childComment.likeCount}</Text>
+                                                </Flex>
+                                            ) : memberNo === childComment.memberNo ? (
+                                                // 회원 로그인을 했고, 작성자인 경우
+                                                <Flex justify="end" align="center">
+                                                  {likedComments.includes(childComment.no) ? (
+                                                      <BsHandThumbsUpFill
+                                                          cursor="pointer"
+                                                          size={25}
+                                                          onClick={() => handleLikeClick(childComment.no)}
+                                                      />
+                                                  ) : (
+                                                      <BsHandThumbsUp
+                                                          cursor="pointer"
+                                                          size={25}
+                                                          onClick={() => handleLikeClick(childComment.no)}
+                                                      />
+                                                  )}
+                                                  <Text mx={2}>{childComment.likeCount}</Text>
+                                                  <Button
+                                                      size="sm"
+                                                      colorPalette="orange"
+                                                      mr={2}
+                                                      onClick={() => handleReplyEditClick(childComment)}
+                                                  >
+                                                    수정
+                                                  </Button>
+                                                  <DeleteDialog onClick={() => handleCommentDelete(childComment.no)} />
+                                                </Flex>
+                                            ) : (
+                                                // 회원 로그인을 했고, 작성자가 아닌 경우
+                                                <Flex justify="end" align="center">
+                                                  {likedComments.includes(childComment.no) ? (
+                                                      <BsHandThumbsUpFill
+                                                          cursor="pointer"
+                                                          size={25}
+                                                          onClick={() => handleLikeClick(childComment.no)}
+                                                      />
+                                                  ) : (
+                                                      <BsHandThumbsUp
+                                                          cursor="pointer"
+                                                          size={25}
+                                                          onClick={() => handleLikeClick(childComment.no)}
+                                                      />
+                                                  )}
+                                                  <Text mx={2}>{childComment.likeCount}</Text>
+                                                </Flex>
+                                            )}
+                                          </Flex>
+                                      )}
+                                    </Box>
+                                ))}
+                              </AccordionItemContent>
+                            </AccordionItem>
+                          </AccordionRoot>
+                      )}
+                    </Box>
+                );
+              })}
+            </div>
+        ))}
+
+        {isFetchingNextPage || hasNextPage ? <MySpinner /> : <p style={{ textAlign: 'center' }}>모든 댓글을 로드했습니다.</p>}
+      </Box>
   );
 };
 

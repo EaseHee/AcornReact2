@@ -8,7 +8,7 @@ import { DaumPostAPI } from "./DaumPostAPI";
 import Terms1 from "./Terms1";
 import Terms2 from "./Terms2";
 import DuplicatedEmail from "./DuplicatedEmail";
-import axios from "axios";
+import axios from "utils/axios";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo";
 
@@ -39,7 +39,7 @@ const AuthRegister = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/register",
+        "/auth/register",
         data
       );
 

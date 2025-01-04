@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../../../components/ui/dialog";
-import axios from "axios";
+import axios from "utils/axios";
 
 const DuplicatedNickname = ({ nickname, setIsNicknameAvailable }) => {
 
@@ -21,7 +21,7 @@ const DuplicatedNickname = ({ nickname, setIsNicknameAvailable }) => {
   const handleCheckNickname = async () => {
     try {
       //console.log(nickname);
-      const response = await axios.get("http://localhost:8080/main/mypage/members/check-nickname", {
+      const response = await axios.get("/main/mypage/members/check-nickname", {
         withCredentials: true,
         params: { nickname }, 
       });

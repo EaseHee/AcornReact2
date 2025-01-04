@@ -23,11 +23,7 @@ const Header = () => {
     const fetchNickname = async () => {
       try {
         const response = await axios.get(
-          "/main/mypage/members/read",
-          {
-            withCredentials: true,
-          }
-        );
+          "/main/mypage/members/read");
         setNickname(response.data.nickname);
       } catch (err) {
         setError(err.message);
