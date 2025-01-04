@@ -2,15 +2,17 @@
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
+const baseURL = process.env.REACT_APP_API_BASE_URL || "https://port-0-forklog-m10lhqc01e8bd7d0.sel4.cloudtype.app";
+
 const useWebSocket = (setChats) => {
     const [stompClient, setStompClient] = useState(null);
 
     const connectWebSocket = useCallback(() => {
-        const socket = new SockJS(`${process.env.REACT_APP_API_BASE_URL}/ws`);
+        const socket = new SockJS(`${baseURL}/ws`);
         const client = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log("STOMP Debug: ", str),
-            reconnectDelay: 5000,
+            reconnectDelay: 2000,
             heartbeatIncoming: 0,
             heartbeatOutgoing: 0,
         });
@@ -21,17 +23,17 @@ const useWebSocket = (setChats) => {
                 const receivedMessage = JSON.parse(message.body);
                 setChats((prevMessages) => [...prevMessages, receivedMessage]);
             });
+            setStompClient(client);
         };
 
         client.activate();
-        setStompClient(client);
 
         return () => {
             if (client) {
                 client.deactivate();
             }
         };
-    }, [setChats]);
+    }, []);
 
     return { stompClient, connectWebSocket };
 };

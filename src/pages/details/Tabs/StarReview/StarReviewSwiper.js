@@ -7,6 +7,9 @@ import 'swiper/css/pagination';
 // Import required modules
 import { Pagination, Navigation } from 'swiper/modules';
 import './StarReviewSwiper.css';
+
+const baseURL = REACT_APP_API_BASE_URL || "https://port-0-forklog-m10lhqc01e8bd7d0.sel4.cloudtype.app";
+
 export default function StarReviewSwiper({ImgInfo}) {
     return (
     <div className="swiper-container">
@@ -23,7 +26,7 @@ export default function StarReviewSwiper({ImgInfo}) {
             <div className="swiper-slide-content">
               <img
                 className="slide-image"
-                src={`http://localhost:8080${item.imageUrl.replace(/^[.\\]+/, '/')}`}  // 서버 주소를 포함한 절대 URL로 변환
+                src={`${baseURL}${item.imageUrl.replace(/^[.\\]+/, '/')}`}  // 서버 주소를 포함한 절대 URL로 변환
                 alt={`리뷰 사진 ${item.no}`}
               />
             </div>
