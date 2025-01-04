@@ -16,6 +16,7 @@ import MySpinner from '../../../../components/Spinner';
 import { BsHandThumbsUp, BsHandThumbsUpFill } from 'react-icons/bs';
 import DeleteDialog from './DeleteDialog';
 import { useSelector } from 'react-redux';
+import { Toaster, toaster } from '../../../../components/ui/toaster';
 
 // 댓글 데이터 가져오기
 const fetchComments = async ({ pageParam = 0, eateryNo }) => {
@@ -31,6 +32,10 @@ const postComment = async ({ eateryNo, content, memberNo, parentCommentNo }) => 
       content,
       memberNo,
       parentCommentNo, // 대댓글 작성 시 포함
+    });
+    toaster.create({
+      description: '댓글 등록 성공!',
+      type: 'success',
     });
     return response.data;
   } catch (err) {
@@ -93,10 +98,10 @@ const unlikeComment = async (likeNo) => {
  */
 const FreeComments = ({ eateryNo }) => {
   const [memberNo, setMemberNo] = useState(0);
-  const isLoggedIn = useSelector(state=>state.auth.isLoggedIn);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   useEffect(() => {
-    if(isLoggedIn){
+    if (isLoggedIn) {
       const fetchMemberNo = async () => {
         try {
           const response = await axios.get('http://localhost:8080/main/mypage/members/member-no', {
@@ -111,7 +116,7 @@ const FreeComments = ({ eateryNo }) => {
       };
       fetchMemberNo();
     }
-  }, []);
+  }, [isLoggedIn]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery(
     ['comments', eateryNo],
@@ -274,6 +279,7 @@ const FreeComments = ({ eateryNo }) => {
 
   return (
     <Box w="full" p={4}>
+      <Toaster />
       {/* 새 댓글 작성 */}
       <Flex direction="column" mb={4}>
         <Textarea
@@ -438,8 +444,8 @@ const FreeComments = ({ eateryNo }) => {
                   <AccordionRoot collapsible variant="plain" defaultValue={['b']}>
                     <AccordionItem>
                       <AccordionItemTrigger cursor="pointer" w="fit-content">
-                        <Box rounded="md" borderWidth="thin" p="1.5" _hover={{bg: 'gray.200'}}>
-                        <Text>{comment.childComments.length}개의 대댓글</Text>
+                        <Box rounded="md" borderWidth="thin" p="1.5" _hover={{ bg: 'gray.200' }}>
+                          <Text>{comment.childComments.length}개의 대댓글</Text>
                         </Box>
                       </AccordionItemTrigger>
                       <AccordionItemContent>
