@@ -39,8 +39,11 @@ const Body = () => {
     }
   };
 
-  // Enter 키를 눌렀을 때 메시지 전송
-  // 메시지 전송 함수
+  /**
+   * Enter 키를 눌렀을 때 메시지 전송
+   * event.nativeEvent.isComposing : 한글 입력 시 마지막 글자가 중복되어 입력되는 오류 처리
+   * @param event
+   */
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.nativeEvent.isComposing) {
       e.preventDefault(); // 기본 Enter 동작 방지
