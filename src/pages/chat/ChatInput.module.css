@@ -11,14 +11,6 @@
   height: 100vh;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #ff7f32; /* 오렌지 색상 */
-}
-
-/* 채팅 메시지 영역의 정렬 */
 .chatMessages {
   display: flex;
   flex-direction: column;
@@ -33,7 +25,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* 개별 채팅 메시지 */
 .chatMessage {
   margin-bottom: 10px;
   padding: 10px;
@@ -47,7 +38,6 @@ h2 {
 /* 다른 사용자 메시지 */
 .chatMessage.otheruser {
   background-color: #ffcc80; /* 다른 사용자 메시지는 더 진한 오렌지 */
-  font-weight: bold;
   align-self: flex-start; /* 왼쪽 정렬 */
 }
 
@@ -85,43 +75,4 @@ h2 {
 
 .sendButton:hover {
   background-color: #ff5e0f; /* 호버시 진한 오렌지 */
-}
-
-.inputField:focus {
-  outline: none;
-  border-color: #ff9e52;
-  box-shadow: 0 0 5px rgba(255, 158, 82, 0.5); /* 오렌지 색상으로 포커스 */
-}
-
-.chatMessages::-webkit-scrollbar {
-  width: 8px;
-}
-
-.chatMessages::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.chatMessages::-webkit-scrollbar-thumb {
-  background-color: #ff9e52;
-  border-radius: 10px;
-  border: 3px solid #f1f1f1;
-}
-
-/* 모바일 반응형 */
-@media (max-width: 768px) {
-  .container {
-    max-width: 100%;
-    padding: 10px;
-  }
-
-  .sendButton {
-    font-size: 12px;
-    padding: 8px 16px;
-  }
-
-  .inputField {
-    font-size: 12px;
-    padding: 8px;
-  }
 }

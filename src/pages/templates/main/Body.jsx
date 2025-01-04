@@ -16,11 +16,13 @@ const Body = () => {
   const [chatNo, setChatNo] = useState(null); // 채팅방 번호
   const [stompClient, setStompClient] = useState(null); // STOMP 클라이언트
   const [memberNo, setMemberNo] = useState(null);
+  const [nickname, setNickname] = useState(null);
 
   useEffect(() => {
     axios.get("/main/mypage/members/read")
         .then(res => res.data)
         .then(data => setMemberNo(data.no))
+        .then(data => setNickname(data.nickname))
         .catch(err => console.log(err));
   }, []);
 
@@ -123,6 +125,8 @@ const Body = () => {
                 handleSend={handleSend}
                 handleKeyDown={handleKeyDown}
                 chats={chats}
+                currentMemberNo={memberNo}
+                nickname={nickname}
               />
             }
           />
