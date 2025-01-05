@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-import {Box, Button, Flex, Text} from "@chakra-ui/react";
+import {Box, Button, Flex, Grid, Text} from "@chakra-ui/react";
 
 import Swiper from "components/swiper/Swiper.js";
 import MySpinner from "components/Spinner.js";
@@ -238,17 +238,23 @@ export default function Main() {
                         loader={<MySpinner alignSelf="center"/>}
                         endMessage={<EndMessage text={"마지막 목록입니다."} component={Filter()}/>}
                     >
-                        <Flex justify="space-between" wrap="wrap" gap={4} p={2} h={"fit-content"}>
+                        <Grid
+                            templateColumns={{
+                                base: "1fr",
+                                sm: "repeat(2, 1fr)",
+                                md: "repeat(3, 1fr)"
+                            }}
+                            gap={4} p={2} h={"fit-content"}
+                        >
                             {eateries.map((eatery, index) => (
                                 <Box
                                     key={index}
-                                    w={{base: "100%", sm: "48%", md: "30%", lg: "30%"}}
                                     borderRadius="md"
                                 >
                                     <MainCard data={eatery}/>
                                 </Box>
                             ))}
-                        </Flex>
+                        </Grid>
                     </InfiniteScroll>
                 ) : error ? (
                     <ErrorState
