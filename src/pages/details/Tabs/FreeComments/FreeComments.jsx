@@ -327,11 +327,11 @@ const FreeComments = ({ eateryNo }) => {
                         <Flex direction="row" align="center">
                           {comment.updatedAt === comment.createdAt ? null : (
                               <Text fontSize="sm" color="black" ml={2}>
-                                (수정일: {new Date(comment.updatedAt).toLocaleString()})
+                                (수정: {new Date(comment.updatedAt).toLocaleString()})
                               </Text>
                           )}
                           <Text fontSize="sm" color="black" ml={2}>
-                            작성일: {new Date(comment.createdAt).toLocaleString()}
+                            작성: {new Date(comment.createdAt).toLocaleString()}
                           </Text>
                         </Flex>
                       </Flex>
@@ -469,11 +469,11 @@ const FreeComments = ({ eateryNo }) => {
                                         <Flex direction="row" align="center">
                                           {childComment.updatedAt === childComment.createdAt ? null : (
                                               <Text fontSize="sm" color="black" ml={2}>
-                                                (수정일: {new Date(childComment.updatedAt).toLocaleString()})
+                                                (수정: {new Date(childComment.updatedAt).toLocaleString()})
                                               </Text>
                                           )}
                                           <Text fontSize="sm" color="black" ml={2}>
-                                            작성일: {new Date(childComment.createdAt).toLocaleString()}
+                                            작성: {new Date(childComment.createdAt).toLocaleString()}
                                           </Text>
                                         </Flex>
                                       </Flex>
