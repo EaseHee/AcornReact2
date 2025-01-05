@@ -32,10 +32,10 @@ const ChatMessage = ({ chat, previousChat, nextChat, isCurrentUser }) => {
             )}
 
             <HStack
-                w="100%"
                 justifyContent={isCurrentUser ? "flex-end" : "flex-start"}
                 spacing="10px"
                 alignItems="center"
+                ml="10px"
             >
                 {/* 본인 여부에 따른 좌우 시간 정렬 */}
                 {isCurrentUser && shouldShowTime && (

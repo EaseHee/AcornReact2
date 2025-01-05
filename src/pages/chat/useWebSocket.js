@@ -11,7 +11,7 @@ const useWebSocket = (setChats) => {
         const socket = new SockJS(`${baseURL}/ws`);
         const client = new Client({
             webSocketFactory: () => socket,
-            debug: (str) => console.log("STOMP Debug: ", str),
+            // debug: (str) => console.log("STOMP Debug: ", str),
             reconnectDelay: 2000,
             heartbeatIncoming: 0,
             heartbeatOutgoing: 0,
