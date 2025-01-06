@@ -166,7 +166,7 @@ const ImageSlider = ({ restaurant }) => {
             width={3}
             height={3}
             borderRadius="full"
-            bg={currentIndex === index ? "white" : "whiteAlpha.600"}
+            bg={currentIndex === index ? "orange" : "whiteAlpha.600"}
             cursor="pointer"
             onClick={() => {
               setCurrentIndex(index);
