@@ -18,7 +18,7 @@ const BookmarkCard = ({ name, rating, thumbnail, eateryNo }) => {
   useEffect(() => {
     const fetchFavoritesCount = async () => {
       try {
-        const response = await fetch(`https://port-0-forklog-m10lhqc01e8bd7d0.sel4.cloudtype.app/main/eateries/${eateryNo}/favorites/count`);
+        const response = await fetch(`/main/eateries/${eateryNo}/favorites/count`);
         if (response.ok) {
           const count = await response.json();
           setFavoritesCount(count);
