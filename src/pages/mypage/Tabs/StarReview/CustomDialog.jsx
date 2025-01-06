@@ -14,6 +14,7 @@ import {
 import { NativeSelectField, NativeSelectRoot } from "../../../../components/ui/native-select"
 import { Field } from "../../../../components/ui/field";
 import { Toaster, toaster } from "../../../../components/ui/toaster";
+import { InfoTip } from "../../../../components/ui/toggle-tip"
 import axios from 'utils/axios';
 export default function CustomDialog({ onReviewSubmitted, openBtnText, title, memberNo, review, confirmBtnText, closeBtnText, onClose }) {
   const [formData, setFormData] = useState({ rating: "0", content: "" });
@@ -74,7 +75,13 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
         <DialogBody>
           <Fieldset.Root size="lg" maxW="md">
             <Stack>
-              <Fieldset.Legend>가게에 대한 솔직한 평을 남겨주세요.</Fieldset.Legend>
+              <Fieldset.Legend>
+                가게에 대한 솔직한 평을 남겨주세요.
+                <InfoTip content={<>
+                  파일업로드는 다중 선택(ctrl키를 누른 채 파일 선택)을 지원합니다.<br></br>
+                  기존에 업로드한 파일과 무관하게 업로드할 파일을 모두 선택해 주세요.</>}
+                  />
+              </Fieldset.Legend>
             </Stack>
             <Fieldset.Content>
               <Field label="별점">
