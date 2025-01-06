@@ -4,7 +4,7 @@ import eateriesReducer from "./slices/eateriesSlice";
 import filterReducer from "./slices/filterSlice";
 import { loadFromLocalStorage, saveToLocalStorage } from '../utils/localStorage';
 
-const persistedState = loadFromLocalStorage();
+const preloadedState = loadFromLocalStorage();
 
 const store = configureStore({
     reducer: {
@@ -12,7 +12,9 @@ const store = configureStore({
         eateries: eateriesReducer, // 음식점 정보 저장
         filter: filterReducer, // 필터 조건 및 사용자 위치 정보 저장
     },
-    preloadedState: persistedState, // 초기 상태로 로드
+    preloadedState: { // 초기 상태로 로드
+        auth : preloadedState || { isLoading: false },
+    },
 });
 
 // 상태 변경 시 Local Storage에 저장
