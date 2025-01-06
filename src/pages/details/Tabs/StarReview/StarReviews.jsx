@@ -20,9 +20,7 @@ export default function StarReviews({no}) {
       const fetchMemberNo = async () => {
         try {
           // 서버에서 사용자 정보를 가져옵니다.
-          const response = await axios.get("/main/mypage/members/read", {
-            withCredentials: true, // 쿠키를 함께 전송하도록 설정
-          });
+          const response = await axios.get("/main/mypage/members/read");
           setMemberNo(response.data.no); // 상태를 업데이트
           setNickName(response.data.nickname); // 상태를 업데이트
         } catch (error) {

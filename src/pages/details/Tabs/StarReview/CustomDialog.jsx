@@ -32,7 +32,7 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
       setFiles([]);
     } else {
       // 기존 파일에 새로 선택한 파일을 추가
-      setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+      setFiles(selectedFiles);
     }
   }, []);
 
