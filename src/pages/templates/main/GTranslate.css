@@ -1,0 +1,18 @@
+/* GTranslate Wrapper 스타일 */
+.gtranslate_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  /* 플래그 아이콘 커스터마이징 */
+  .gtranslate_wrapper img {
+    transition: transform 0.3s; /* 호버 효과 */
+  }
+  
+  .gtranslate_wrapper img:hover {
+    transform: scale(1.1); /* 국기 확대 효과 */
+    cursor: pointer;
+  }
+  

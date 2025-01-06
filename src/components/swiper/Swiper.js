@@ -18,7 +18,7 @@ export default function MainSwiper() {
   return (
     <Box w="100%" h="fit-content" className="swiper-container">
       <Swiper
-        modules={[Mousewheel, Pagination, Autoplay]}
+        modules={[Pagination, Autoplay]}
         pagination={{
           clickable: true,
           el: '.swiper-pagination',

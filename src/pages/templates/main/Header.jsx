@@ -10,6 +10,8 @@ import { logout } from "../../../redux/slices/authSlice";
 import Logo from "../../../components/Logo";
 import { useEffect, useState } from "react";
 
+import GTranslate from "./GTranslate";
+
 const Header = () => {
   // 사용자의 로그인 상태를 redux에 저장하여 useSelector와 useDispatch 훅을 이용해서 전역적으로 관리
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -74,6 +76,11 @@ const Header = () => {
       {/* 로고 */}
       <Box>
         <Logo />
+      </Box>
+
+      {/* 다국어 위젯 */}
+      <Box>
+        <GTranslate />
       </Box>
 
       {/* 로그인/로그아웃 버튼 + 닉네임 + 테마 토글 */}
