@@ -9,7 +9,7 @@ const GTranslate = () => {
       detect_browser_language: true, // 브라우저 언어 감지 활성화
       languages: ["es", "de", "th", "mn", "ar", "ko", "en", "ja", "zh-CN"], // 지원 언어
       wrapper_selector: ".gtranslate_wrapper", // 위젯을 렌더링할 선택자
-      flag_size: 45, // 국기 크기
+      flag_size: 35, // 국기 크기
       horizontal_position: "middle", // 가로 정렬 (중앙)
       vertical_position: "top", // 상단 정렬
     };
