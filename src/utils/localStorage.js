@@ -30,7 +30,7 @@ export const loadFromLocalStorage = () => {
             return undefined;
         }
 
-        return { isLoggedIn: parsedState.isLoggedIn };
+        return parsedState.auth;
     } catch (error) {
         console.error('Local Storage에서 사용자 정보 반환에 실패하였습니다.', error);
         return undefined;

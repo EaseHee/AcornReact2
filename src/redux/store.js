@@ -13,15 +13,13 @@ const store = configureStore({
         filter: filterReducer, // 필터 조건 및 사용자 위치 정보 저장
     },
     preloadedState: { // 초기 상태로 로드
-        auth : preloadedState || { isLoading: false },
+        auth : preloadedState || { isLoggedIn: false },
     },
 });
 
 // 상태 변경 시 Local Storage에 저장
 store.subscribe(() => {
-    saveToLocalStorage({
-        auth: store.getState().auth,
-    });
+    saveToLocalStorage({auth: store.getState().auth, expirationTime: store.getState().expirationTime});
 });
 
 export default store;

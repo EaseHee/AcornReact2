@@ -22,7 +22,7 @@ const Map = ({ latitude, longitude }) => {
       // 카카오맵 스크립트 엘리먼트 생성
       const script = document.createElement("script");
       // autoload=false로 설정하여 수동으로 초기화 제어
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=378972c56faff9a433209f6d133d4945&autoload=false`;
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_JAVA_SCRIPT_KEY}&autoload=false`;
       script.async = true;
 
       // 스크립트 로드 완료 시 실행될 콜백
