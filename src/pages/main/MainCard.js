@@ -59,7 +59,18 @@ const MainCard = memo(({ data }) => {
           maxW="sm"
           overflow="hidden"
           onClick={handleCardClick}
-          style={{ cursor: "pointer" }}
+          style={{ 
+            cursor: "pointer",
+            
+            // 마우스 호버시 이벤트 효과
+            transition: "transform 0.3s ease-in-out", // 전환 효과 시간 증가
+            transformOrigin: "center", // 중앙 기준으로 확대
+            height: "150px" // 카드 전체 높이 고정
+          }}
+          _hover={{
+            transform: "scale(1.05)", // 호버시 5% 크기 증가
+            boxShadow: "xl" // 그림자 효과 추가
+          }}
       >
         <Flex
             height="150px"
