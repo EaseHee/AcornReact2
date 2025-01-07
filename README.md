@@ -6,4 +6,4 @@
 
 #### Collaborators : [jaeuk-choi](https://github.com/jaeuk-choi), [JeroCaller](https://github.com/JeroCaller), [kai-jang99](https://github.com/kai-jang99), [rmk-3850](https://github.com/rmk-3850), [YYUMMMMMMMM](https://github.com/YYUMMMMMMMM)
 
-#### [forklog v0.0.1](https://web-acornreact2-m10lhqc01e8bd7d0.sel4.cloudtype.app/)
+#### [forklog v0.0.1](https://port-0-forklog-m10lhqc01e8bd7d0.sel4.cloudtype.app/)
