@@ -19,7 +19,7 @@ const Body = () => {
         {/* 메인 콘텐츠 */}
         <Box
             flex={{ base: "1", md: "3" }}
-            minW={{ base: "xl", md: "xl" }}
+            minW={{ base: "lg", md: "xl" }}
             maxW="1200px" // Header와 동일한 너비로 맞추기
             bg="white"
             borderRadius="md"

@@ -7,7 +7,7 @@ import FindPassword from "./FindPassword";
 import FindEmail from "./FindEmail";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import Logo from "../../components/Logo";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../redux/slices/authSlice";
@@ -111,7 +111,7 @@ const AuthLogin = () => {
             <Text fontSize="2xl" fontWeight="bold">
               로그인
             </Text>
-            <Link href="/register" color="orange.500" fontWeight="bold">
+            <Link as={ReactRouterLink} to="/register" color="orange.500" fontWeight="bold">
               회원가입
             </Link>
           </Box>

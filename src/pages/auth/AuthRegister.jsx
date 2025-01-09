@@ -9,7 +9,7 @@ import Terms1 from "./Terms1";
 import Terms2 from "./Terms2";
 import DuplicatedEmail from "./DuplicatedEmail";
 import axios from "utils/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as ReactRouterLink } from "react-router-dom";
 import Logo from "../../components/Logo";
 
 const AuthRegister = () => {
@@ -104,7 +104,7 @@ const AuthRegister = () => {
               <Text fontSize="2xl" fontWeight="bold">
                 회원가입
               </Text>
-              <Link href="/login" color="orange.500" fontWeight="bold">
+              <Link as={ReactRouterLink} to="/login" color="orange.500" fontWeight="bold">
                 기존 계정으로 로그인
               </Link>
             </Box>

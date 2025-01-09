@@ -18,7 +18,7 @@ export default function StarReviews({nickname, memberNo}) {
         </HStack>
       </Card.Header>
       <Card.Body>
-        {memberNo > 0 && <StarReviewCard memberNo={memberNo} nickname={nickname} />}
+        {memberNo > 0 && <StarReviewCard sortBy={sortBy} memberNo={memberNo} nickname={nickname} />}
       </Card.Body>
     </Card.Root>
   );
