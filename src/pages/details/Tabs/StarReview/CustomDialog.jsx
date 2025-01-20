@@ -10,12 +10,13 @@ import {
   DialogTitle,
   DialogRoot,
   DialogTrigger
-} from '../../../../components/ui/dialog';
-import { NativeSelectField, NativeSelectRoot } from "../../../../components/ui/native-select"
-import { Field } from "../../../../components/ui/field"
-import { Toaster, toaster } from "../../../../components/ui/toaster"
-import { InfoTip } from "../../../../components/ui/toggle-tip"
+} from 'components/ui/dialog';
+import { Field } from "components/ui/field"
+import { Toaster, toaster } from "components/ui/toaster"
+import { InfoTip } from "components/ui/toggle-tip"
+
 import axios from 'utils/axios';
+import StarRating from "components/StarRating";
 
 export default function CustomDialog({ onReviewSubmitted, openBtnText, title, memberNo, eateryNo, confirmBtnText, closeBtnText }) {
   const [formData, setFormData] = useState({ rating: "0", content: "" });
@@ -24,6 +25,11 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // 별점 등록 처리
+  const handleRatingChange = (rating) => {
+    setFormData(prev => ({ ...prev, rating })); // 별점 값 업데이트
   };
 
   const handleFileChange = useCallback((e) => {
@@ -84,16 +90,9 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
             </Stack>
             <Fieldset.Content>
               <Field label="별점">
-                <NativeSelectRoot>
-                  <NativeSelectField name="rating" value={formData.rating} onChange={handleInputChange}>
-                    <option value="0">☆☆☆☆☆</option>
-                    <option value="5">★★★★★</option>
-                    <option value="4">★★★★☆</option>
-                    <option value="3">★★★☆☆</option>
-                    <option value="2">★★☆☆☆</option>
-                    <option value="1">★☆☆☆☆</option>
-                  </NativeSelectField>
-                </NativeSelectRoot>
+                <Field label="별점">
+                  <StarRating value={formData.rating} onChange={handleRatingChange} />
+                </Field>
               </Field>
               <Field label="내용">
                 <Textarea name="content" value={formData.content} onChange={handleInputChange} />

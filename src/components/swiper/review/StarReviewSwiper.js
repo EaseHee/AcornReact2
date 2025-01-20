@@ -6,7 +6,10 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 // Import required modules
 import { Pagination, Navigation } from 'swiper/modules';
-import '../../../details/Tabs/StarReview/StarReviewSwiper.css';
+import 'components/swiper/review/StarReviewSwiper.css';
+
+import { baseURL } from 'utils/axios';
+
 export default function StarReviewSwiper({ImgInfo}) {
     return (
     <div className="swiper-container">
@@ -23,7 +26,7 @@ export default function StarReviewSwiper({ImgInfo}) {
             <div className="swiper-slide-content">
               <img
                 className="slide-image"
-                src={`${process.env.REACT_APP_API_BASE_URL}${item.imageUrl.replace(/^[.\\]+/, '/')}`}  // 서버 주소를 포함한 절대 URL로 변환
+                src={new URL(item.imageUrl.replace(/^[.\\/]+/, '/'), baseURL).toString()}  // 서버 주소를 포함한 절대 URL로 변환
                 alt={`리뷰 사진 ${item.no}`}
               />
             </div>

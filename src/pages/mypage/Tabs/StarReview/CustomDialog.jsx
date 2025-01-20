@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+
 import { Button, Fieldset, Stack, Textarea } from '@chakra-ui/react';
 import { 
   DialogActionTrigger, 
@@ -10,18 +11,26 @@ import {
   DialogTitle, 
   DialogTrigger, 
   DialogRoot
-} from '../../../../components/ui/dialog';
-import { NativeSelectField, NativeSelectRoot } from "../../../../components/ui/native-select"
-import { Field } from "../../../../components/ui/field";
-import { Toaster, toaster } from "../../../../components/ui/toaster";
-import { InfoTip } from "../../../../components/ui/toggle-tip"
+} from 'components/ui/dialog';
+import { Field } from "components/ui/field";
+import { Toaster, toaster } from "components/ui/toaster";
+import { InfoTip } from "components/ui/toggle-tip"
+
+import StarRating from 'components/StarRating';
+
 import axios from 'utils/axios';
+
 export default function CustomDialog({ onReviewSubmitted, openBtnText, title, memberNo, review, confirmBtnText, closeBtnText, onClose }) {
   const [formData, setFormData] = useState({ rating: "0", content: "" });
   const [files, setFiles] = useState([]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // 별점 등록 처리
+  const handleRatingChange = (rating) => {
+    setFormData(prev => ({ ...prev, rating })); // 별점 값 업데이트
   };
 
   const handleFileChange = useCallback((e) => {
@@ -85,16 +94,7 @@ export default function CustomDialog({ onReviewSubmitted, openBtnText, title, me
             </Stack>
             <Fieldset.Content>
               <Field label="별점">
-                <NativeSelectRoot>
-                  <NativeSelectField name="rating" value={formData.rating} onChange={handleInputChange}>
-                    <option value="0">☆☆☆☆☆</option>
-                    <option value="5">★★★★★</option>
-                    <option value="4">★★★★☆</option>
-                    <option value="3">★★★☆☆</option>
-                    <option value="2">★★☆☆☆</option>
-                    <option value="1">★☆☆☆☆</option>
-                  </NativeSelectField>
-                </NativeSelectRoot>
+                <StarRating value={formData.rating} onChange={handleRatingChange} />
               </Field>
               <Field label="내용">
                 <Textarea name="content" value={formData.content} onChange={handleInputChange} />
