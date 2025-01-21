@@ -4,7 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 import {Box, Button, Flex, Grid, Text} from "@chakra-ui/react";
 
-import Swiper from "components/swiper/Swiper.js";
+import Swiper from "../../components/swiper/main/MainSwiper.js";
 import MySpinner from "components/Spinner.js";
 
 import axios from "utils/axios";

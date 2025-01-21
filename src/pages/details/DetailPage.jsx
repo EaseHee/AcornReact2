@@ -21,14 +21,12 @@ const DetailPage = () => {
   // 사용자 정보 가져오기
   useEffect(() => {
     const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get("/main/mypage/members/member-no");
-
+      if (isLoggedIn) {
+        const response
+            = await axios.get("/main/mypage/members/member-no");
         if (response.data) {
           setMemberNo(response.data);
         }
-      } catch (err) {
-         // 사용자 정보를 가져오지 못했을 경우(비로그인), memberNo를 null로 유지
       }
     };
 

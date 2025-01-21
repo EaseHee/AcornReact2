@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import axios from "utils/axios";
-import MySpinner from "../../../../components/Spinner.js";
+
 import { Box, Card, Text } from "@chakra-ui/react"
-import Swiper from "./StarReviewSwiper.js";
+
+import axios from "utils/axios";
+
+import MySpinner from "components/Spinner.js";
+import Swiper from "components/swiper/review/StarReviewSwiper";
+
 import CustomDialog from './CustomDialog';
 import DeleteDialog from './DeleteDialog.js'
+
+import { getStarRating } from 'components/StarRating'
+
 const StarReviewCard = ({memberNo,nickname, sortBy}) => {
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(1); // 현재 페이지 번호
@@ -57,12 +64,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
       setPage((prevPage) => prevPage + 1); // 페이지 번호 증가
     }
   };
-  //평점 별모양으로 변환
-  const getStarRating = (rating) => {
-    const fullStar = '★';
-    const emptyStar = '☆';
-    return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
-  };
+
   const refreshReviews = async () => {
     setReviews([]); // 기존 데이터 초기화
     setPage(1);     // 첫 페이지로 초기화
@@ -94,7 +96,7 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
       >
         {sortedReviews.map((review, index) => (
           <Card.Root maxW="svw" overflow="hidden"  key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
-          <Card.Body gap="3">
+          <Card.Body >
             <Box display="flex" justifyContent="space-between" alignItems="center">
             <Card.Title alignSelf="flex-start">{review.reviewEateriesDto.name}</Card.Title>
             <Box display="flex" alignItems="center">
@@ -112,13 +114,16 @@ const StarReviewCard = ({memberNo,nickname, sortBy}) => {
             </Box>
             </Box>
             <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Card.Description>
-              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br>
-              {nickname}
-            </Card.Description>
-            <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
+              <Card.Description>
+                {getStarRating(review.rating)}
+                {/*{nickname}*/}
+              </Card.Description>
+              <Box fontSize="xs" display="flex" alignSelf="flex-end">
+                작성일: {review.createdAt.replace('T', ' ')}<br/>
+                수정일: {review.updatedAt.replace('T', ' ')}
+              </Box>
             </Box>
-            <br></br>
+            <br/>
             {review.content}
           </Card.Body>
           <Card.Footer w="80%" alignSelf="center">

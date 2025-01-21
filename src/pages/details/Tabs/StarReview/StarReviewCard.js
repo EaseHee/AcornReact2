@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+
+import {Box, Card, Span, Text} from "@chakra-ui/react"
+
 import axios from "utils/axios";
-import MySpinner from "../../../../components/Spinner.js";
-import { Box, Card, Text } from "@chakra-ui/react"
-import Swiper from "./StarReviewSwiper.js";
+
+import MySpinner from "components/Spinner.js";
+import Swiper from "components/swiper/review/StarReviewSwiper.js";
+
+import { getStarRating } from 'components/StarRating'
+
 const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(1); // 현재 페이지 번호
@@ -62,12 +69,7 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
       setPage((prevPage) => prevPage + 1); // 페이지 번호 증가
     }
   };
-  //평점 별모양으로 변환
-  const getStarRating = (rating) => {
-    const fullStar = '★';
-    const emptyStar = '☆';
-    return fullStar.repeat(rating) + emptyStar.repeat(5 - rating);
-  };
+
   const refreshReviews = async () => {
     setReviews([]); // 기존 데이터 초기화
     setPage(1);     // 첫 페이지로 초기화
@@ -99,13 +101,17 @@ const StarReviewCard = ({eateryNo, sortBy, passRefresh}) => {
       >
         {sortedReviews.map((review, index) => (
           <Card.Root maxW="svw" overflow="hidden" key={`${review.no}-${index}`} style={{ marginBottom: "16px" }}>
-          <Card.Body gap="3">
+          <Card.Body>
             <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Card.Title alignSelf="flex-start">{review.reviewMembersDto.nickname} 님</Card.Title>
-            <Box fontSize="xs" display="flex" alignSelf="flex-end">작성일: {review.createdAt.replace('T', ' ')}<br></br>수정일: {review.updatedAt.replace('T', ' ')}</Box>
+              <Card.Title alignSelf="flex-start">{review.reviewMembersDto.nickname} 님</Card.Title>
+              <Box fontSize="xs" display="flex" alignSelf="flex-end">
+                작성일: {review.createdAt.replace('T', ' ')}<br/>
+                수정일: {review.updatedAt.replace('T', ' ')}
+              </Box>
             </Box>
+
             <Card.Description>
-              {getStarRating(review.rating)}&nbsp;&nbsp;{review.rating}<br></br><br></br>
+              {getStarRating(review.rating)}<br/><br/>
               {review.content}
             </Card.Description>
           </Card.Body>

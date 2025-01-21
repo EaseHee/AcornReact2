@@ -4,7 +4,7 @@ import {useDispatch} from "react-redux";
 import MySpinner from "../../components/Spinner";
 import {useEffect, useState} from "react";
 
-const NoDataComponent = ({loading}) => {
+const NoDataComponent = () => {
     const dispatch = useDispatch();
     const [showNoData, setShowNoData] = useState(false);
 
