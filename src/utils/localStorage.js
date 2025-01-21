@@ -6,7 +6,7 @@ export const saveToLocalStorage = (state) => {
         const expirationTime = new Date().getTime() + 30 * 60 * 1000; // 30분 후 만료
         const serializedState = JSON.stringify({ ...state, expirationTime });
         localStorage.setItem('auth', serializedState);
-        localStorage.setItem('theme', "light");
+        // localStorage.setItem('theme', "light");
     } catch (error) {
         console.error('Local Storage에 사용자 정보 저장에 실패하였습니다.', error);
     }
@@ -35,4 +35,8 @@ export const loadFromLocalStorage = () => {
         console.error('Local Storage에서 사용자 정보 반환에 실패하였습니다.', error);
         return undefined;
     }
+};
+
+export const setThemeToLocalStorage = () => {
+    localStorage.setItem('theme', 'light');
 };

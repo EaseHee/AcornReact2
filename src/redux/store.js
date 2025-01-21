@@ -2,7 +2,9 @@
 import authReducer from "./slices/authSlice";
 import eateriesReducer from "./slices/eateriesSlice";
 import filterReducer from "./slices/filterSlice";
-import { loadFromLocalStorage, saveToLocalStorage } from '../utils/localStorage';
+import { loadFromLocalStorage, saveToLocalStorage, setThemeToLocalStorage } from '../utils/localStorage';
+
+setThemeToLocalStorage();
 
 const preloadedState = loadFromLocalStorage();
 
